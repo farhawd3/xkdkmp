@@ -3,6 +3,7 @@ import { NAVIGATION_GROUPS } from "./constants";
 /** Rute produksi yang aktif dan terintegrasi dengan validasi otorisasi server Supabase. */
 export const PRODUCTION_READY_ROUTES = new Set([
   "/dashboard",
+  "/meja-kerja",
   "/pekerjaan",
   "/monitoring",
   "/unit-usaha",

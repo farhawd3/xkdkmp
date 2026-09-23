@@ -37,6 +37,11 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
         iconName: "LayoutDashboard",
       },
       {
+        title: "Meja Kerja",
+        href: "/meja-kerja",
+        iconName: "Inbox",
+      },
+      {
         title: "Tugas & Agenda",
         href: "/pekerjaan",
         iconName: "ClipboardList",

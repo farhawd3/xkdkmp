@@ -1,5 +1,39 @@
 # Status Proyek — Kopdes Merah Putih Ladang Laweh
 
+Terakhir diperbarui: 23 September 2026 — Implementasi Tahap P1 Selesai (Meja Kerja Manajer /meja-kerja).
+
+## Tahap P1: Meja Kerja Manajer (`/meja-kerja`) — SELESAI (v2.9.2)
+
+- **Tujuan**: Satu antrian tindak lanjut terpadu lintas gerai, tugas, kendala, dan ketersediaan stok tanpa tabel database baru.
+- **Backend & Route Handler**: [`src/app/api/manager/work-desk/route.ts`](../src/app/api/manager/work-desk/route.ts)
+  - Menghimpun data secara deterministik ke dalam 4 kelompok urgensi:
+    1. `perlu_sekarang`: tugas lewat tenggat (*overdue*), tugas prioritas mendesak, dan stok habis (0 unit fisik).
+    2. `hari_ini`: tugas jatuh tempo hari ini dan gerai aktif yang belum mengisi rekap harian hari ini.
+    3. `pantau`: stok menipis ($0 < \text{stok} \le \text{min}$) dan catatan kendala lapangan 7 hari terakhir.
+    4. `selesai`: gerai aktif yang sudah sukses rekap hari ini dan tugas yang telah diselesaikan hari ini.
+  - Fail-fast & transparansi parsial: jika salah satu query terganggu, kesalahan dicatat dalam `partialErrors` tanpa menggagalkan seluruh halaman atau memalsukan data menjadi nol.
+- **Halaman Antarmuka**: [`src/app/meja-kerja/page.tsx`](../src/app/meja-kerja/page.tsx)
+  - 4 kartu metrik (Total Antrian, Perlu Sekarang, Hari Ini, Dalam Pantauan).
+  - Bilah filter responsif (Urgensi, Sumber Data, Pencarian teks).
+  - Kartu antrian dengan badge tingkat perhatian, nama gerai, PIC, dan tombol aksi 1-klik menuju rute terfilter (`/pekerjaan`, `/monitoring`, `/stok`).
+  - Empty state cerdas dan banner peringatan parsial.
+- **Integrasi Navigasi**: Menu Meja Kerja ditambahkan di Sidebar pada kelompok **Menu Utama** (ikon `Inbox`).
+- **Verifikasi Kualitas**:
+  - Unit test otomatis: **169/169 lulus 100% (19 berkas uji)** termasuk 4 tes komprehensif baru di [`tests/work-desk.test.ts`](../tests/work-desk.test.ts).
+  - TypeScript strict: 0 galat (`tsc --noEmit` bersih).
+  - Next.js production build: **35 rute** sukses terkompilasi optimal (termasuk `/meja-kerja` dan `/api/manager/work-desk`).
+
+---
+
+## Tahap P0: Penyelarasan Skema Anggota & Stok di Supabase Cloud (Siap Dijalankan)
+
+- **Tujuan**: Menghilangkan galat HTTP 500 pada `/api/members` dan `/api/stock-simple` akibat perbedaan kolom di Supabase Cloud lama.
+- **Berkas Migrasi Resmi**: `supabase/migrations/20260923000009_align_members_products.sql` (dan draft di `supabase/drafts/20260923000009_align_members_products.sql`).
+- **Jaminan Keamanan**: Transaksional atomik (`BEGIN ... COMMIT`), tidak menghapus tabel/baris, menyelaraskan `member_number` $\leftrightarrow$ `member_no` dengan trigger otomatis, menambahkan kolom pelengkap `notes`, `is_archived`, dan `unit_id`.
+- **Status Database**: Menunggu eksekusi oleh Bapak Abdul Halim di Supabase SQL Editor.
+
+---
+
 ## Rancangan tambahan menu/fitur untuk AI berikutnya — 23 September 2026
 
 - Prompt siap pakai dan lebih rinci dibuat di [prompts/91_Pengembangan_Fitur_Manajer_Lanjutan.md](../prompts/91_Pengembangan_Fitur_Manajer_Lanjutan.md). Usulan menu baru: **Meja Kerja** dan **Kinerja Gerai**; fitur lain diutamakan sebagai tab pada modul yang ada agar sidebar tidak penuh.

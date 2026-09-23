@@ -48,3 +48,8 @@ Aturan ini berlaku untuk seluruh agen dan percakapan dalam workspace ini.
 1. Kerjakan perubahan konkret sesuai arahan pengguna.
 2. Jalankan pengujian relevan (`npm test`, `npm run typecheck`, `npm run build`).
 3. Laporkan ringkasan perubahan dalam bahasa Indonesia sederhana, daftar file yang diubah, dan status terkini di `docs/STATUS.md`.
+
+## 6. Aturan Evaluasi Tampilan & Pengambilan Alih Browser
+- **Wajib Evaluasi Browser Nyata**: Setiap kali merancang atau mengubah tampilan (UI/UX), agen **WAJIB** mengambil alih browser (*browser subagent*) untuk memeriksa langsung hasil tampilannya di peramban lokal.
+- **Tujuan Evaluasi Mandiri**: Memastikan agen secara mandiri melihat dan mengevaluasi kekurangan tata letak, kerapian kartu/tabel, kontras warna, kesesuaian mode gelap/terang, dan kenyamanan target sentuh tablet (44–48 px) sebelum menyerahkan hasil kepada pengguna.
+- **Siklus Evaluasi**: Buka halaman -> Ambil tangkapan layar/inspeksi DOM -> Temukan kekurangan/kejanggalan visual -> Perbaiki kode -> Pastikan hasil akhir memuaskan.

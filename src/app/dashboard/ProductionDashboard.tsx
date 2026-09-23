@@ -98,7 +98,12 @@ export function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3 pt-2">
-            <p className="text-xs text-slate-500 dark:text-slate-400">{actions.length} tindak lanjut ditampilkan. Tugas dan stok dibatasi cuplikan prioritas; buka modul untuk daftar lengkap.</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400">{actions.length} tindak lanjut ditampilkan. Cuplikan prioritas cepat.</p>
+              <Link href="/meja-kerja" className="inline-flex min-h-8 items-center gap-1 text-xs font-bold text-primary hover:underline">
+                Buka Meja Kerja Lengkap <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
             {actions.length === 0 ? <div className="rounded-xl bg-slate-50 p-6 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300">Tidak ada tindak lanjut pada kategori ini berdasarkan data yang tercatat. Tetap periksa kelengkapan rekap gerai.</div> :
               <ul className="divide-y divide-slate-100 dark:divide-slate-700">
                 {actions.map((item) => <li key={item.id}><Link href={item.href} className="group flex min-h-16 items-start justify-between gap-3 rounded-xl px-2 py-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800">

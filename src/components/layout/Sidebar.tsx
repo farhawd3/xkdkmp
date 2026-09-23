@@ -24,6 +24,7 @@ import {
   Activity,
   ClipboardList,
   Scale,
+  Inbox,
   X,
   LucideIcon,
 } from "lucide-react";
@@ -54,6 +55,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Activity,
   ClipboardList,
   Scale,
+  Inbox,
 };
 
 export interface SidebarProps {

@@ -2,6 +2,43 @@
 
 Catatan perubahan kronologis proyek untuk pelacakan lintas agen AI dan pengembang.
 
+## [v2.9.2 — Tahap P1: Meja Kerja Manajer (/meja-kerja)] — 23 September 2026
+
+- **Fitur Baru — Meja Kerja Manajer (`/meja-kerja`)**:
+  - Halaman antrian terpadu bagi Bapak Abdul Halim untuk memantau seluruh kebutuhan tindak lanjut harian dalam satu layar.
+  - Membagi pekerjaan ke dalam 4 kelompok urgensi yang jelas dan deterministik:
+    1. **Perlu Sekarang**: Tugas lewat jatuh tempo (*overdue*), tugas prioritas mendesak, dan stok fisik habis (0 unit).
+    2. **Hari Ini**: Tugas jatuh tempo hari ini dan gerai aktif yang belum mengisi rekap harian hari ini.
+    3. **Pantau**: Stok fisik menipis ($0 < \text{stok} \le \text{stok minimum}$) dan kendala lapangan yang dilaporkan dalam 7 hari terakhir.
+    4. **Selesai**: Gerai aktif yang sudah sukses menyetorkan rekap hari ini dan tugas yang telah diselesaikan hari ini.
+- **Backend Route Handler Baru (`GET /api/manager/work-desk`)**:
+  - Menghimpun data dari 4 tabel yang sudah ada (`business_units`, `unit_daily_reports`, `tasks`, `products`) tanpa memerlukan tabel database baru.
+  - Tahan terhadap kegagalan parsial (*fail-fast & transparent*): jika salah satu query terganggu, galat dicatat dalam `partialErrors` dan data yang berhasil tetap disajikan secara jujur tanpa rekayasa angka nol.
+- **Antarmuka Pengguna & Navigasi**:
+  - 4 kartu metrik ringkasan (Total Antrian, Perlu Sekarang, Hari Ini, Dalam Pantauan).
+  - Filter interaktif berdasarkan tingkat urgensi, sumber data, dan pencarian teks cepat.
+  - Tombol aksi 1-klik langsung menuju modul terkait (`/pekerjaan`, `/monitoring`, `/stok`) dengan parameter terarah.
+  - Menu baru ditambahkan di Sidebar pada kelompok **Menu Utama** dengan ikon `Inbox`.
+- **Pengujian & Verifikasi**:
+  - 169/169 unit test Vitest lulus (19 berkas), termasuk berkas uji baru `tests/work-desk.test.ts`.
+  - 0 galat TypeScript (`tsc --noEmit`).
+  - Next.js production build sukses mengompilasi 35 rute.
+
+---
+
+## [Tahap P0 — Penyelarasan Skema Anggota & Stok di Supabase Cloud] — 23 September 2026
+
+- **Migrasi Penyelarasan Disiapkan**: Membuat berkas resmi `supabase/migrations/20260923000009_align_members_products.sql` dan memperbarui draf di `supabase/drafts/`.
+- **Penyelarasan Kolom & Relasi**:
+  - `products`: Menambahkan kolom `notes`, `is_archived`, dan relasi `unit_id` ke `business_units`, serta memastikan tipe data `current_stock` dan `min_stock` adalah `NUMERIC(12,2)`.
+  - `members`: Menambahkan kolom `notes`, `is_archived`, `member_number`, dan mempertahankan `member_no` serta `domicile`.
+  - Sinkronisasi dua arah: Trigger otomatis `sync_member_number_v29` memastikan `member_number` dan `member_no` selalu sinkron tanpa risiko kehilangan data nomor anggota lama.
+  - Melepas kewajiban NOT NULL pada `phone` dan `domicile` agar pendaftaran warga lebih fleksibel.
+- **Keamanan Data**: Menggunakan transaksi atomik (`BEGIN ... COMMIT`) dan `LOCK TABLE ACCESS EXCLUSIVE` dengan batas waktu aman (`timeout 5s/30s`). Tidak ada data atau tabel yang dihapus.
+- **Verifikasi Kode**: 165/165 unit test Vitest lulus (18 berkas), 0 galat TypeScript (`tsc --noEmit`), build Next.js 33 rute sukses.
+
+---
+
 ## [Rancangan lanjutan — prompt fitur manajer] — 23 September 2026
 
 - Menulis prompt implementasi rinci `prompts/91_Pengembangan_Fitur_Manajer_Lanjutan.md`: usulan dua menu, alur harian/bulanan, fitur berbasis data saat ini dan fitur yang memerlukan database, aturan hitung, UX, uji, keamanan, prioritas dan pertanyaan bisnis.
