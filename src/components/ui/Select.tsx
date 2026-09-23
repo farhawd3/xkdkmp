@@ -1,6 +1,12 @@
 import React, { useId } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  fieldControlClass,
+  fieldErrorClass,
+  fieldLabelClass,
+  fieldMessageClass,
+} from "./fieldStyles";
 
 export interface SelectOption {
   value: string;
@@ -24,7 +30,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-sm font-semibold text-slate-700 dark:text-slate-300"
+            className={fieldLabelClass}
           >
             {label}
             {props.required && <span className="ml-1 text-red-500">*</span>}
@@ -38,10 +44,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={error ? true : undefined}
             aria-describedby={error || helperText ? `${selectId}-description` : undefined}
             className={cn(
-              "flex h-11 w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 pr-10 text-sm text-slate-900 dark:text-slate-100 transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary-container",
-              "disabled:cursor-not-allowed disabled:bg-slate-50 dark:disabled:bg-slate-800/50 disabled:text-slate-400 dark:disabled:text-slate-600",
-              error && "border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50/20 dark:bg-red-950/20",
+              fieldControlClass,
+              "h-12 appearance-none px-3.5 py-2.5 pr-11",
+              error && fieldErrorClass,
               className
             )}
             {...props}
@@ -54,16 +59,16 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 ))
               : children}
           </select>
-          <div className="absolute right-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-            <ChevronDown className="h-4 w-4" />
+          <div className="pointer-events-none absolute right-3 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
           </div>
         </div>
         {error ? (
-          <p id={`${selectId}-description`} role="alert" className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-1">
-            <span>⚠</span> {error}
+          <p id={`${selectId}-description`} role="alert" className={cn(fieldMessageClass, "font-medium text-red-600 dark:text-red-400")}>
+            <span aria-hidden="true">⚠</span> {error}
           </p>
         ) : helperText ? (
-          <p id={`${selectId}-description`} className="text-sm text-slate-500 dark:text-slate-400">{helperText}</p>
+          <p id={`${selectId}-description`} className={cn(fieldMessageClass, "text-slate-500 dark:text-slate-400")}>{helperText}</p>
         ) : null}
       </div>
     );

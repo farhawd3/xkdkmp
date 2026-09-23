@@ -8,47 +8,24 @@ import {
   isProductionDatabaseConfigured,
 } from '@/lib/repository';
 
-describe('Tahap 09 — Verifikasi Skema SQL & Kebijakan Keamanan Supabase', () => {
+describe('Tahap 09 — Verifikasi Skema SQL & Kebijakan Keamanan Supabase Sederhana', () => {
   const migrationsDir = path.resolve(process.cwd(), 'supabase/migrations');
-  const file1 = path.join(migrationsDir, '20260923000001_core_schema.sql');
-  const file2 = path.join(migrationsDir, '20260923000002_rls_policies.sql');
-  const file3 = path.join(migrationsDir, '20260923000003_atomic_rpcs.sql');
+  const cleanSchemaFile = path.join(migrationsDir, '20260923000007_clean_simple_schema.sql');
 
-  const schemaSql = fs.readFileSync(file1, 'utf-8');
-  const rlsSql = fs.readFileSync(file2, 'utf-8');
-  const rpcSql = fs.readFileSync(file3, 'utf-8');
+  const schemaSql = fs.readFileSync(cleanSchemaFile, 'utf-8');
 
-  it('memastikan berkas migrasi SQL tersedia dan tidak kosong', () => {
-    expect(fs.existsSync(file1)).toBe(true);
-    expect(fs.existsSync(file2)).toBe(true);
-    expect(fs.existsSync(file3)).toBe(true);
-    expect(schemaSql.length).toBeGreaterThan(500);
-    expect(rlsSql.length).toBeGreaterThan(500);
-    expect(rpcSql.length).toBeGreaterThan(500);
+  it('memastikan berkas migrasi skema bersih Supabase tersedia dan tidak kosong', () => {
+    expect(fs.existsSync(cleanSchemaFile)).toBe(true);
+    expect(schemaSql.length).toBeGreaterThan(1000);
   });
 
-  it('memvalidasi 15+ tabel inti didefinisikan dalam skema', () => {
+  it('memvalidasi tabel-tabel inti pemantauan didefinisikan dalam skema sederhana', () => {
     const requiredTables = [
-      'user_roles',
-      'members',
-      'organization_profile',
-      'fixed_assets',
-      'suppliers',
+      'business_units',
+      'unit_daily_reports',
+      'tasks',
       'products',
-      'purchase_orders',
-      'purchase_order_items',
-      'goods_receipts',
-      'goods_receipt_items',
-      'stock_mutations',
-      'stock_opnames',
-      'stock_opname_items',
-      'cashier_shifts',
-      'pos_transactions',
-      'pos_transaction_items',
-      'chart_of_accounts',
-      'journal_entries',
-      'journal_lines',
-      'audit_logs',
+      'members',
     ];
 
     for (const table of requiredTables) {
@@ -65,13 +42,11 @@ describe('Tahap 09 — Verifikasi Skema SQL & Kebijakan Keamanan Supabase', () =
 
     // Kolom moneter wajib NUMERIC(15, 2)
     const monetaryColumns = [
-      'cost_price NUMERIC\\(15, 2\\)',
-      'selling_price NUMERIC\\(15, 2\\)',
-      'total_amount NUMERIC\\(15, 2\\)',
-      'unit_price NUMERIC\\(15, 2\\)',
-      'debit NUMERIC\\(15, 2\\)',
-      'credit NUMERIC\\(15, 2\\)',
-      'simpanan_pokok_amount NUMERIC\\(15, 2\\)',
+      'monthly_target NUMERIC\\(15, 2\\)',
+      'gross_revenue NUMERIC\\(15, 2\\)',
+      'operational_expenses NUMERIC\\(15, 2\\)',
+      'net_profit NUMERIC\\(15, 2\\)',
+      'cash_in_hand NUMERIC\\(15, 2\\)',
     ];
 
     for (const pattern of monetaryColumns) {
@@ -80,54 +55,26 @@ describe('Tahap 09 — Verifikasi Skema SQL & Kebijakan Keamanan Supabase', () =
     }
   });
 
-  it('memvalidasi seluruh tabel mengaktifkan Row Level Security (Default Deny)', () => {
+  it('memvalidasi seluruh tabel pemantauan mengaktifkan Row Level Security (Default Deny)', () => {
     const tablesWithRls = [
-      'user_roles',
-      'members',
-      'organization_profile',
-      'fixed_assets',
-      'suppliers',
+      'business_units',
+      'unit_daily_reports',
+      'tasks',
       'products',
-      'purchase_orders',
-      'purchase_order_items',
-      'goods_receipts',
-      'goods_receipt_items',
-      'stock_mutations',
-      'stock_opnames',
-      'stock_opname_items',
-      'cashier_shifts',
-      'pos_transactions',
-      'pos_transaction_items',
-      'chart_of_accounts',
-      'journal_entries',
-      'journal_lines',
-      'audit_logs',
+      'members',
     ];
 
     for (const table of tablesWithRls) {
       const rlsRegex = new RegExp(`ALTER TABLE public\\.${table} ENABLE ROW LEVEL SECURITY;`, 'i');
-      expect(rlsRegex.test(rlsSql)).toBe(true);
+      expect(rlsRegex.test(schemaSql)).toBe(true);
     }
   });
 
-  it('memvalidasi aturan imutabilitas transaksi (larangan UPDATE dan DELETE langsung pada jurnal dan mutasi)', () => {
-    // Memastikan ada policy immutability dengan USING (FALSE)
-    expect(rlsSql).toContain('Jurnal dilarang diedit langsung');
-    expect(rlsSql).toContain('Jurnal dilarang dihapus langsung');
-    expect(rlsSql).toContain('Mutasi stok dilarang diedit langsung');
-    expect(rlsSql).toContain('Mutasi stok dilarang dihapus langsung');
-    expect(rlsSql).toContain('Transaksi kasir dilarang diedit langsung');
-    expect(rlsSql).toContain('Transaksi kasir dilarang dihapus langsung');
-    expect(rlsSql).toContain('USING (FALSE)');
-  });
-
-  it('memvalidasi fungsi RPC atomik didefinisikan dengan kontrol transaksi aman', () => {
-    expect(rpcSql).toContain('CREATE OR REPLACE FUNCTION public.rpc_receive_goods_shipment');
-    expect(rpcSql).toContain('CREATE OR REPLACE FUNCTION public.rpc_process_pos_sale');
-    expect(rpcSql).toContain('CREATE OR REPLACE FUNCTION public.rpc_create_balanced_journal');
-    expect(rpcSql).toContain('SECURITY DEFINER');
-    expect(rpcSql).toContain('SET search_path = public');
-    expect(rpcSql).toContain('Jurnal tidak seimbang');
+  it('memvalidasi kebijakan izin akses authenticated pada unit_daily_reports dan business_units', () => {
+    expect(schemaSql).toContain('CREATE POLICY "Izin baca rekap gerai authenticated"');
+    expect(schemaSql).toContain('CREATE POLICY "Izin kelola rekap gerai authenticated"');
+    expect(schemaSql).toContain('CREATE POLICY "Izin baca gerai authenticated"');
+    expect(schemaSql).toContain('CREATE POLICY "Izin kelola gerai authenticated"');
   });
 });
 

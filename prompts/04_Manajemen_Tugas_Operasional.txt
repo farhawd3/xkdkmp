@@ -1,0 +1,60 @@
+MODUL MANAJEMEN TUGAS & AGENDA OPERASIONAL (/pekerjaan)
+
+Fungsi: Task and action hub bagi manajer untuk mengatur pembagian tugas, PIC, prioritas, jadwal agenda, dan memantau penyelesaian pekerjaan tim pengelola.
+Implementasi: src/app/pekerjaan/page.tsx (1035 baris, dua tab utama).
+
+TAB 1 — DAFTAR TUGAS & INSTRUKSI KERJA:
+1. 4 Kartu Metrik Status (Gradient Pastel):
+   - Total Tugas (slate gradient)
+   - Tugas Sedang Dikerjakan (sky gradient)
+   - Tugas Mendesak / Butuh Perhatian (rose gradient)
+   - Tugas Selesai (emerald gradient)
+2. Bilah Filter & Pencarian:
+   - Pencarian judul/PIC/kata kunci
+   - Filter berdasarkan unit usaha/gerai
+   - Filter status (belum_mulai, sedang_proses, selesai, tertunda)
+   - Filter skala prioritas (mendesak, tinggi, sedang, rendah)
+   - Tombol '+ Tambah Tugas Baru'
+3. Kartu Tugas Grid 2 Kolom (md:grid-cols-2):
+   - Badge prioritas: Mendesak (danger/rose 🔥), Tinggi (warning/amber), Sedang (info/sky), Rendah (neutral)
+   - Badge status: Belum Mulai, Sedang Dikerjakan, ✓ Selesai, Tertunda
+   - Info PIC, nama gerai terkait, dan tanggal batas waktu (due date)
+   - Catatan tugas dalam box italic
+   - Tombol aksi cepat:
+     * 'Mulai Kerjakan' (belum_mulai → sedang_proses)
+     * 'Tandai Selesai' (sedang_proses → selesai, bg-emerald)
+     * 'Buka Kembali' (selesai → sedang_proses)
+   - Tombol edit (ikon pensil) dan hapus (ikon tong sampah)
+4. Dialog Form Tambah / Edit Tugas:
+   - Fields: Judul, Deskripsi, Unit Usaha (Select), PIC, Due Date, Prioritas (Select), Status (Select), Catatan.
+   - Validasi: Judul wajib. Terhubung ke API /api/tasks (POST/PATCH).
+
+TAB 2 — KALENDER AGENDA & EVENT (Desain Favorit Pengguna):
+1. Navigasi Bulan/Tahun:
+   - Tombol ◀ (bulan sebelumnya) dan ▶ (bulan berikutnya)
+   - Tombol "Hari Ini" untuk kembali ke tanggal sekarang
+   - Tombol "+ Agenda Baru" (langsung buat tugas pada tanggal terpilih)
+2. Grid Kalender 7×N (Senin s/d Minggu):
+   - Header hari: Sen, Sel, Rab, Kam, Jum, Sab (rose), Min (rose)
+   - Sel tanggal: min-h 70px (mobile), 85px (desktop)
+   - Penanda hari ini: badge bulat bg-sky-600 text-white
+   - Penanda tanggal terpilih: ring-2 ring-[#A64768]/30, bg-rose-50/60
+   - Indikator jumlah tugas per tanggal (badge kecil rose)
+   - Preview 2 judul tugas teratas di dalam sel
+3. Panel Detail Tanggal Terpilih:
+   - Daftar lengkap tugas pada tanggal terpilih
+   - Badge prioritas dan status
+   - Aksi cepat: Mulai, Selesai, Edit, Hapus
+   - State kosong dengan ajakan membuat tugas baru
+
+API PENDUKUNG:
+- GET /api/tasks → { tasks: [...] } (termasuk join ke business_units.name)
+- POST /api/tasks → membuat tugas baru
+- PATCH /api/tasks → memperbarui tugas (termasuk quick status change)
+- DELETE /api/tasks?id={id} → menghapus tugas
+
+DESAIN VISUAL:
+- Tab switcher: rounded-xl, aktif = bg-[#A64768] text-white shadow-sm
+- Kartu tugas mendesak: border-rose-200 bg-gradient-to-br from-white to-rose-50/50
+- Kartu tugas selesai: opacity-80, judul line-through
+- Area sentuh minimum 44px (ramah tablet).

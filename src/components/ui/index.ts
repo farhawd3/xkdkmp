@@ -1,6 +1,7 @@
 export * from "./Button";
 export * from "./Input";
 export * from "./Select";
+export * from "./Textarea";
 export * from "./DateInput";
 export * from "./Badge";
 export * from "./Card";

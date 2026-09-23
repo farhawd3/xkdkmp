@@ -8,14 +8,14 @@ import { CardMetric } from "@/components/ui/Card";
 afterEach(cleanup);
 
 describe("Navigasi konsisten", () => {
-  it("memilih Jurnal tanpa mengaktifkan halaman induk", () => {
-    expect(getActiveNavigationHref("/keuangan/jurnal")).toBe("/keuangan/jurnal");
+  it("memilih sub-rute dan mengembalikan rute induk terdekat", () => {
+    expect(getActiveNavigationHref("/keuangan/jurnal")).toBe("/keuangan");
     expect(getActiveNavigationHref("/anggota/123")).toBe("/anggota");
     expect(getActiveNavigationHref("/anggotanya")).toBeUndefined();
   });
-  it("pencarian mencakup pemasok dan unit usaha tanpa rute ganda", () => {
-    expect(SEARCH_MODULES.some((item) => item.href === "/pemasok")).toBe(true);
+  it("pencarian mencakup modul utama tanpa rute ganda", () => {
     expect(SEARCH_MODULES.some((item) => item.href === "/unit-usaha")).toBe(true);
+    expect(SEARCH_MODULES.some((item) => item.href === "/dashboard")).toBe(true);
     expect(new Set(SEARCH_MODULES.map((item) => item.href)).size).toBe(SEARCH_MODULES.length);
   });
 });

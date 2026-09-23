@@ -63,8 +63,8 @@ const GUIDE_TOPICS: GuideTopic[] = [
       "Periksa fisik barang: komoditas yang rusak/cacat dialihkan ke gudang Karantina, sedangkan yang utuh otomatis menambah saldo siap jual.",
     ],
     tips: "Pemisahan status pesanan (PO) dan penerimaan fisik (Goods Receipt) mencegah terjadinya selisih stok yang tidak sesuai.",
-    actionUrl: "/pembelian",
-    actionLabel: "Buka Modul Pengadaan",
+    actionUrl: "/stok",
+    actionLabel: "Buka Barang & Stok",
   },
   {
     id: "kasir-shift",
@@ -78,8 +78,8 @@ const GUIDE_TOPICS: GuideTopic[] = [
       "Saat toko tutup, kasir wajib melakukan 'Tutup Shift' dengan menghitung fisik uang tunai yang ada di laci kasir (Blind Count) tanpa diberitahu kalkulasi sistem.",
     ],
     tips: "Selisih lebih atau selisih kurang pada kas register kasir akan otomatis tercatat di berita acara tutup shift.",
-    actionUrl: "/penjualan",
-    actionLabel: "Buka Kasir POS",
+    actionUrl: "/monitoring",
+    actionLabel: "Buka Pemantauan Gerai",
   },
   {
     id: "jurnal-pembukuan",
@@ -93,7 +93,7 @@ const GUIDE_TOPICS: GuideTopic[] = [
       "Jika terjadi kesalahan pencatatan nomor akun atau nominal, terbitkan Jurnal Pembalikan (Reversal Entry) dengan alasan tertulis.",
     ],
     tips: "Jurnal pembalikan membatalkan mutasi sebelumnya secara transparan dan menjaga audit trail tetap utuh.",
-    actionUrl: "/keuangan/jurnal",
+    actionUrl: "/keuangan",
     actionLabel: "Buka Buku Jurnal",
   },
 ];

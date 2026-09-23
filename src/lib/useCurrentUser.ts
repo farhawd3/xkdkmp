@@ -8,7 +8,7 @@ import { ROLE_LABELS } from "@/lib/constants";
 export interface CurrentUserDisplay {
   name: string;
   roleLabel: string;
-  role: UserRole;
+  role: UserRole | null;
   initials: string;
   isLoggedIn: boolean;
 }
@@ -21,7 +21,7 @@ export function useCurrentUser(): CurrentUserDisplay {
   const [userDisplay, setUserDisplay] = useState<CurrentUserDisplay>({
     name: "Tamu Sistem",
     roleLabel: "Belum Masuk",
-    role: "anggota",
+    role: null,
     initials: "?",
     isLoggedIn: false,
   });
@@ -47,16 +47,16 @@ export function useCurrentUser(): CurrentUserDisplay {
               .slice(0, 2)
               .toUpperCase() || "ST";
 
-            const { data: roles } = await supabase
+            const { data: roles, error: rolesError } = await supabase
               .from("user_roles")
               .select("role")
               .eq("user_id", user.id)
               .eq("is_active", true);
 
-            const primaryRole = (roles?.[0]?.role as UserRole) || "anggota";
+            const primaryRole = !rolesError && roles?.length ? roles[0].role as UserRole : null;
             setUserDisplay({
               name: fullName,
-              roleLabel: ROLE_LABELS[primaryRole] || "Staf Koperasi",
+              roleLabel: primaryRole ? ROLE_LABELS[primaryRole] : "Peran belum diverifikasi",
               role: primaryRole,
               initials,
               isLoggedIn: true,
@@ -65,7 +65,7 @@ export function useCurrentUser(): CurrentUserDisplay {
             setUserDisplay({
               name: "Tamu Sistem",
               roleLabel: "Belum Masuk",
-              role: "anggota",
+              role: null,
               initials: "?",
               isLoggedIn: false,
             });

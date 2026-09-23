@@ -35,21 +35,18 @@ import type { IPreparationRepository } from "./index";
  * 1. Tidak ada data contoh transaksi/keuangan rekaan di produksi.
  * 2. Fail-fast: Jika kredensial belum dikonfigurasi, sistem melempar
  *    kesalahan teknis yang jujur tanpa fallback data.
- * 3. Dalam mode persiapan, data instrumen persiapan pra-operasional
- *    dilayani secara proporsional dan mutasi operasional nyata
- *    dihubungkan secara atomik di Tahap 11.
+ * 3. Modul yang belum memiliki integrasi database harus gagal secara jelas.
+ *    Data sesi lokal tidak boleh menjadi jawaban untuk kegagalan koneksi produksi.
  */
 export class SupabaseProductionRepository implements IPreparationRepository {
   private isConfigured: boolean;
-  private delegate?: IPreparationRepository;
 
-  constructor(delegate?: IPreparationRepository) {
+  constructor() {
     this.isConfigured = !!(
       typeof process !== "undefined" &&
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
-    this.delegate = delegate;
   }
 
   private assertConfigured(): void {
@@ -63,10 +60,7 @@ export class SupabaseProductionRepository implements IPreparationRepository {
 
   private getActiveDelegate(): IPreparationRepository {
     this.assertConfigured();
-    if (!this.delegate) {
-      throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
-    }
-    return this.delegate;
+    throw new Error("Modul ini belum terhubung ke database Supabase. Data sesi lokal tidak digunakan pada jalur produksi.");
   }
 
   async getMemberSummary(): Promise<{ total: number; calon: number; verified: number }> {

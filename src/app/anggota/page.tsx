@@ -77,17 +77,41 @@ export default function AnggotaPage() {
     setIsLoading(true);
     setLoadError(false);
     try {
-      const res = await preparationRepository.getMembers(
-        searchQuery,
-        statusFilter,
-        currentPage,
-        6 // Page size 6 untuk demonstrasi pagination yang nyaman di tablet/desktop
-      );
-      setMembers(res.members);
-      setTotalCount(res.total);
-      setTotalPages(res.totalPages);
-      setCurrentPage(Math.min(currentPage, res.totalPages));
-      setSummary(await preparationRepository.getMemberSummary());
+      const res = await fetch(`/api/members?q=${encodeURIComponent(searchQuery)}&status=${statusFilter}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("Gagal mengambil data anggota dari database.");
+      const data = await res.json();
+      interface MemberApiRecord {
+        id: string;
+        member_number: string;
+        full_name: string;
+        phone: string | null;
+        status: "calon" | "aktif" | "nonaktif";
+        join_date: string;
+        created_at: string;
+      }
+      const mapped: Member[] = (data.members || []).map((m: MemberApiRecord) => ({
+        id: m.id,
+        fullName: m.full_name,
+        maskedNik: "",
+        phone: m.phone || "-",
+        domicile: "Ladang Laweh",
+        job: "Warga",
+        status: (m.status === "aktif" ? "verified" : m.status) as Member["status"],
+        simpananPokokPaid: m.status === "aktif",
+        simpananWajibPaid: m.status === "aktif",
+        simpananPokokAmount: 0,
+        simpananWajibAmount: 0,
+        documentStatus: "lengkap",
+        createdAt: m.created_at,
+      }));
+      setMembers(mapped);
+      setTotalCount(data.summary?.total ?? mapped.length);
+      setTotalPages(Math.max(1, Math.ceil(mapped.length / 6)));
+      setSummary({
+        total: data.summary?.total ?? mapped.length,
+        calon: data.summary?.calon ?? 0,
+        verified: data.summary?.aktif ?? 0,
+      });
     } catch {
       setLoadError(true);
     } finally {
@@ -102,34 +126,29 @@ export default function AnggotaPage() {
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSaving || !fullName.trim()) return;
-    if (rawNik && !/^\d{16}$/.test(rawNik)) {
-      showToast("error", "Periksa NIK", "NIK harus 16 angka atau dikosongkan.");
-      return;
-    }
     setIsSaving(true);
     try {
-      const masked = rawNik.length === 16
-        ? `${rawNik.substring(0, 4)}**********${rawNik.substring(14)}`
-        : "";
-
-      await preparationRepository.addMember({
-        fullName: fullName.trim(),
-        maskedNik: masked,
-        phone: phone.trim(),
-        domicile: domicile.trim(),
-        job,
-        status: "calon",
-        simpananPokokPaid: false,
-        simpananWajibPaid: false,
-        simpananPokokAmount: 0,
-        simpananWajibAmount: 0,
-        documentStatus: "belum_unggah",
+      const memberNumber = `ANG-${String(totalCount + 1).padStart(3, "0")}`;
+      const res = await fetch("/api/members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          member_number: memberNumber,
+          full_name: fullName.trim(),
+          phone: phone.trim() || undefined,
+          status: "calon",
+        }),
       });
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        throw new Error(errJson.error || "Gagal mencatat anggota.");
+      }
 
       showToast(
         "success",
         "Calon Anggota Berhasil Ditambahkan",
-        `${fullName} terdaftar dengan status Calon Anggota.`
+        `${fullName} terdaftar dengan nomor ${memberNumber}.`
       );
 
       // Reset form lengkap
@@ -141,8 +160,9 @@ export default function AnggotaPage() {
       setFormDirty(false);
       setIsAddModalOpen(false);
       await loadData();
-    } catch {
-      showToast("error", "Anggota belum dicatat", "Coba lagi. Isian Anda masih tersedia.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Coba lagi. Isian Anda masih tersedia.";
+      showToast("error", "Anggota belum dicatat", msg);
     } finally {
       setIsSaving(false);
     }

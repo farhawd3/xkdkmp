@@ -10,7 +10,10 @@ import {
   FileText,
   Clock,
   MapPin,
-  CheckCircle2,
+  Palette,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import {
   Card,
@@ -23,12 +26,14 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import { PageHeader } from "@/components/layout";
 import { useToast } from "@/components/ui/Toast";
 import { preparationRepository } from "@/lib/repository";
 import { OrganizationProfile } from "@/types";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { useTheme, type ThemePreference } from "@/lib/ThemeContext";
 
 export default function PengaturanPage() {
   const [profile, setProfile] = useState<OrganizationProfile | null>(null);
@@ -43,6 +48,18 @@ export default function PengaturanPage() {
   const [isDirty, setIsDirty] = useState(false);
 
   const { showToast } = useToast();
+  const { theme, preference, setTheme } = useTheme();
+
+  const appearanceOptions: Array<{
+    value: ThemePreference;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+  }> = [
+    { value: "light", label: "Terang", description: "Cerah dan lembut untuk ruangan terang.", icon: <Sun className="h-5 w-5" /> },
+    { value: "dark", label: "Gelap", description: "Nyaman untuk kerja malam dan cahaya rendah.", icon: <Moon className="h-5 w-5" /> },
+    { value: "system", label: "Ikuti perangkat", description: "Berubah mengikuti pengaturan tablet atau komputer.", icon: <Monitor className="h-5 w-5" /> },
+  ];
 
   const loadProfile = async () => {
     setIsLoading(true);
@@ -190,6 +207,55 @@ export default function PengaturanPage() {
         </div>
       </div>
 
+      <Card className="overflow-hidden border-rose-100/90 bg-gradient-to-br from-white via-white to-rose-50/60 dark:border-slate-700 dark:from-[#252F40] dark:via-[#252F40] dark:to-[#302534]">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Palette className="h-5 w-5 text-primary-container dark:text-rose-300" />
+            Kenyamanan Tampilan
+          </CardTitle>
+          <CardDescription>
+            Pilihan ini hanya mengubah tampilan pada perangkat yang sedang digunakan dan tidak mengubah data koperasi.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3" role="radiogroup" aria-label="Pilih tema tampilan">
+            {appearanceOptions.map((option) => {
+              const isActive = preference === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  onClick={() => {
+                    setTheme(option.value);
+                    showToast("success", "Tampilan Diperbarui", `Mode ${option.label.toLowerCase()} digunakan pada perangkat ini.`);
+                  }}
+                  className={`min-h-[92px] rounded-2xl border p-4 text-left transition-all ${
+                    isActive
+                      ? "border-primary-container bg-rose-50/80 shadow-sm ring-2 ring-rose-100 dark:border-rose-400 dark:bg-rose-950/30 dark:ring-rose-950/60"
+                      : "border-slate-200 bg-white/80 hover:border-rose-200 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-900/45 dark:hover:border-slate-600"
+                  }`}
+                >
+                  <span className="flex items-start gap-3">
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isActive ? "bg-primary-container text-white" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}`}>
+                      {option.icon}
+                    </span>
+                    <span>
+                      <span className="block text-sm font-bold text-slate-900 dark:text-slate-100">{option.label}</span>
+                      <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">{option.description}</span>
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            Tampilan aktif saat ini: <strong className="text-slate-700 dark:text-slate-200">{theme === "dark" ? "gelap" : "terang"}</strong>.
+          </p>
+        </CardContent>
+      </Card>
+
       <form onSubmit={handleSave} className="space-y-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Kolom 1: Identitas Tampilan & Legalitas */}
@@ -265,21 +331,16 @@ export default function PengaturanPage() {
                 required
               />
 
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Alamat Kantor Persiapan / Gerai Fisik
-                </label>
-                <textarea
-                  rows={3}
-                  value={fullAddress}
-                  onChange={(e) => {
-                    setFullAddress(e.target.value);
-                    setIsDirty(true);
-                  }}
-                  placeholder="Contoh: Jl. Raya Ladang Laweh, Jorong Ladang Laweh Barat..."
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
-                />
-              </div>
+              <Textarea
+                rows={3}
+                label="Alamat Kantor Persiapan / Gerai Fisik"
+                value={fullAddress}
+                onChange={(e) => {
+                  setFullAddress(e.target.value);
+                  setIsDirty(true);
+                }}
+                placeholder="Contoh: Jl. Raya Ladang Laweh, Jorong Ladang Laweh Barat..."
+              />
             </CardContent>
           </Card>
         </div>
@@ -322,7 +383,7 @@ export default function PengaturanPage() {
                 <div className="text-sm font-bold text-slate-800 dark:text-slate-200 font-mono">
                   {profile.rekeningBank || "Belum Dibuka (Rencana: Bank Nagari)"}
                 </div>
-                <Badge variant="neutral">Saldo Riil: Rp 0</Badge>
+                <Badge variant="neutral">Saldo belum diverifikasi</Badge>
               </div>
             </div>
 

@@ -60,27 +60,25 @@ describe("Tahap 10 — Sanitasi Pesan Galat & Pencegahan Enumerasi Akun", () => 
   });
 });
 
-describe("Tahap 10 — Integritas Skema Bootstrap Admin & Klien Administrasi", () => {
-  const bootstrapFile = path.resolve(
+describe("Tahap 10 — Integritas Kebijakan Akses Database & Klien Administrasi", () => {
+  const schemaFile = path.resolve(
     process.cwd(),
-    "supabase/migrations/20260923000004_auth_bootstrap.sql"
+    "supabase/migrations/20260923000007_clean_simple_schema.sql"
   );
 
-  it("memastikan berkas migrasi bootstrap auth tersedia", () => {
-    expect(fs.existsSync(bootstrapFile)).toBe(true);
-    const sql = fs.readFileSync(bootstrapFile, "utf-8");
-    expect(sql.length).toBeGreaterThan(300);
+  it("memastikan berkas migrasi skema bersih Supabase tersedia", () => {
+    expect(fs.existsSync(schemaFile)).toBe(true);
+    const sql = fs.readFileSync(schemaFile, "utf-8");
+    expect(sql.length).toBeGreaterThan(500);
   });
 
-  it("memvalidasi fungsi bootstrap admin satu kali dan penautan akun Abdul Halim", () => {
-    const sql = fs.readFileSync(bootstrapFile, "utf-8");
-    expect(sql).toContain("CREATE OR REPLACE FUNCTION public.bootstrap_initial_admin");
-    expect(sql).toContain("CREATE OR REPLACE FUNCTION public.link_abdul_halim_profile");
-    expect(sql).toContain("CREATE OR REPLACE FUNCTION public.rpc_assign_user_role");
-    expect(sql).toContain("SECURITY DEFINER");
-    expect(sql).toContain("SET search_path = public");
-    expect(sql).toContain("REVOKE ALL ON FUNCTION public.bootstrap_initial_admin(TEXT) FROM PUBLIC, anon, authenticated");
-    expect(sql).toContain("REVOKE ALL ON FUNCTION public.link_abdul_halim_profile(TEXT) FROM PUBLIC, anon, authenticated");
+  it("memvalidasi kebijakan RLS terproteksi dan pembagian hak akses terautentikasi", () => {
+    const sql = fs.readFileSync(schemaFile, "utf-8");
+    expect(sql).toContain("ENABLE ROW LEVEL SECURITY");
+    expect(sql).toContain("CREATE POLICY \"Izin baca gerai authenticated\"");
+    expect(sql).toContain("CREATE POLICY \"Izin kelola rekap gerai authenticated\"");
+    expect(sql).toContain("CREATE POLICY \"Izin baca tugas authenticated\"");
+    expect(sql).toContain("GRANT SELECT, INSERT, UPDATE, DELETE ON public.business_units TO authenticated, service_role");
   });
 
   it("createAdminClient menolak dijalankan di lingkungan browser/klien", () => {

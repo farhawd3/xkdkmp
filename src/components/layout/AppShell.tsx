@@ -25,7 +25,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   if (isAuthPage) {
     return (
       <ToastProvider>
-        <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-background dark:bg-slate-950 font-sans text-on-surface dark:text-slate-100 antialiased">
+        <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,228,230,0.55),_transparent_34%),#F7F8FC] font-sans text-on-surface antialiased dark:bg-[radial-gradient(circle_at_top_left,_rgba(166,71,104,0.12),_transparent_32%),#1D2533] dark:text-slate-100">
           <div className="flex-1 overflow-y-auto">
             <main id="main-content" tabIndex={-1}>
               {children}
@@ -44,7 +44,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       >
         Lewati ke konten utama
       </a>
-      <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-background dark:bg-slate-950 font-sans text-on-surface dark:text-slate-100 antialiased">
+      <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,228,230,0.55),_transparent_34%),#F7F8FC] font-sans text-on-surface antialiased dark:bg-[radial-gradient(circle_at_top_left,_rgba(166,71,104,0.12),_transparent_32%),#1D2533] dark:text-slate-100">
         {/* Banner Mode Persiapan */}
         <div className="shrink-0 z-40">
           <DemoBanner />

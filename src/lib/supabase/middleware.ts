@@ -46,6 +46,9 @@ export async function updateSession(request: NextRequest) {
 
   // Jika Supabase belum dikonfigurasi, halaman privat tetap memerlukan login.
   if (!supabaseUrl || !supabaseAnonKey) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Koneksi Supabase belum dikonfigurasi." }, { status: 503 });
+    }
     if (!isAuthRoute && pathname !== "/") {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/login";
@@ -80,6 +83,9 @@ export async function updateSession(request: NextRequest) {
 
   // 1. Pengguna belum login mencoba membuka rute terproteksi
   if (!user && !isAuthRoute && pathname !== "/") {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    }
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set("redirectTo", sanitizeRedirectUrl(pathname));

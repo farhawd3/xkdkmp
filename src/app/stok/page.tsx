@@ -45,6 +45,8 @@ import { formatRupiah } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
+import { isProductionDatabaseConfigured } from "@/lib/repository";
+import { ProductionStockPage } from "./ProductionStockPage";
 
 const CATEGORY_NAMES: Record<string, string> = {
   beras: "Beras & Padi",
@@ -55,7 +57,7 @@ const CATEGORY_NAMES: Record<string, string> = {
   lainnya: "Pangan Pokok Lainnya",
 };
 
-export default function StokPage() {
+function PreparationStockPage() {
   const [activeTab, setActiveTab] = useState<"katalog" | "mutasi" | "opname">("katalog");
   const [products, setProducts] = useState<Product[]>([]);
   const [mutations, setMutations] = useState<StockMutation[]>([]);
@@ -963,4 +965,8 @@ export default function StokPage() {
       />
     </div>
   );
+}
+
+export default function StokPage() {
+  return isProductionDatabaseConfigured() ? <ProductionStockPage /> : <PreparationStockPage />;
 }

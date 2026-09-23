@@ -10,7 +10,7 @@ export const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-2xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-card transition-colors duration-200",
+      "rounded-2xl border border-slate-200/70 dark:border-slate-700/60 bg-white dark:bg-[#252F40] text-slate-900 dark:text-slate-100 shadow-sm transition-colors duration-200",
       className
     )}
     {...props}
@@ -75,7 +75,7 @@ export const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex items-center p-5 md:p-6 pt-3 md:pt-4 border-t border-slate-100/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-2xl mt-2",
+      "flex items-center p-5 md:p-6 pt-3 md:pt-4 border-t border-slate-100/80 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/30 rounded-b-2xl mt-2",
       className
     )}
     {...props}

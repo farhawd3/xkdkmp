@@ -1,5 +1,21 @@
 import { NAVIGATION_GROUPS } from "./constants";
 
+/** Rute produksi yang aktif dan terintegrasi dengan validasi otorisasi server Supabase. */
+export const PRODUCTION_READY_ROUTES = new Set([
+  "/dashboard",
+  "/pekerjaan",
+  "/monitoring",
+  "/unit-usaha",
+  "/stok",
+  "/keuangan",
+  "/laporan",
+  "/anggota",
+  "/persiapan",
+  "/tata-kelola",
+  "/pengaturan",
+  "/bantuan",
+]);
+
 /** Satu sumber untuk sidebar dan pencarian, termasuk modul baru. */
 export const SEARCH_MODULES = NAVIGATION_GROUPS.flatMap((group) =>
   group.items.map((item) => ({ ...item, desc: group.groupName }))

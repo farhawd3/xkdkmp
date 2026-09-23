@@ -1,7 +1,11 @@
 # DECISIONS — KOPDES MERAH PUTIH LADANG LAWEH
 
 **Tanggal Pembaruan**: 23 September 2026  
-**Status**: Aktif — Tahap 10 Selesai; Menunggu Arahan Tahap 11
+**Status**: Aktif — Tahap 11 berlangsung
+
+## Keputusan Tahap 11A — batas data produksi
+
+Saat kredensial Supabase aktif, repository sesi tidak boleh menjadi sumber data cadangan. Dashboard dan stok membaca database secara eksplisit; modul yang belum diintegrasikan gagal jelas. Sebelum RPC lama dapat dipakai, akses eksekusi publik serta penulisan tabel langsung ditutup melalui migrasi 00005. Migrasi belum diterapkan pada cloud. Detail dan urutan tindak lanjut: [PHASE11_SECURITY.md](PHASE11_SECURITY.md). Keputusan ini menggantikan klaim lama bahwa delegasi data sesi pada `SupabaseProductionRepository` aman untuk jalur produksi.
 
 ## Keputusan terbaru — 23 September 2026 (Tahap 10: Autentikasi Supabase & Manajemen Akses)
 
@@ -88,6 +92,11 @@ Dokumen ini mencatat seluruh keputusan arsitektur, teknologi, dan tata kelola si
 3. **Keamanan Default Deny & RLS**:
    - Seluruh tabel database dilindungi Row Level Security (RLS). Akses default ditolak kecuali diizinkan oleh kebijakan peran (*role policy*).
    - Peran pengguna (*role*) dilarang disimpan di `user_metadata` yang bisa dimanipulasi oleh klien browser.
+4. **Transformasi Arsitektur: Sistem Informasi Manajemen & Pemantauan Gerai**:
+   - Berdasarkan arahan pengguna, sistem BUKAN aplikasi kasir toko fisik (POS). Sistem difokuskan sebagai **Pusat Komando & Pemantauan Operasional Gerai Manajer**.
+   - Input rekap harian gerai dilakukan secara manual (default) dengan opsi integrasi API kelak di pengaturan.
+   - Database disederhanakan dari belasan tabel transaksi retail menjadi 7 tabel inti pemantauan: `business_units`, `unit_daily_reports`, `tasks`, `products`, `members`, `user_roles`, `organization_profile`. Migrasi `20260923000007_clean_simple_schema.sql` sukses diterapkan.
+   - Manajemen Tugas (`/pekerjaan`) dirombak total menjadi task & action hub dengan estetika gradient pastel.
 
 ---
 

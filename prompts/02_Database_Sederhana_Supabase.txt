@@ -1,0 +1,23 @@
+PANDUAN DATABASE SEDERHANA SUPABASE (7 TABEL INTI)
+
+Tujuan: Menjaga database tetap bersih, transparan, dan mudah dipahami oleh pemula IT.
+
+STRUKTUR 7 TABEL INTI (Migrasi 20260923000007_clean_simple_schema.sql):
+1. public.business_units:
+   Menyimpan data unit usaha / gerai koperasi (id, code, name, unit_type, status, pic_name, phone, location, monthly_target, readiness_percentage, operational_start_date, notes).
+2. public.unit_daily_reports:
+   Rekapitulasi pemantauan harian gerai (id, unit_id, report_date, gross_revenue, operational_expenses, net_profit, transaction_count, cash_in_hand, operational_notes, source_type).
+3. public.tasks:
+   Manajemen tugas operasional koperasi (id, title, description, unit_id, pic_name, due_date, priority, status, notes).
+4. public.products:
+   Katalog komoditas barang untuk memantau angka stok fisik (id, sku, name, category, unit_id, base_unit, current_stock, min_stock, notes).
+5. public.members:
+   Data keanggotaan koperasi (id, member_number, full_name, phone, status, join_date, notes).
+6. public.user_roles:
+   Hak akses peran akun (user_id, role, unit_id, granted_by).
+7. public.organization_profile:
+   Profil lembaga koperasi dan status operasional.
+
+ATURAN PENGEMBANGAN:
+- Selalu awali berkas migrasi SQL dengan 'RESET ROLE;' agar dieksekusi sebagai postgres/superuser.
+- Konfirmasikan dan jelaskan setiap perubahan skrip SQL kepada Bapak Abdul Halim sebelum meminta beliau menjalankannya di SQL Editor Supabase.

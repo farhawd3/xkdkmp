@@ -3,6 +3,10 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
+import { DateInput } from "@/components/ui/DateInput";
 import { formatRupiah, formatTanggal } from "@/lib/utils";
 import { preparationRepository } from "@/lib/repository";
 
@@ -33,6 +37,23 @@ describe("UI Components", () => {
     const badge = screen.getByText("Mode Persiapan");
     expect(badge).toBeDefined();
     expect(badge.className).toContain("text-rose-800");
+  });
+
+  it("komponen formulir menghubungkan label, bantuan, dan status galat secara aksesibel", () => {
+    render(
+      <div>
+        <Input label="Nama gerai" helperText="Nama yang terlihat di dashboard" />
+        <Select label="Status" options={[{ value: "aktif", label: "Aktif" }]} />
+        <Textarea label="Catatan" error="Catatan belum lengkap" />
+        <DateInput label="Tanggal agenda" />
+      </div>
+    );
+
+    expect(screen.getByLabelText("Nama gerai").getAttribute("aria-describedby")).toBeTruthy();
+    expect(screen.getByLabelText("Status")).toBeDefined();
+    expect(screen.getByLabelText("Tanggal agenda")).toBeDefined();
+    expect(screen.getByRole("alert").textContent).toContain("Catatan belum lengkap");
+    expect(screen.getByLabelText("Catatan").getAttribute("aria-invalid")).toBe("true");
   });
 });
 

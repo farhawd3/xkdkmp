@@ -1,0 +1,45 @@
+MODUL BARANG & STOK (/stok) DAN DATA ANGGOTA (/anggota)
+
+Prinsip: Hanya memantau jumlah dan angka nyata tanpa mekanisme mutasi/akuntansi yang rumit.
+
+1. BARANG & STOK (/stok):
+   Implementasi: src/app/stok/page.tsx (mode persiapan), src/app/stok/ProductionStockPage.tsx (mode produksi Supabase).
+   
+   Komponen Utama:
+   - 3 Kartu Metrik: Total Produk, Produk Stok Menipis, Produk Stok Kosong
+   - Pencarian produk dan filter kategori
+   - Tabel/kartu produk menampilkan: SKU, Nama Barang, Kategori, Satuan (kg, liter, sak, pcs), Stok Fisik Saat Ini, Batas Minimum Stok
+   - Indikator kondisi stok otomatis:
+     * 'Cukup' (hijau) — stok >= min_stock × 1.5
+     * 'Menipis' (amber) — stok < min_stock × 1.5
+     * 'Kosong' (merah) — stok = 0
+   - Tombol cepat 'Sesuaikan Angka Stok': Memperbarui angka fisik nyata secara langsung via PATCH /api/stock-simple
+   - Tombol 'Tambah Produk Baru': Dialog form tambah barang via POST /api/stock-simple
+   
+   API Pendukung:
+   - GET /api/stock-simple → { products: [...] }
+   - PATCH /api/stock-simple → memperbarui stok fisik
+   - POST /api/stock-simple → menambah produk baru
+
+2. DATA ANGGOTA (/anggota):
+   Implementasi: src/app/anggota/page.tsx
+   
+   Komponen Utama:
+   - 3 Kartu Metrik: Total Anggota, Anggota Aktif, Calon Anggota
+   - Pencarian nama/kontak
+   - Filter status keaktifan (Semua, Aktif, Calon)
+   - Tabel daftar anggota: Nomor Anggota, Nama Lengkap, Nomor Kontak, Status Keaktifan
+   - Paginasi (halaman per 20 anggota)
+   - Tombol 'Tambah Anggota Baru': Dialog form sederhana
+   - Fitur import/export CSV
+   
+   API Pendukung:
+   - GET /api/members → { members: [...], total, totalPages }
+   - POST /api/members → menambah anggota baru
+   - PATCH /api/members → memperbarui data anggota
+
+DESAIN VISUAL:
+- Kartu metrik: gradient pastel (emerald untuk stok aman, amber untuk menipis, rose untuk kosong)
+- Tabel: header bg-slate-50/80, baris selang-seling, dark mode support
+- Badge kondisi stok: variant success/warning/danger
+- Area sentuh minimum 44px (ramah tablet)

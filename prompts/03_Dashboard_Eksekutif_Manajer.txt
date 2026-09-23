@@ -1,0 +1,47 @@
+MODUL DASHBOARD EKSEKUTIF MANAJER (/dashboard)
+
+Fungsi: Menjadi pusat kendali dan informasi ringkas bagi Manajer Koperasi saat pertama kali masuk sistem.
+Implementasi: src/app/dashboard/ProductionDashboard.tsx (mode produksi Supabase) dan src/app/dashboard/page.tsx (mode persiapan localStorage).
+
+KOMPONEN UTAMA:
+1. 4 Kartu Metrik Pastel Utama (gradient lembut: rose, emerald, amber, sky):
+   - Total Unit Usaha & Gerai Aktif → link ke /unit-usaha
+   - Akumulasi Omset Bulan Berjalan + Estimasi Laba Kotor → link ke /monitoring
+   - Jumlah Tugas Operasional Aktif (penanda tugas mendesak) → link ke /pekerjaan
+   - Jumlah Anggota Terdaftar → link ke /anggota
+
+2. Grafik Tren Omset 7 Hari Terakhir:
+   - Mini bar chart CSS murni (tanpa library grafik tambahan).
+   - Setiap bar menunjukkan total omset harian dari seluruh gerai.
+   - Label angka dalam jutaan (contoh: "1.5jt") dan nama hari dalam bahasa Indonesia.
+   - Warna gradient rose-400 ke rose-300.
+
+3. Kepatuhan Pelaporan Gerai Hari Ini:
+   - Progress bar tingkat kepatuhan (gerai yang sudah lapor / total gerai × 100%).
+   - Daftar nama gerai yang BELUM menyetor rekap harian hari ini (highlight amber/warning).
+   - Tombol pintas '+ Input Rekap' → langsung ke /monitoring.
+   - Notifikasi hijau jika semua gerai sudah lapor.
+
+4. Daftar 5 Tugas Mendesak / Prioritas Tinggi:
+   - Kartu tugas langsung terlihat di dashboard (bukan hanya angka).
+   - Warna kartu: rose gradient untuk mendesak, amber gradient untuk tinggi.
+   - Menampilkan judul tugas, PIC, tanggal batas, dan gerai terkait.
+
+5. Akses Cepat Manajer (kolom kanan):
+   - Tautan langsung ke: Input Rekap Gerai, Edit & Sesuaikan Gerai, Tambah Instruksi/Tugas, Pantau Angka Stok, Data & Jumlah Anggota, Kas & Buku Besar.
+   - Panduan sistem manajer.
+   - Penjelasan "Sistem Pemantauan Terpusat (Bukan Kasir Toko)".
+
+API PENDUKUNG:
+- GET /api/dashboard/executive — data lengkap:
+  * totalUnits, activeUnits, totalMembers, activeTasks, urgentTasks
+  * urgentTaskList (5 tugas mendesak/tinggi teratas)
+  * todayReports, monthRevenue, monthExpenses, monthProfit
+  * dailyTrend (7 hari: { date, revenue, expenses, profit } per hari)
+  * unreportedUnits (daftar gerai yang belum lapor hari ini)
+  * businessStatus
+
+DESAIN VISUAL:
+- Kartu metrik: bg-gradient-to-br from-white to-{color}-50/80 (light), from-[#252F40] to-{dark} (dark mode).
+- Border radius: rounded-2xl. Area sentuh minimum 44px.
+- Ikon di pojok kanan kartu dalam kotak rounded-2xl ukuran 48×48px.

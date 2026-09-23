@@ -1,1 +1,38 @@
-Lanjutkan proyek Kopdes Ladang Laweh untuk Abdul Halim. Baca aturan workspace, brief/panduan revisi 22 September 2026, docs/PROJECT_BRIEF.md, STATUS.md, DECISIONS.md, BUSINESS_RULES.md, STITCH_SCREEN_MAP.md, INTERACTION_MAP.md, ACCESS_MATRIX.md, SECURITY_CHECKS.md dan perubahan Git terakhir. Gunakan Project ID Stitch yang sudah tercatat dan verifikasi koneksi; jika belum ada, minta ID/tautan proyek dahulu. Jangan mengganti proyek, style atau mengulang pertanyaan ID yang sudah dijawab. Jangan membuat proyek dari awal atau mengganti stack/desain. Laporkan singkat tahap terakhir yang benar-benar selesai, hasil tes, blocker, dan tahap berikutnya. Bedakan pekerjaan yang tertulis selesai dari bukti yang ada. Lanjutkan hanya tahap aktif/berikut yang sudah saya minta; gunakan kontrak data kosong/Persiapan menuju awal 2027. Jangan mengarang transaksi, kebijakan, akun, atau integrasi.
+Lanjutkan proyek Kopdes Merah Putih — Ladang Laweh untuk Bapak Abdul Halim.
+
+BACA TERLEBIH DAHULU:
+1. AGENTS.md (aturan utama workspace — kontrak produk, identitas visual, batasan stack)
+2. docs/STATUS.md (status terkini dan checkpoint terakhir)
+3. docs/HANDOFF.md (panduan serah terima utama — arsitektur modul, API, database, desain)
+4. docs/CHANGELOG.md (catatan perubahan kronologis)
+5. docs/DECISIONS.md (keputusan bisnis dan arsitektur yang telah diambil)
+
+KONDISI SAAT INI:
+- Website adalah SISTEM INFORMASI MANAJEMEN & PEMANTAUAN GERAI KOPERASI (bukan kasir POS).
+- Modul inti aktif:
+  * Dashboard Manajer (/dashboard) — KPI metrik, tren omset 7 hari, tugas mendesak, kepatuhan pelaporan
+  * Manajemen Tugas & Agenda (/pekerjaan) — daftar tugas + kalender agenda bulanan
+  * Pemantauan Gerai (/monitoring) — input rekap harian manual + riwayat
+  * Daftar & Edit Gerai (/unit-usaha) — profil gerai, PIC, target omset
+  * Barang & Stok (/stok) — pantau angka stok fisik sederhana
+  * Data Anggota (/anggota) — daftar dan jumlah anggota koperasi
+  * Kas & Buku Besar (/keuangan) — buku besar kas, mutasi setoran, simpanan anggota
+  * Neraca & SHU (/laporan) — neraca seimbang, laba rugi, alokasi SHU sesuai AD/ART
+- Database Supabase: 7 tabel inti (migrasi 20260923000007_clean_simple_schema.sql)
+- API aktif: /api/dashboard/executive, /api/tasks, /api/units, /api/monitoring/records, /api/stock-simple, /api/members, /api/finance/summary
+- Pengujian: 95 unit test lulus 100%, TypeScript typecheck 0 galat, build Next.js sukses.
+- Desain: Pastel lembut, gradient halus, aksen rose #A64768, Plus Jakarta Sans, sidebar kiri, target tablet.
+- Fondasi visual v2.2: Input/Select/DateInput/Textarea seragam, dialog responsif, kalender ramah tablet/ponsel, serta tema Terang/Gelap/Ikuti Perangkat.
+
+BATAS YANG WAJIB DIPAHAMI:
+- Profil organisasi pada /pengaturan masih memakai repository persiapan lama. Jangan mengklaim tersimpan permanen ke Supabase sebelum endpoint organization_profile dibuat dan diuji.
+- /api/finance/summary masih harus diaudit karena ada angka keuangan konstan. Data keuangan produksi tidak boleh memakai angka contoh.
+- Audit visual langsung terakhir hanya mencakup layar login desktop dan tablet dark mode; halaman internal memerlukan sesi akun uji yang aman.
+- Baca bagian 7–9 docs/HANDOFF.md untuk rencana pembangunan, prioritas, dan prosedur pemeriksaan lengkap.
+
+INSTRUKSI:
+- Periksa git diff dan status lokal sebelum mulai.
+- Gunakan bahasa Indonesia sederhana dan lugas untuk Bapak Abdul Halim.
+- Jalankan verifikasi teknis setelah perubahan: npm.cmd test -- --maxWorkers=1, npm.cmd run typecheck, npm.cmd run build.
+- Gunakan npm.cmd atau npx.cmd (bukan npm/npx) di environment Windows.
+- Perbarui docs/STATUS.md dan docs/CHANGELOG.md setiap ada perubahan signifikan.

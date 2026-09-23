@@ -29,17 +29,52 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
   {
-    groupName: "Ringkasan",
+    groupName: "Menu Utama",
     items: [
       {
-        title: "Dashboard",
+        title: "Dashboard Manajer",
         href: "/dashboard",
         iconName: "LayoutDashboard",
       },
       {
-        title: "Kesiapan Buka",
-        href: "/persiapan",
-        iconName: "CheckSquare",
+        title: "Tugas & Agenda",
+        href: "/pekerjaan",
+        iconName: "ClipboardList",
+      },
+    ],
+  },
+  {
+    groupName: "Operasional Gerai",
+    items: [
+      {
+        title: "Pemantauan Gerai",
+        href: "/monitoring",
+        iconName: "Activity",
+      },
+      {
+        title: "Daftar & Edit Gerai",
+        href: "/unit-usaha",
+        iconName: "Store",
+      },
+      {
+        title: "Barang & Stok",
+        href: "/stok",
+        iconName: "Package",
+      },
+    ],
+  },
+  {
+    groupName: "Keuangan & Laporan",
+    items: [
+      {
+        title: "Kas & Buku Besar",
+        href: "/keuangan",
+        iconName: "Wallet",
+      },
+      {
+        title: "Neraca & SHU",
+        href: "/laporan",
+        iconName: "Scale",
       },
     ],
   },
@@ -51,70 +86,10 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
         href: "/anggota",
         iconName: "Users",
       },
-    ],
-  },
-  {
-    groupName: "Unit Usaha",
-    items: [
       {
-        title: "Unit Usaha",
-        href: "/unit-usaha",
-        iconName: "Store",
-      },
-      {
-        title: "Barang & Stok",
-        href: "/stok",
-        iconName: "Package",
-      },
-      {
-        title: "Mitra Pemasok",
-        href: "/pemasok",
-        iconName: "Truck",
-      },
-      {
-        title: "Aset Tetap",
-        href: "/aset",
-        iconName: "Archive",
-      },
-      {
-        title: "Pengadaan (PO)",
-        href: "/pembelian",
-        iconName: "ShoppingBag",
-      },
-      {
-        title: "Kasir (POS)",
-        href: "/penjualan",
-        iconName: "CreditCard",
-      },
-    ],
-  },
-  {
-    groupName: "Keuangan",
-    items: [
-      {
-        title: "Kas & Simpanan",
-        href: "/keuangan",
-        iconName: "Wallet",
-      },
-      {
-        title: "Buku Jurnal",
-        href: "/keuangan/jurnal",
-        iconName: "BookOpen",
-      },
-      {
-        title: "Pusat Laporan",
-        href: "/laporan",
-        iconName: "BarChart3",
-      },
-    ],
-  },
-  {
-    groupName: "Manajemen",
-    items: [
-      {
-        title: "Tugas & Agenda",
-        href: "/pekerjaan",
-        iconName: "Calendar",
+        title: "Kesiapan Buka",
+        href: "/persiapan",
+        iconName: "CheckSquare",
       },
       {
         title: "Tata Kelola & RAT",
@@ -124,7 +99,7 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
     ],
   },
   {
-    groupName: "Sistem",
+    groupName: "Sistem & Bantuan",
     items: [
       {
         title: "Pengaturan",
@@ -132,10 +107,11 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
         iconName: "Settings",
       },
       {
-        title: "Panduan & Bantuan",
+        title: "Panduan Sistem",
         href: "/bantuan",
         iconName: "HelpCircle",
       },
     ],
   },
+
 ];

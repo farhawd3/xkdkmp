@@ -1,0 +1,58 @@
+MODUL PEMANTAUAN GERAI (/monitoring) & DAFTAR EDIT GERAI (/unit-usaha)
+
+1. MODUL PEMANTAUAN GERAI (/monitoring):
+   Implementasi: src/app/monitoring/page.tsx
+   Fungsi: Pencatatan dan pemantauan rekapitulasi penjualan harian seluruh gerai koperasi.
+
+   Tab 1 — Input Rekap Harian Manual (Default):
+   Layout: 2 kolom (lg:grid-cols-3 — form 2 span, kalkulasi 1 span).
+   * Field Utama:
+     - Pilih Gerai / Unit Usaha (Select, auto-loaded dari /api/units)
+     - Tanggal Laporan (date input, default hari ini)
+     - Omset Penjualan Kotor (Rp) — wajib, step 1000, penjelasan bantuan di bawah
+     - Pengeluaran Kas / Biaya Operasional (Rp) — opsional, step 1000
+     - Kas Fisik di Kasir / Uang Setoran (Rp) — uang fisik ke bendahara
+     - Estimasi Jumlah Transaksi / Pembeli
+     - Catatan Kendala Lapangan & Evaluasi (textarea, placeholder contoh nyata)
+   * Tombol 'Simpan Rekapitulasi Harian' → POST /api/monitoring/records
+   * Kartu Kalkulasi Otomatis (sisi kanan):
+     - Omset Kotor, Pengeluaran, Estimasi Laba Kotor (realtime saat mengetik)
+     - Border rose gradient pastel, dark mode dukungan penuh
+   * Kartu Petunjuk Pengisian (sisi kanan bawah): sky gradient pastel
+
+   Tab 2 — Riwayat Rekapitulasi Gerai:
+   * 3 Kartu Metrik Ringkasan: Total Omset, Total Pengeluaran, Laba Akumulatif
+   * Filter berdasarkan gerai (Select + badge jumlah catatan)
+   * Daftar kartu riwayat per laporan:
+     - Header: Ikon gerai, nama gerai, tanggal laporan
+     - Badge: Sumber (Manual/API Kasir), jumlah transaksi
+     - Grid 4 kolom: Omset, Pengeluaran, Laba, Setoran
+     - Catatan kendala dalam kotak amber
+   * State kosong: ikon + ajakan ke tab Input Rekap
+
+2. MODUL DAFTAR & EDIT GERAI (/unit-usaha):
+   Implementasi: src/app/unit-usaha/page.tsx
+   Fungsi: Pengelolaan data seluruh unit usaha/gerai koperasi.
+
+   * Menampilkan kartu gerai dengan:
+     - Nama gerai, kode, jenis usaha, PIC
+     - Nomor WA/kontak, lokasi
+     - Target omset bulanan, kesiapan (%), status (aktif/persiapan/ditangguhkan)
+   * Fitur Edit & Sesuaikan Gerai:
+     - Dialog form komprehensif: nama, jenis usaha, PIC, telepon, lokasi, target bulanan, status, catatan
+     - Validasi Zod di server melalui API PATCH /api/units
+   * Fitur Tambah Gerai Baru:
+     - Dialog untuk mendaftarkan gerai baru saat ekspansi
+     - API POST /api/units
+
+API PENDUKUNG:
+- GET /api/units → { units: [...] }
+- POST /api/units → membuat unit baru
+- PATCH /api/units → memperbarui unit
+- GET /api/monitoring/records → { reports: [...] } (termasuk join ke business_units)
+- POST /api/monitoring/records → menyimpan rekap harian (validasi Zod)
+
+DESAIN VISUAL:
+- Tab navigasi: border-b-2 aktif = border-primary-container (rose)
+- Form input: rounded-xl, min-h-11, focus:ring-2 ring-rose-300
+- Penjelasan field: teks xs text-slate-500 di bawah input

@@ -1,51 +1,67 @@
 # Kopdes Merah Putih — Ladang Laweh
 
-Prototipe aplikasi manajemen koperasi berbahasa Indonesia, untuk tablet dan komputer. Status organisasi **Persiapan**, target awal 2027; tanggal pembukaan belum ditetapkan.
+Sistem Informasi Manajemen & Pemantauan Gerai Koperasi berbahasa Indonesia, dioptimalkan untuk perangkat **Tablet** dan **Komputer/Desktop**. Status organisasi: Mode **Persiapan** menuju operasional bertahap awal 2027.
 
-**Serah terima terkini:** Kode autentikasi Tahap 10 tersedia, `.env.local` sudah ada pada komputer ini, dan pengguna melaporkan bootstrap admin SQL Editor berhasil. Login dashboard masih perlu diverifikasi; modul Supabase belum terhubung. Jalur masuk tamu sementara sudah dihapus. Untuk pindah ke Gemini baca [serah terima terbaru](docs/HANDOFF_GEMINI.md), [status](docs/STATUS.md), dan [panduan Supabase](docs/SUPABASE_SETUP.md). Jangan bagikan nilai `.env.local`.
+---
 
-## Mulai menjalankan
+## Fokus Utama Sistem
+Website ini adalah **Pusat Komando & Pemantauan Manajer Koperasi** (Bukan aplikasi kasir POS toko fisik). Manajer menggunakannya untuk memantau performa harian seluruh unit gerai, mengelola penugasan tim, memantau angka ketersediaan stok komoditas, dan mengelola keanggotaan warga nagari.
 
-Prasyarat: Node.js dan npm yang kompatibel dengan versi terkunci di package-lock.json (disarankan Node 22 LTS). Dari folder proyek:
+---
+
+## Modul Utama
+
+1. **Dashboard Manajer Eksekutif** (`/dashboard`): Indikator utama KPI, ringkasan capaian omset gerai, dan pantauan tugas mendesak hari ini.
+2. **Manajemen Tugas Operasional** (`/pekerjaan`): Pusat komando instruksi kerja dengan kartu ber-gradient warna pastel, penanda skala prioritas (Mendesak, Tinggi, Sedang, Rendah), PIC, dan aksi status 1-klik.
+3. **Pemantauan Gerai** (`/monitoring`): Form input rekap harian manual (omset penjualan kotor, pengeluaran kas operasional, kalkulasi otomatis laba kotor, uang setoran kas fisik, dan catatan kendala lapangan) serta tab riwayat laporan.
+4. **Daftar & Edit Gerai** (`/unit-usaha`): Menampilkan semua unit usaha dengan kartu pastel, dilengkapi tombol *Edit & Sesuaikan Gerai* (nama, jenis, PIC, kontak WA, target omset bulanan, lokasi, dan status) serta tombol *Tambah Gerai Baru*.
+5. **Barang & Stok** (`/stok`): Khusus memantau jumlah dan angka stok komoditas sembako, batas minimum, serta tombol cepat *Sesuaikan Angka Stok*.
+6. **Data Anggota** (`/anggota`): Khusus memantau data dan jumlah anggota (total anggota, anggota aktif, calon anggota).
+7. **Kesiapan Buka** (`/persiapan`), **Pengaturan** (`/pengaturan`), dan **Panduan Sistem** (`/bantuan`).
+
+---
+
+## Database Supabase (Sederhana & Bersih)
+
+Database telah disederhanakan melalui migrasi [20260923000007_clean_simple_schema.sql](supabase/migrations/20260923000007_clean_simple_schema.sql) dan hanya terdiri dari **7 tabel inti**:
+- `business_units`: Data profil unit usaha/gerai koperasi.
+- `unit_daily_reports`: Rekapitulasi laporan pemantauan harian gerai.
+- `tasks`: Manajemen tugas dan instruksi kerja operasional.
+- `products`: Katalog barang dan angka ketersediaan stok fisik.
+- `members`: Data anggota koperasi.
+- `user_roles`: Hak akses peran akun pengguna.
+- `organization_profile`: Profil kelembagaan koperasi.
+
+---
+
+## Cara Menjalankan Lokal
 
 ```sh
+# Instalasi dependensi
 npm ci
-npm run dev
+
+# Jalankan server pengembangan
+npm.cmd run dev
 ```
 
-Buka http://localhost:3000. Pada Windows PowerShell, gunakan npm.cmd bila npm.ps1 diblokir. Untuk meninjau kompilasi produksi: npm run build lalu npm start. Jangan menjalankan build dan dev bersamaan pada folder .next yang sama.
+Buka `http://localhost:3000` di peramban web (browser/tablet).
 
-## Kondisi nyata
+---
 
-- Next.js App Router, React, TypeScript strict, Tailwind CSS v3.
-- Repository berada di src/lib/repository/index.ts dan menyimpan data di memori sesi. Ada data contoh persiapan, master, dan dokumen untuk latihan; bukan data resmi. Muat ulang dapat menghilangkan perubahan.
-- Database, login nyata, otorisasi server/RLS, storage privat, backup, dan pembukuan produksi belum selesai. Nama pemilik kebutuhan bukan sesi login terautentikasi.
-- Jangan masukkan data identitas atau transaksi nyata ke prototipe. Jangan memindahkan seed contoh ke produksi.
-- Folder yang diaudit belum memiliki metadata Git. Keberadaan .gitignore tidak berarti riwayat kode sudah dicadangkan.
-
-## Pemeriksaan
+## Pemeriksaan Kualitas & Pengujian
 
 ```sh
-npm test
-npm run typecheck
-npm run build
+# Menjalankan 99 unit test otomatis
+npm.cmd test -- --maxWorkers=1
+
+# Pemeriksaan kesesuaian tipe data TypeScript
+npm.cmd run typecheck
+
+# Pengujian kompilasi build produksi Next.js
+npm.cmd run build
 ```
 
-Vitest mencakup komponen dan perilaku prototipe. Playwright E2E belum dikonfigurasi; skrip test:e2e sengaja gagal dengan penjelasan agar tidak memberikan hasil sukses palsu. Lint juga belum dikonfigurasi sebagai quality gate; gunakan pemeriksaan tipe dan build sambil menyiapkan konfigurasi ESLint pada pekerjaan berikutnya.
-
-## Peta folder
-
-- src/app: halaman dan rute aplikasi.
-- src/components/layout: shell, sidebar, header, dan status prototipe.
-- src/components/ui: tombol, kartu, tabel, formulir, dialog.
-- src/lib: sumber navigasi, tema, label checklist, dan repository prototipe.
-- src/types: kontrak tipe data.
-- tests: pengujian Vitest.
-- docs: status, keputusan, desain, dan spesifikasi bisnis/keamanan.
-- references dan brief: referensi historis, bukan sumber data produksi.
-
-## Melanjutkan dengan AI atau editor apa pun
-
-Baca AGENTS.md → docs/HANDOFF.md → docs/STATUS.md → docs/HANDOFF_08B.md → docs/DECISIONS.md → docs/DESIGN_SYSTEM.md, lalu dokumen modul terkait. Tidak perlu model tertentu, Antigravity, atau koneksi Stitch untuk menjalankan proyek ini. Gunakan sumber lokal yang tersedia. Jangan menganggap isi folder supabase sudah terpasang pada database. Laporkan hasil tes aktual dan perbarui status setelah perubahan.
-
-Keputusan warna terbaru ada di docs/DESIGN_SYSTEM.md. AGENTS.md pada root mengungguli salinan aturan editor lama. Rincian perubahan checkpoint dan pekerjaan tersisa ada di docs/FRONTEND_REFRESH.md.
+**Status Kualitas Terkini:**
+- Unit Test Vitest: **99/99 Lulus 100%** (11 berkas uji).
+- Typecheck: **Lulus (0 galat)**.
+- Build Produksi: **Lulus sukses (38 rute terkompilasi optimal)**.

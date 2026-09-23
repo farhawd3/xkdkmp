@@ -1,0 +1,17 @@
+PEMERIKSAAN KUALITAS KODE, KEAMANAN, & DEPLOY VERCEL HOBBY
+
+1. QUALITY GATES (WAJIB LULUS SEBELUM SERAH TERIMA):
+- Vitest unit test: npm.cmd test -- --maxWorkers=1 (seluruh berkas pengujian wajib lulus 100%)
+- Typecheck TypeScript: npm.cmd run typecheck (0 galat, exit code 0)
+- Production Build Next.js: npm.cmd run build (semua rute statis & dinamis terkompilasi optimal)
+
+2. ATURAN KEAMANAN PRODUKSI:
+- Dilarang memasukkan Service Role Key, Secret API, atau token rahasia ke browser, NEXT_PUBLIC, repositori Git, atau chat.
+- Seluruh mutasi divalidasi oleh skema Zod di server.
+- RLS aktif pada seluruh tabel di Supabase.
+- Pengalihan aman: hindari Open Redirect pada middleware.
+
+3. BATASAN DEPLOY VERCEL HOBBY:
+- Paket gratis untuk prototipe/belajar nonkomersial.
+- Dilarang mengaktifkan upgrade otomatis ke Pro, trial berbayar, add-on berbayar, atau domain berbayar.
+- Gunakan URL domain bawaan Vercel (*.vercel.app).

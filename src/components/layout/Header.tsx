@@ -18,13 +18,14 @@ import {
   Moon,
   Shield,
 } from "lucide-react";
-import { SEARCH_MODULES } from "@/lib/navigation";
+import { PRODUCTION_READY_ROUTES, SEARCH_MODULES } from "@/lib/navigation";
 import { formatTanggal } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import { Dialog } from "@/components/ui/Dialog";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useTheme } from "@/lib/ThemeContext";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 export interface HeaderProps {
   onMenuToggle: () => void;
@@ -84,8 +85,9 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
   const filteredModules = SEARCH_MODULES.filter(
     (m) =>
-      m.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
-      m.desc.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      (!isSupabaseConfigured() || PRODUCTION_READY_ROUTES.has(m.href)) &&
+      (m.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
+      m.desc.toLowerCase().includes(searchQuery.trim().toLowerCase()))
   );
 
   return (
@@ -242,14 +244,16 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           </div>
         }
       >
-        <div className="space-y-4 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+        <div className="space-y-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
           <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-3.5">
             <h5 className="font-bold text-emerald-900 dark:text-emerald-200 text-sm flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               Status Sistem Saat Ini: Mode Persiapan
             </h5>
             <p className="mt-1 text-emerald-800 dark:text-emerald-300/90">
-              Ini prototipe antarmuka. Data isian berada di memori sesi dan dapat hilang saat halaman dimuat ulang. Database dan login belum terhubung.
+              {isSupabaseConfigured()
+                ? "Login dan pembacaan data Supabase sudah tersedia pada modul yang terhubung. Transaksi operasional masih ditahan sampai izin dan validasi server selesai diuji."
+                : "Supabase belum dikonfigurasi. Data yang Anda isi di mode persiapan hanya tersimpan selama sesi aplikasi ini dan dapat hilang saat halaman dimuat ulang."}
             </p>
           </div>
 

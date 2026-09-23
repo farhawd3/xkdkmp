@@ -1,7 +1,18 @@
 # DESIGN SYSTEM — KOPDES MERAH PUTIH LADANG LAWEH
 
 **Tanggal Pembaruan**: 23 September 2026  
-**Status**: Acuan Desain Baku (Single Source of Design Truth)  
+**Status**: Acuan Desain Baku (Single Source of Design Truth) — diperkuat pada v2.2
+
+## Penyempurnaan v2.2 — fondasi formulir, dialog, kalender, dan tema
+
+- Semua formulir baru wajib memakai komponen bersama `Input`, `Select`, `DateInput`, dan `Textarea`. Tinggi kontrol baku 48 px agar nyaman disentuh pada tablet.
+- Label selalu berada di atas kontrol. Teks bantuan dan pesan galat harus terhubung lewat `aria-describedby`; kondisi galat memakai `aria-invalid` dan `role="alert"`.
+- Dropdown menggunakan ikon panah dalam bidang netral agar mudah dikenali. Warna daftar opsi tetap mengikuti kemampuan native browser supaya stabil pada tablet Windows dan Android.
+- Dialog tampil sebagai panel tengah pada tablet/desktop dan lembar dari bawah pada ponsel. Header dan area aksi tidak ikut hilang ketika isi panjang digulir.
+- Kalender bulanan mempertahankan tujuh kolom. Pada layar sempit, kalender digeser secara horizontal agar angka tanggal dan agenda tidak dipaksa menjadi terlalu kecil.
+- Pilihan tema terdiri dari **Terang**, **Gelap**, dan **Ikuti perangkat**. Preferensi tersimpan hanya pada perangkat melalui `localStorage`; data usaha tidak berubah.
+- Latar aplikasi memakai gradasi radial rose yang sangat tipis. Warna tidak boleh mengganggu keterbacaan data atau mengalahkan status penting.
+- Standar bahasa: gunakan istilah yang langsung menjelaskan hasil tindakan, misalnya “Simpan tugas”, “Sesuaikan stok”, atau “Catat rekap”, bukan istilah teknis pengembang.
 
 Dokumen ini menyatukan token warna, tipografi, dan aturan tata letak dari kedua spesifikasi Stitch, serta menetapkan panduan ergonomi untuk perangkat tablet, komputer, dan ponsel.
 

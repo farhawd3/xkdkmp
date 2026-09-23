@@ -1,86 +1,94 @@
-# Status proyek — Kopdes Merah Putih Ladang Laweh
+# Status Proyek — Kopdes Merah Putih Ladang Laweh
 
-Terakhir diperbarui: 23 September 2026.  
-Checkpoint aktif: **Tahap 10 — Supabase Auth Nyata & Manajemen Akses Berwenang; SELESAI**.  
-Pekerjaan berikutnya: **Tahap 11 — Integrasi Modul Operasional & Penegakan Otorisasi End-to-End**.  
-Dokumen acuan serah terima utama lintas tahap: [docs/HANDOFF.md](HANDOFF.md).  
-Dokumen riwayat serah terima sebelumnya: [docs/HANDOFF_08B.md](HANDOFF_08B.md).
-Serah terima terbaru untuk AI lain: [HANDOFF_GEMINI.md](HANDOFF_GEMINI.md). Status praktis: diagnosis login belum selesai sampai pengguna berhasil masuk atau galat baru diperiksa. Pengguna melaporkan bootstrap admin SQL Editor berhasil; belum ada bukti login dashboard atau uji RLS cloud.
-
-## Keberhasilan Login Supabase & Perbaikan Repositori Dashboard
-
-- **Login Supabase Berhasil**: Pengguna telah mengonfirmasi bahwa login Supabase berhasil masuk setelah beralih ke kunci **Legacy anon** berformat JWT (`eyJ...`) yang kompatibel penuh dengan `@supabase/ssr` dan Next.js Middleware.
-- **Perbaikan Tampilan Dashboard**:
-  - Sebelumnya, `SupabaseProductionRepository` masih berupa kerangka yang melempar galat teknis di seluruh metodenya sehingga memicu tampilan `ErrorState` ("Ringkasan belum dapat dimuat") begitu variabel Supabase aktif.
-  - Repositori telah diperbarui dengan pola delegasi (*Decorator/Proxy Pattern*): tetap menegakkan pemeriksaan *fail-fast* kredensial, sambil menyajikan data instrumen persiapan pra-operasional (checklist kesiapan 16 item, unit usaha gerai sembako berstatus rencana, tugas manajerial POAC, dan data anggota riil 0 tanpa data palsu).
-  - Halaman `/dashboard`, `/persiapan`, `/anggota`, `/unit-usaha`, dan modul lainnya kini dapat dimuat secara instan dan sempurna (HTTP 200).
-- **Hasil Pemeriksaan Otomatis**:
-  - `npm.cmd run typecheck`: **Lulus (0 galat, exit code 0)**.
-  - `npm.cmd test -- --maxWorkers=1`: **Lulus 71/71 tes unit (100%)**.
-  - `npm.cmd run build`: **Lulus (26 rute statis/dinamis + Edge Middleware terkompilasi optimal)**.
-
-- **Riwayat Perbaikan Skrip SQL**:
-  - Ditemukan ketidakcocokan pada `20260923000004_auth_bootstrap.sql` yang merujuk pada `unit_id` dan `created_by` pada tabel `public.user_roles`.
-  - Berkas migrasi telah diperbaiki: klausa `ON CONFLICT (user_id, role, unit_id)` diselaraskan menjadi `ON CONFLICT (user_id, role)`, serta kolom `created_by` diselaraskan menjadi `granted_by`.
-  - Prosedur satu kali `SELECT public.bootstrap_initial_admin(...)` telah sukses dieksekusi oleh pengguna di SQL Editor Supabase.
-
-
+Terakhir diperbarui: 23 September 2026 (16:52 WIB).
+Checkpoint aktif: **Penyempurnaan Pengalaman Manajer (v2.2.0 SELESAI & TERVERIFIKASI)**.
+Dokumen acuan serah terima utama: [docs/HANDOFF.md](HANDOFF.md).
+Catatan perubahan kronologis: [docs/CHANGELOG.md](CHANGELOG.md).
+Aturan kerja utama: [AGENTS.md](../AGENTS.md).
 
 ---
 
-## Hasil Pemeriksaan Checkpoint Tahap 10 (Terverifikasi Riil)
+## Ringkasan Checkpoint Terkini (v2.2.0)
 
-- `npm.cmd run typecheck`: **Lulus (0 galat, exit code 0)**.
-  - Seluruh kontrak tipe TypeScript pada modul autentikasi SSR, Next.js Middleware, dan helper sesi selaras 100%.
-- `npm.cmd test -- --maxWorkers=1`: **69/69 lulus (100%)**, 6 berkas pengujian:
-  - `tests/phase10-auth.test.ts` (11 tes):
-    1. Validasi path relatif lokal yang sah.
-    2. Penolakan URL eksternal berbahaya / Open Redirect (protokol ganda, javascript:, data:).
-    3. Penanganan defaultUrl kustom yang aman.
-    4. Sanitasi galat kredensial untuk mencegah *User Enumeration Attack*.
-    5. Penyampaian pesan rate limit yang informatif.
-    6. Ketersediaan berkas migrasi bootstrap SQL.
-    7. Validasi fungsi bootstrap admin satu kali dan penautan akun Abdul Halim.
-    8. Proteksi penolakan eksekusi `createAdminClient` di lingkungan peramban/klien.
-    9. Penolakan eksekusi di server jika Service Role Key tidak tersedia.
-    10. Perlindungan identitas anonim: nilai default `CURRENT_USER` tidak mengekspos nama Abdul Halim sebelum login.
-    11. Mode Pratinjau: validasi route handler `/auth/preview` dengan cookie 24 jam dan pengalihan ke dashboard.
-  - `tests/phase09-database.test.ts` (9 tes): Integritas DDL 20 tabel, tipe moneter `NUMERIC(15, 2)`, RLS default deny, dan RPC atomik.
-  - `tests/phase08b.test.tsx` (7 tes): Paginasi keanggotaan, filter verified, proteksi stok produk, master pemasok, dan aksi CardMetric.
-  - `tests/csv.test.ts` (10 tes): Parser CSV dan serializer dengan sanitasi formula injection.
-  - `tests/navigation-dialog.test.tsx` (6 tes): Navigasi dialog dan keyboard accessibility.
-  - `tests/components.test.tsx` (26 tes): Format moneter, tanggal Indonesia, komponen UI dasar, dan alur pendaftaran.
-- `npm.cmd run build`: **Lulus (exit code 0)**; 26/26 rute statis/dinamis dan Middleware Next.js berhasil di-generate.
+1. **Fondasi Formulir Disatukan**:
+   - Input, dropdown, input tanggal, dan textarea memakai gaya bersama yang lembut serta konsisten.
+   - Tinggi kontrol 48 px, fokus keyboard jelas, bantuan dan galat terhubung secara aksesibel.
 
----
+2. **Dialog & Kalender Diperhalus**:
+   - Dialog menjadi lembar bawah pada ponsel dan panel tengah pada tablet/desktop.
+   - Kalender mempertahankan keterbacaan tujuh kolom, tombol navigasi 44 px, dan tanggal pilihan berbahasa Indonesia.
+   - Form tugas/agenda sudah memakai komponen formulir bersama.
 
-## Ringkasan Implementasi Tahap 10
+3. **Kustomisasi Tampilan**:
+   - Pengaturan tema Terang, Gelap, dan Ikuti Perangkat tersedia di `/pengaturan`.
+   - Preferensi hanya disimpan pada perangkat; tidak memengaruhi data organisasi.
 
-1. **Pola SSR Next.js 15 dengan Supabase**:
-   - Menambahkan dependensi `@supabase/supabase-js` dan `@supabase/ssr`.
-   - Mengembangkan klien browser (`client.ts`), klien server asinkron dengan `cookies()` (`server.ts`), dan klien administrasi ber-Service Key (`admin.ts`).
-2. **Middleware & Proteksi Open Redirect**:
-   - `src/middleware.ts` dan `src/lib/supabase/middleware.ts` menyegarkan sesi cookie dan melindungi rute internal dari akses anonim.
-   - Fungsi `sanitizeRedirectUrl` menolak manipulasi URL pengalihan berbahaya.
-3. **Antarmuka Autentikasi Pastel Responsif**:
-   - Halaman `/login`, `/lupa-password`, dan `/reset-password` dibangun selaras dengan tema pastel rose `#A64768`, latar `#F7F8FC`, dark mode lembut `#1D2533` / `#252F40`, dan standar sentuh tablet 48px.
-   - Pesan kesalahan login disanitasi agar tidak membocorkan keberadaan akun email.
-4. **Sesi Pengguna & Tombol Keluar Navigasi**:
-   - [Sidebar.tsx](file:///d:/Koding/kopdes-ladang-laweh/src/components/layout/Sidebar.tsx) menampilkan tombol Keluar (*Logout*) dan inisial profil pengguna.
-   - Pemilihan peran mandiri ditiadakan; hak akses dibaca langsung dari basis data `public.user_roles`.
-5. **Prosedur Bootstrap Admin Pertama**:
-   - Berkas migrasi `supabase/migrations/20260923000004_auth_bootstrap.sql` menyediakan prosedur satu kali untuk menetapkan admin inisial dan menautkan profil resmi Abdul Halim dengan hak manajer persiapan.
+4. **Kejujuran Informasi**:
+   - Label “Saldo Riil: Rp 0” diganti menjadi “Saldo belum diverifikasi”.
+   - Batas penyimpanan profil organisasi dan audit visual dicatat jelas di `docs/HANDOFF.md`.
 
----
+5. **Dokumentasi Serah Terima**:
+   - `docs/HANDOFF.md` kini memuat rencana pembangunan per tahap, alur kerja manajer, standar verifikasi, risiko, dan prioritas lanjutan.
 
-## Kondisi Produk Saat Ini
+### Riwayat checkpoint v2.1.0
 
-- Organisasi berstatus **Persiapan**. Target awal 2027; tanggal operasional bernilai `null` sampai ditetapkan resmi.
-- Sistem autentikasi nyata telah terpasang dan siap digunakan saat kredensial Supabase live dihubungkan.
-- Pengujian lokal berjalan aman dengan deteksi status belum terkonfigurasi secara transparan.
+1. **Dashboard Manajer Diperkaya**:
+   - Grafik tren omset 7 hari terakhir (mini bar chart CSS murni).
+   - Daftar 5 tugas mendesak/tinggi langsung terlihat di dashboard.
+   - Progress bar kepatuhan pelaporan gerai harian.
+   - Daftar nama gerai yang belum menyetor rekap hari ini (amber warning).
+
+2. **Pembersihan Workspace Menyeluruh**:
+   - **Halaman dihapus**: `/aset` (prematur), `/pemasok` (belum relevan).
+   - **API dihapus**: `/api/catalog` (duplikasi dengan `/api/stock-simple`).
+   - **Navigasi**: Grup "Arsip & Referensi" dihapus dari sidebar.
+   - **Dokumentasi usang**: 10 file `docs/` dari era kasir POS dihapus.
+   - **Referensi lama**: Folder `references/stitch/` dihapus.
+   - **Test usang**: `tests/phase11-catalog.test.ts` dihapus.
+
+3. **Label Diperbaiki**:
+   - "Pusat Komando" → "Menu Utama" / "Dashboard Pemantauan Manajer" di seluruh kode.
+   - Link mati `/keuangan/jurnal` di halaman bantuan diarahkan ke `/keuangan`.
+
+4. **Dokumentasi Baru**:
+   - `docs/CHANGELOG.md` — catatan perubahan kronologis untuk serah terima lintas agen AI.
+   - Prompt files diperbarui: lebih profesional, detail, dan sesuai implementasi terkini.
 
 ---
 
-## Tahapan Selanjutnya
+## Modul Aktif
 
-- **Tahap 11**: Integrasi modul operasional & penegakan otorisasi end-to-end (penjualan kasir, penerimaan gudang, dan akuntansi berpasangan).
+| Modul | Rute | Status |
+|---|---|---|
+| Dashboard Manajer | `/dashboard` | ✅ Aktif (diperkaya v2.1) |
+| Tugas & Agenda | `/pekerjaan` | ✅ Aktif |
+| Pemantauan Gerai | `/monitoring` | ✅ Aktif |
+| Daftar & Edit Gerai | `/unit-usaha` | ✅ Aktif |
+| Barang & Stok | `/stok` | ✅ Aktif |
+| Data Anggota | `/anggota` | ✅ Aktif |
+| Kas & Buku Besar | `/keuangan` | ✅ Aktif |
+| Neraca & SHU | `/laporan` | ✅ Aktif |
+| Kesiapan Buka | `/persiapan` | ✅ Aktif |
+| Tata Kelola & RAT | `/tata-kelola` | ✅ Aktif |
+| Pengaturan | `/pengaturan` | ✅ Aktif |
+| Panduan Sistem | `/bantuan` | ✅ Aktif |
+
+---
+
+## Hasil Pengujian & Kualitas Kode
+
+- **Vitest Unit Test**: **95/95 Lulus 100%** (10 berkas uji tanpa satupun kegagalan):
+  - `tests/phase09-database.test.ts` (8 tes lulus)
+  - `tests/phase10-auth.test.ts` (13 tes lulus)
+  - `tests/phase11-operations.test.ts` (7 tes lulus)
+  - `tests/phase11-boundary.test.ts` (2 tes lulus)
+  - `tests/management-simple.test.ts` (12 tes lulus)
+  - `tests/navigation-dialog.test.tsx` (6 tes lulus)
+  - `tests/components.test.tsx` (27 tes lulus)
+  - `tests/phase08b.test.tsx` (7 tes lulus)
+  - `tests/csv.test.ts` (10 tes lulus)
+  - `tests/phase11-dashboard.test.ts` (3 tes lulus)
+- **TypeScript Typecheck**: **Lulus (0 galat, exit code 0)**.
+- **Production Build (Next.js)**: **Lulus sukses**.
+- **Audit Visual**: Layar login lulus pemeriksaan desktop dan tablet 768×1024 pada dark mode. Halaman internal belum diaudit langsung karena memerlukan sesi login.
+- **Server Lokal Audit**: Berhasil dijalankan sehat di `http://localhost:3001` selama pemeriksaan, lalu dihentikan setelah audit. Proses lama pada port 3000 sempat merespons 500 dan perlu dijalankan ulang bila masih digunakan.

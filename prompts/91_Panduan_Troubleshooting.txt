@@ -1,0 +1,17 @@
+PANDUAN TROUBLESHOOTING & PERBAIKAN MASALAH
+
+1. KONEKSI SUPABASE:
+- Jika muncul error 'Failed to run query: 42501 permission denied':
+  * Pastikan di baris pertama SQL Editor tertulis: RESET ROLE;
+  * Periksa apakah tabel memiliki policy RLS yang tepat untuk 'authenticated'.
+- Jika login gagal atau sesi tidak terbaca:
+  * Periksa .env.local apakah NEXT_PUBLIC_SUPABASE_ANON_KEY menggunakan JWT format 'eyJ...'.
+
+2. PENGUJIAN OTOMATIS:
+- Jalankan: npm.cmd test -- --maxWorkers=1
+- Jika ada tes gagal, tinjau AssertionError dan perbaiki tanpa menghapus fungsi pengujian atau membuat data palsu.
+
+3. MEMULIHKAN SERVER PENGEMBANGAN:
+- Jika port 3000 macet, restart server dengan:
+  Get-Process -Name node | Stop-Process -Force
+  npm.cmd run dev

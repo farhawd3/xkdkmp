@@ -12,6 +12,8 @@ import { preparationRepository } from "@/lib/repository";
 import { CATEGORY_LABELS } from "@/lib/checklist";
 import { useResource } from "@/lib/useResource";
 import { formatTanggal } from "@/lib/utils";
+import { isProductionDatabaseConfigured } from "@/lib/repository";
+import { ProductionDashboard } from "./ProductionDashboard";
 
 async function loadDashboard() {
   const [checklist, units, agendas, tasks, members] = await Promise.all([
@@ -28,7 +30,7 @@ const SHORTCUTS = [
   { href: "/keuangan", title: "Kas & simpanan", description: "Tinjau catatan keuangan", icon: Wallet, tone: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
 ];
 
-export default function DashboardPage() {
+function PreparationDashboard() {
   const { data, loading, error, reload } = useResource(loadDashboard);
   if (error) return <ErrorState message="Ringkasan belum dapat dimuat. Coba lagi untuk mengambil data sesi." onRetry={reload} />;
   if (loading || !data) return <LoadingState label="Menyiapkan ringkasan koperasi…" />;
@@ -124,4 +126,8 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
+
+export default function DashboardPage() {
+  return isProductionDatabaseConfigured() ? <ProductionDashboard /> : <PreparationDashboard />;
 }

@@ -16,7 +16,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#95002A",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F8FC" },
+    { media: "(prefers-color-scheme: dark)", color: "#1D2533" },
+  ],
 };
 
 export default function RootLayout({
@@ -38,7 +41,7 @@ export default function RootLayout({
             __html: `
               try {
                 var theme = localStorage.getItem('kopdes_theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                if (theme === 'dark' || ((theme === 'system' || !theme) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                   document.documentElement.classList.add('dark');
                 } else {
                   document.documentElement.classList.remove('dark');

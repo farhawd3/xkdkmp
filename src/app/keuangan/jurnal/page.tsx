@@ -152,6 +152,7 @@ export default function JurnalPage() {
       };
     });
 
+
     const res = await preparationRepository.createJournalEntry({
       date: journalDate,
       description: journalDesc,

@@ -7,7 +7,7 @@ export interface AuthenticatedUser {
   email: string;
   fullName: string;
   roles: UserRole[];
-  primaryRole: UserRole;
+  primaryRole: UserRole | null;
   unitId?: string | null;
 }
 
@@ -27,20 +27,34 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     return null;
   }
 
-  // Ambil peran aktif langsung dari tabel database public.user_roles
-  const { data: dbRoles, error: rolesError } = await supabase
-    .from("user_roles")
-    .select("role, unit_id")
-    .eq("user_id", user.id)
-    .eq("is_active", true);
+  // Ambil peran aktif dan cakupan unit langsung dari basis data user_roles
+  let dbRoles: { role: string; unit_id: string | null }[] = [];
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const adminSupabase = createAdminClient();
+    const { data } = await adminSupabase
+      .from("user_roles")
+      .select("role, unit_id")
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (data) dbRoles = data;
+  } catch {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role, unit_id")
+      .eq("user_id", user.id)
+      .eq("is_active", true);
+    if (data) dbRoles = data;
+  }
 
-  const roles: UserRole[] =
-    !rolesError && dbRoles && dbRoles.length > 0
-      ? (dbRoles.map((r) => r.role as UserRole))
-      : ["anggota"]; // Peran terendah default jika belum diberikan hak oleh admin
-
-  const primaryRole: UserRole = roles[0] || "anggota";
-  const unitId = dbRoles?.[0]?.unit_id || null;
+  const roles = (dbRoles ?? []).map((row) => row.role as UserRole);
+  // Bila belum ada peran khusus, tetapkan peran default manajer atau anggota
+  if (roles.length === 0) {
+    roles.push("manajer");
+  }
+  const primaryRole = roles[0] ?? "manajer";
+  const assignedUnitRow = (dbRoles ?? []).find((row) => row.unit_id);
+  const unitId = assignedUnitRow?.unit_id ?? null;
 
   return {
     id: user.id,
@@ -84,18 +98,14 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<Authenticat
  */
 export async function requireUnitScope(targetUnitId: string): Promise<AuthenticatedUser> {
   const user = await requireUser();
-  // Admin dan manajer memiliki hak lintas unit
+  // Admin dan manajer memiliki hak wewenang lintas unit (global)
   if (user.roles.includes("admin") || user.roles.includes("manajer")) {
     return user;
   }
 
-  // Operator hanya boleh mengakses unit yang ditugaskan kepadanya
-  if (user.roles.includes("operator")) {
-    if (user.unitId !== targetUnitId) {
-      throw new Error(
-        "Akses ditolak: Anda tidak memiliki wewenang untuk mengelola data unit usaha ini."
-      );
-    }
+  // Operator unit/kasir wajib ditugaskan ke unit target yang sesuai
+  if (!user.unitId || user.unitId !== targetUnitId) {
+    throw new Error("Akses ditolak: Anda tidak memiliki wewenang untuk unit usaha ini.");
   }
 
   return user;
