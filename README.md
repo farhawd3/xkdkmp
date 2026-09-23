@@ -2,7 +2,7 @@
 
 Prototipe aplikasi manajemen koperasi berbahasa Indonesia, untuk tablet dan komputer. Status organisasi **Persiapan**, target awal 2027; tanggal pembukaan belum ditetapkan.
 
-**Serah terima terkini:** Kode autentikasi Tahap 10 tersedia, tetapi kredensial dan migrasi cloud belum terhubung. Jalur masuk tamu sementara sudah dihapus. Baca [status](docs/STATUS.md), [serah terima](docs/HANDOFF.md), dan [panduan Supabase](docs/SUPABASE_SETUP.md) sebelum mengisi `.env.local`.
+**Serah terima terkini:** Kode autentikasi Tahap 10 tersedia, `.env.local` sudah ada pada komputer ini, dan pengguna melaporkan bootstrap admin SQL Editor berhasil. Login dashboard masih perlu diverifikasi; modul Supabase belum terhubung. Jalur masuk tamu sementara sudah dihapus. Untuk pindah ke Gemini baca [serah terima terbaru](docs/HANDOFF_GEMINI.md), [status](docs/STATUS.md), dan [panduan Supabase](docs/SUPABASE_SETUP.md). Jangan bagikan nilai `.env.local`.
 
 ## Mulai menjalankan
 

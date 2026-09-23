@@ -2138,12 +2138,15 @@ export function isProductionDatabaseConfigured(): boolean {
   );
 }
 
+const defaultInMemory = new InMemoryPreparationRepository();
+
 export const preparationRepository: IPreparationRepository = isProductionDatabaseConfigured()
-  ? new SupabaseProductionRepository()
-  : new InMemoryPreparationRepository();
+  ? new SupabaseProductionRepository(defaultInMemory)
+  : defaultInMemory;
 
 export function getRepository(): IPreparationRepository {
   return isProductionDatabaseConfigured()
-    ? new SupabaseProductionRepository()
+    ? new SupabaseProductionRepository(defaultInMemory)
     : preparationRepository;
 }
+

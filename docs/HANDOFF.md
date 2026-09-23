@@ -1,6 +1,7 @@
 # Serah Terima Utama Lintas Tahap — Kopdes Merah Putih Ladang Laweh
 
-> Pembaruan setelah serah terima Tahap 10: jalur preview sementara telah dihapus, dan fungsi bootstrap admin/penautan profil dibatasi untuk `service_role` dalam file migrasi lokal. Build, typecheck, dan 69 tes lulus setelah perubahan. Kredensial/migrasi cloud belum diverifikasi; repository modul Supabase masih kerangka. Ikuti [panduan koneksi Supabase](SUPABASE_SETUP.md) dan [STATUS.md](STATUS.md). Pernyataan di bawah tentang hasil tes 67/67 serta kesiapan modul adalah riwayat sebelum pembaruan ini.
+> **Serah terima terkini:** Login Supabase Auth telah terbukti berhasil 100% oleh pengguna (menggunakan kunci Legacy anon JWT). Masalah tampilan dashboard ("Ringkasan belum dapat dimuat") telah berhasil diperbaiki dengan pola delegasi repositori yang aman dan *fail-fast*. Seluruh 71 tes unit Vitest, typecheck, dan build Next.js (26 rute) lulus 100%. Rujukan serah terima instan untuk AI lain / ChatGPT: [docs/HANDOFF_CHATGPT.md](HANDOFF_CHATGPT.md).
+
 
 **Tanggal Pembaruan**: 23 September 2026  
 **Tahap Aktif Terkini**: **Tahap 10 — Supabase Auth Nyata & Manajemen Akses Berwenang (SELESAI)**  
@@ -103,10 +104,10 @@ DATABASE_URL=postgresql://postgres:[DB_PASSWORD]@db.[PROJECT_ID].supabase.co:543
 1. **Pemeriksaan Tipe TypeScript (`npm.cmd run typecheck`)**:
    - Hasil: **Lulus tanpa galat (Exit code 0)**.
 2. **Pengujian Unit Vitest (`npm.cmd test -- --maxWorkers=1`)**:
-   - Hasil: **6 berkas lulus, 67/67 pengujian sukses 100% (Exit code 0)**:
-     - `tests/phase10-auth.test.ts` (9 tes): Validasi open redirect, sanitasi enumerasi akun, bootstrap admin SQL, dan keamanan client admin.
-     - `tests/phase09-database.test.ts` (9 tes): Integritas DDL, tipe moneter `NUMERIC(15, 2)`, RLS default deny, dan RPC atomik.
-     - `tests/phase08b.test.tsx` (7 tes): Paginasi keanggotaan, filter verified, proteksi stok produk.
+   - Hasil: **6 berkas lulus, 69/69 pengujian sukses 100% (Exit code 0)**:
+     - `tests/phase10-auth.test.ts` (11 tes): Validasi open redirect, sanitasi enumerasi akun, bootstrap admin SQL, keamanan client admin, default user non-ekspos, dan eliminasi route preview.
+     - `tests/phase09-database.test.ts` (9 tes): Integritas DDL 20 tabel, tipe moneter `NUMERIC(15, 2)`, RLS default deny, dan RPC atomik.
+     - `tests/phase08b.test.tsx` (7 tes): Paginasi keanggotaan, filter verified, proteksi stok produk, master pemasok, dan aksi CardMetric.
      - `tests/csv.test.ts` (10 tes): Parser CSV dan proteksi injeksi formula spreadsheet.
      - `tests/navigation-dialog.test.tsx` (6 tes): Dialog konfirmasi dan aksesibilitas keyboard.
      - `tests/components.test.tsx` (26 tes): Format moneter, tanggal Indonesia, dan komponen UI dasar.

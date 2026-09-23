@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import * as fs from "fs";
 import * as path from "path";
 import { sanitizeRedirectUrl } from "@/lib/supabase/middleware";
-import { sanitizeAuthError } from "@/lib/auth/utils";
+import { sanitizeAuthError, withAuthTimeout } from "@/lib/auth/utils";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CURRENT_USER } from "@/lib/constants";
 
@@ -47,6 +47,16 @@ describe("Tahap 10 — Sanitasi Pesan Galat & Pencegahan Enumerasi Akun", () => 
   it("menyampaikan pesan batas frekuensi secara tepat saat rate limit terpicu", () => {
     const rateLimitError = sanitizeAuthError("rate limit exceeded: too many requests");
     expect(rateLimitError).toContain("Terlalu banyak percobaan masuk");
+  });
+
+  it("tidak menyebut kata sandi salah untuk galat layanan yang tidak dikenal", () => {
+    expect(sanitizeAuthError("Not Found")).toBe(
+      "Login belum berhasil. Periksa koneksi Supabase dan coba kembali."
+    );
+  });
+
+  it("menghentikan verifikasi yang tidak pernah selesai", async () => {
+    await expect(withAuthTimeout(new Promise<never>(() => {}), 1)).rejects.toThrow("AUTH_TIMEOUT");
   });
 });
 

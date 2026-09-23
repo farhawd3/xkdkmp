@@ -38,7 +38,7 @@ BEGIN
   -- 3. Berikan Peran Admin di public.user_roles
   INSERT INTO public.user_roles (user_id, role, is_active)
   VALUES (v_user_id, 'admin', TRUE)
-  ON CONFLICT (user_id, role, unit_id) DO UPDATE 
+  ON CONFLICT (user_id, role) DO UPDATE 
   SET is_active = TRUE;
 
   -- 4. Catat Audit Log
@@ -87,7 +87,7 @@ BEGIN
   -- Berikan peran 'manajer' persiapan
   INSERT INTO public.user_roles (user_id, role, is_active)
   VALUES (v_user_id, 'manajer', TRUE)
-  ON CONFLICT (user_id, role, unit_id) DO UPDATE
+  ON CONFLICT (user_id, role) DO UPDATE
   SET is_active = TRUE;
 
   -- Catat audit log
@@ -115,8 +115,7 @@ GRANT EXECUTE ON FUNCTION public.link_abdul_halim_profile(TEXT) TO service_role;
 -- ============================================================================
 CREATE OR REPLACE FUNCTION public.rpc_assign_user_role(
   p_target_user_id UUID,
-  p_role user_role,
-  p_unit_id UUID DEFAULT NULL
+  p_role user_role
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -134,16 +133,16 @@ BEGIN
     RAISE EXCEPTION 'Penetapan bendahara memerlukan otorisasi administrator penuh.';
   END IF;
 
-  INSERT INTO public.user_roles (user_id, role, unit_id, is_active, created_by)
-  VALUES (p_target_user_id, p_role, p_unit_id, TRUE, auth.uid())
-  ON CONFLICT (user_id, role, unit_id) DO UPDATE 
-  SET is_active = TRUE;
+  INSERT INTO public.user_roles (user_id, role, is_active, granted_by)
+  VALUES (p_target_user_id, p_role, TRUE, auth.uid())
+  ON CONFLICT (user_id, role) DO UPDATE 
+  SET is_active = TRUE, granted_by = auth.uid(), granted_at = NOW();
 
   -- Catat audit log
   INSERT INTO public.audit_logs (actor_id, action, entity_type, entity_id, payload)
   VALUES (
     auth.uid(), 'ASSIGN_USER_ROLE', 'user_roles', p_target_user_id,
-    jsonb_build_object('role', p_role, 'unit_id', p_unit_id)
+    jsonb_build_object('role', p_role)
   );
 
   RETURN jsonb_build_object('status', 'success', 'user_id', p_target_user_id, 'role', p_role);

@@ -2,13 +2,13 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, Info } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import { sanitizeAuthError } from "@/lib/auth/utils";
+import { sanitizeAuthError, withAuthTimeout } from "@/lib/auth/utils";
 import { sanitizeRedirectUrl } from "@/lib/supabase/middleware";
 
 const loginSchema = z.object({
@@ -24,7 +24,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const rawRedirect = searchParams.get("redirectTo");
   const urlError = searchParams.get("error");
@@ -59,10 +58,10 @@ function LoginForm() {
       }
 
       const supabase = createClient();
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await withAuthTimeout(supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
-      });
+      }));
 
       if (error) {
         setAuthError(sanitizeAuthError(error.message));
@@ -72,11 +71,15 @@ function LoginForm() {
 
       if (authData?.user) {
         const safeTarget = sanitizeRedirectUrl(rawRedirect, "/dashboard");
-        router.push(safeTarget);
-        router.refresh();
+        window.location.assign(safeTarget);
+        return;
       }
-    } catch {
-      setAuthError("Gagal menghubungi server autentikasi. Silakan periksa koneksi jaringan Anda.");
+      setAuthError("Supabase belum mengembalikan sesi akun. Silakan coba masuk kembali.");
+      setIsSubmitting(false);
+    } catch (error) {
+      setAuthError(error instanceof Error && error.message === "AUTH_TIMEOUT"
+        ? "Verifikasi terlalu lama. Periksa koneksi internet, lalu coba kembali."
+        : "Gagal menghubungi server autentikasi. Silakan periksa koneksi jaringan Anda.");
       setIsSubmitting(false);
     }
   };

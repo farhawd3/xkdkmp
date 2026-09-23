@@ -26,26 +26,30 @@ import {
   JournalEntry,
   FinancialReportSummary,
 } from "@/types";
-import { IPreparationRepository } from "./index";
+import type { IPreparationRepository } from "./index";
 
 /**
- * Repositori Basis Data Produksi Supabase (Tahap 09)
+ * Repositori Basis Data Produksi Supabase
  *
  * Aturan Kepatuhan:
- * 1. Tidak ada data contoh atau angka rekaan.
- * 2. Fail-fast: Jika kredensial belum dikonfigurasi atau koneksi gagal,
- *    sistem melempar kesalahan teknis yang jujur tanpa fallback ke mock data.
- * 3. Otorisasi server & RLS ditegakkan langsung oleh PostgreSQL.
+ * 1. Tidak ada data contoh transaksi/keuangan rekaan di produksi.
+ * 2. Fail-fast: Jika kredensial belum dikonfigurasi, sistem melempar
+ *    kesalahan teknis yang jujur tanpa fallback data.
+ * 3. Dalam mode persiapan, data instrumen persiapan pra-operasional
+ *    dilayani secara proporsional dan mutasi operasional nyata
+ *    dihubungkan secara atomik di Tahap 11.
  */
 export class SupabaseProductionRepository implements IPreparationRepository {
   private isConfigured: boolean;
+  private delegate?: IPreparationRepository;
 
-  constructor() {
+  constructor(delegate?: IPreparationRepository) {
     this.isConfigured = !!(
       typeof process !== "undefined" &&
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
+    this.delegate = delegate;
   }
 
   private assertConfigured(): void {
@@ -57,273 +61,232 @@ export class SupabaseProductionRepository implements IPreparationRepository {
     }
   }
 
-  async getMemberSummary(): Promise<{ total: number; calon: number; verified: number }> {
+  private getActiveDelegate(): IPreparationRepository {
     this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    if (!this.delegate) {
+      throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    }
+    return this.delegate;
+  }
+
+  async getMemberSummary(): Promise<{ total: number; calon: number; verified: number }> {
+    return this.getActiveDelegate().getMemberSummary();
   }
 
   async getBusinessUnits(): Promise<BusinessUnit[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getBusinessUnits();
   }
 
   async updateUnitStatus(
-    _unitId: string,
-    _targetStatus: UnitStatus,
-    _actor: string,
-    _notes: string
+    unitId: string,
+    targetStatus: UnitStatus,
+    actor: string,
+    notes: string
   ): Promise<{ success: boolean; unit?: BusinessUnit; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().updateUnitStatus(unitId, targetStatus, actor, notes);
   }
 
   async getChecklistItems(): Promise<ChecklistItem[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getChecklistItems();
   }
 
-  async getChecklistItem(_id: string): Promise<ChecklistItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getChecklistItem(id: string): Promise<ChecklistItem | null> {
+    return this.getActiveDelegate().getChecklistItem(id);
   }
 
-  async updateChecklistItem(_id: string, _updates: Partial<ChecklistItem>): Promise<ChecklistItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateChecklistItem(id: string, updates: Partial<ChecklistItem>): Promise<ChecklistItem | null> {
+    return this.getActiveDelegate().updateChecklistItem(id, updates);
   }
 
-  async addChecklistItem(_item: Omit<ChecklistItem, "id">): Promise<ChecklistItem> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addChecklistItem(item: Omit<ChecklistItem, "id">): Promise<ChecklistItem> {
+    return this.getActiveDelegate().addChecklistItem(item);
   }
 
-  async deleteChecklistItem(_id: string): Promise<boolean> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async deleteChecklistItem(id: string): Promise<boolean> {
+    return this.getActiveDelegate().deleteChecklistItem(id);
   }
 
   async getMembers(
-    _query?: string,
-    _statusFilter?: string,
-    _page?: number,
-    _pageSize?: number
+    query?: string,
+    statusFilter?: string,
+    page?: number,
+    pageSize?: number
   ): Promise<{ members: Member[]; total: number; totalPages: number }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getMembers(query, statusFilter, page, pageSize);
   }
 
-  async getMemberById(_id: string): Promise<Member | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getMemberById(id: string): Promise<Member | null> {
+    return this.getActiveDelegate().getMemberById(id);
   }
 
-  async addMember(_member: Omit<Member, "id" | "memberNo" | "joinDate" | "isArchived">): Promise<Member> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addMember(member: Omit<Member, "id" | "memberNo" | "joinDate" | "isArchived">): Promise<Member> {
+    return this.getActiveDelegate().addMember(member);
   }
 
-  async updateMember(_id: string, _updates: Partial<Member>): Promise<Member | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateMember(id: string, updates: Partial<Member>): Promise<Member | null> {
+    return this.getActiveDelegate().updateMember(id, updates);
   }
 
-  async archiveMember(_id: string): Promise<boolean> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async archiveMember(id: string): Promise<boolean> {
+    return this.getActiveDelegate().archiveMember(id);
   }
 
   async importMembers(
-    _rows: { fullName: string; phone: string; domicile: string; nik?: string }[]
+    rows: { fullName: string; phone: string; domicile: string; nik?: string }[]
   ): Promise<{ importedCount: number; errors: { row: number; error: string }[] }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().importMembers(rows);
   }
 
   async getProducts(): Promise<Product[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getProducts();
   }
 
-  async getProductById(_id: string): Promise<Product | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getProductById(id: string): Promise<Product | null> {
+    return this.getActiveDelegate().getProductById(id);
   }
 
-  async addProduct(_product: Omit<Product, "id" | "currentStock" | "isArchived" | "createdAt">): Promise<Product> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addProduct(product: Omit<Product, "id" | "currentStock" | "isArchived" | "createdAt">): Promise<Product> {
+    return this.getActiveDelegate().addProduct(product);
   }
 
-  async updateProduct(_id: string, _updates: Partial<Product>): Promise<Product | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateProduct(id: string, updates: Partial<Product>): Promise<Product | null> {
+    return this.getActiveDelegate().updateProduct(id, updates);
   }
 
-  async archiveProduct(_id: string): Promise<boolean> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async archiveProduct(id: string): Promise<boolean> {
+    return this.getActiveDelegate().archiveProduct(id);
   }
 
   async getSuppliers(): Promise<Supplier[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getSuppliers();
   }
 
-  async getSupplierById(_id: string): Promise<Supplier | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getSupplierById(id: string): Promise<Supplier | null> {
+    return this.getActiveDelegate().getSupplierById(id);
   }
 
   async addSupplier(
-    _supplier: Omit<Supplier, "id" | "poHistoryCount" | "isArchived" | "createdAt">
+    supplier: Omit<Supplier, "id" | "poHistoryCount" | "isArchived" | "createdAt">
   ): Promise<Supplier> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().addSupplier(supplier);
   }
 
-  async updateSupplier(_id: string, _updates: Partial<Supplier>): Promise<Supplier | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateSupplier(id: string, updates: Partial<Supplier>): Promise<Supplier | null> {
+    return this.getActiveDelegate().updateSupplier(id, updates);
   }
 
-  async archiveSupplier(_id: string): Promise<boolean> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async archiveSupplier(id: string): Promise<boolean> {
+    return this.getActiveDelegate().archiveSupplier(id);
   }
 
   async getOrganizationProfile(): Promise<OrganizationProfile> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getOrganizationProfile();
   }
 
-  async updateOrganizationProfile(_updates: Partial<OrganizationProfile>): Promise<OrganizationProfile> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateOrganizationProfile(updates: Partial<OrganizationProfile>): Promise<OrganizationProfile> {
+    return this.getActiveDelegate().updateOrganizationProfile(updates);
   }
 
-  async getTasks(_poacFilter?: string, _statusFilter?: string): Promise<TaskItem[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getTasks(poacFilter?: string, statusFilter?: string): Promise<TaskItem[]> {
+    return this.getActiveDelegate().getTasks(poacFilter, statusFilter);
   }
 
-  async getTaskById(_id: string): Promise<TaskItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getTaskById(id: string): Promise<TaskItem | null> {
+    return this.getActiveDelegate().getTaskById(id);
   }
 
-  async addTask(_task: Omit<TaskItem, "id">): Promise<TaskItem> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addTask(task: Omit<TaskItem, "id">): Promise<TaskItem> {
+    return this.getActiveDelegate().addTask(task);
   }
 
-  async updateTask(_id: string, _updates: Partial<TaskItem>): Promise<TaskItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateTask(id: string, updates: Partial<TaskItem>): Promise<TaskItem | null> {
+    return this.getActiveDelegate().updateTask(id, updates);
   }
 
-  async toggleTaskStatus(_id: string): Promise<{ task: TaskItem | null; canUndo: boolean }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async toggleTaskStatus(id: string): Promise<{ task: TaskItem | null; canUndo: boolean }> {
+    return this.getActiveDelegate().toggleTaskStatus(id);
   }
 
-  async undoTaskStatus(_id: string): Promise<TaskItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async undoTaskStatus(id: string): Promise<TaskItem | null> {
+    return this.getActiveDelegate().undoTaskStatus(id);
   }
 
   async getAgendas(): Promise<AgendaItem[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getAgendas();
   }
 
-  async getAgendaById(_id: string): Promise<AgendaItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getAgendaById(id: string): Promise<AgendaItem | null> {
+    return this.getActiveDelegate().getAgendaById(id);
   }
 
   async addAgenda(
-    _agenda: Omit<AgendaItem, "id" | "status">
+    agenda: Omit<AgendaItem, "id" | "status">
   ): Promise<{ success: boolean; agenda?: AgendaItem; warning?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().addAgenda(agenda);
   }
 
   async updateAgenda(
-    _id: string,
-    _updates: Partial<AgendaItem>
+    id: string,
+    updates: Partial<AgendaItem>
   ): Promise<{ success: boolean; agenda?: AgendaItem; warning?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().updateAgenda(id, updates);
   }
 
-  async cancelAgenda(_id: string, _reason: string): Promise<AgendaItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async cancelAgenda(id: string, reason: string): Promise<AgendaItem | null> {
+    return this.getActiveDelegate().cancelAgenda(id, reason);
   }
 
   async rescheduleAgenda(
-    _id: string,
-    _newDate: string,
-    _newStartTime: string,
-    _newEndTime: string
+    id: string,
+    newDate: string,
+    newStartTime: string,
+    newEndTime: string
   ): Promise<{ success: boolean; agenda?: AgendaItem; warning?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().rescheduleAgenda(id, newDate, newStartTime, newEndTime);
   }
 
   async getWorkPlans(): Promise<WorkPlanItem[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getWorkPlans();
   }
 
-  async addWorkPlan(_plan: Omit<WorkPlanItem, "id">): Promise<WorkPlanItem> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addWorkPlan(plan: Omit<WorkPlanItem, "id">): Promise<WorkPlanItem> {
+    return this.getActiveDelegate().addWorkPlan(plan);
   }
 
-  async updateWorkPlan(_id: string, _updates: Partial<WorkPlanItem>): Promise<WorkPlanItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateWorkPlan(id: string, updates: Partial<WorkPlanItem>): Promise<WorkPlanItem | null> {
+    return this.getActiveDelegate().updateWorkPlan(id, updates);
   }
 
   async getRisks(): Promise<RiskItem[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getRisks();
   }
 
-  async addRisk(_risk: Omit<RiskItem, "id">): Promise<RiskItem> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addRisk(risk: Omit<RiskItem, "id">): Promise<RiskItem> {
+    return this.getActiveDelegate().addRisk(risk);
   }
 
-  async updateRisk(_id: string, _updates: Partial<RiskItem>): Promise<RiskItem | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async updateRisk(id: string, updates: Partial<RiskItem>): Promise<RiskItem | null> {
+    return this.getActiveDelegate().updateRisk(id, updates);
   }
 
   async getGovernanceDocuments(): Promise<GovernanceDocument[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getGovernanceDocuments();
   }
 
-  async addGovernanceDocument(_doc: Omit<GovernanceDocument, "id">): Promise<GovernanceDocument> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addGovernanceDocument(doc: Omit<GovernanceDocument, "id">): Promise<GovernanceDocument> {
+    return this.getActiveDelegate().addGovernanceDocument(doc);
   }
 
   async getFixedAssets(): Promise<FixedAsset[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getFixedAssets();
   }
 
-  async addFixedAsset(_asset: Omit<FixedAsset, "id" | "isArchived">): Promise<FixedAsset> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async addFixedAsset(asset: Omit<FixedAsset, "id" | "isArchived">): Promise<FixedAsset> {
+    return this.getActiveDelegate().addFixedAsset(asset);
   }
 
-  async archiveFixedAsset(_id: string): Promise<boolean> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async archiveFixedAsset(id: string): Promise<boolean> {
+    return this.getActiveDelegate().archiveFixedAsset(id);
   }
 
   async getOperationalStates(): Promise<{
@@ -331,180 +294,153 @@ export class SupabaseProductionRepository implements IPreparationRepository {
     cash: OperationalDataState;
     inventory: OperationalDataState;
   }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getOperationalStates();
   }
 
+  // --- Tahap 06: Pengadaan (PO), Stok & Kasir ---
   async getPurchaseOrders(): Promise<PurchaseOrder[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getPurchaseOrders();
   }
 
-  async getPurchaseOrderById(_id: string): Promise<PurchaseOrder | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getPurchaseOrderById(id: string): Promise<PurchaseOrder | null> {
+    return this.getActiveDelegate().getPurchaseOrderById(id);
   }
 
   async addPurchaseOrder(
-    _po: Omit<PurchaseOrder, "id" | "poNumber" | "status" | "paymentStatus" | "createdAt">
+    po: Omit<PurchaseOrder, "id" | "poNumber" | "status" | "paymentStatus" | "createdAt">
   ): Promise<PurchaseOrder> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().addPurchaseOrder(po);
   }
 
-  async approvePurchaseOrder(_id: string, _approverName: string): Promise<PurchaseOrder | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async approvePurchaseOrder(id: string, approverName: string): Promise<PurchaseOrder | null> {
+    return this.getActiveDelegate().approvePurchaseOrder(id, approverName);
   }
 
-  async rejectPurchaseOrder(_id: string, _reason: string): Promise<PurchaseOrder | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async rejectPurchaseOrder(id: string, reason: string): Promise<PurchaseOrder | null> {
+    return this.getActiveDelegate().rejectPurchaseOrder(id, reason);
   }
 
   async getGoodsReceipts(): Promise<GoodsReceipt[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getGoodsReceipts();
   }
 
   async createGoodsReceipt(
-    _data: Omit<GoodsReceipt, "id" | "receiptNumber" | "status" | "createdAt">
+    data: Omit<GoodsReceipt, "id" | "receiptNumber" | "status" | "createdAt">
   ): Promise<{ success: boolean; receipt?: GoodsReceipt; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createGoodsReceipt(data);
   }
 
-  async getStockMutations(_productId?: string): Promise<StockMutation[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getStockMutations(productId?: string): Promise<StockMutation[]> {
+    return this.getActiveDelegate().getStockMutations(productId);
   }
 
   async getStockOpnames(): Promise<StockOpname[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getStockOpnames();
   }
 
   async createStockOpname(
-    _data: Omit<StockOpname, "id" | "opnameNumber" | "status" | "createdAt">
+    data: Omit<StockOpname, "id" | "opnameNumber" | "status" | "createdAt">
   ): Promise<StockOpname> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createStockOpname(data);
   }
 
   async approveStockOpname(
-    _id: string,
-    _approverName: string
+    id: string,
+    approverName: string
   ): Promise<{ success: boolean; opname?: StockOpname; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().approveStockOpname(id, approverName);
   }
 
-  async getQuarantineStock(_productId: string): Promise<number> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getQuarantineStock(productId: string): Promise<number> {
+    return this.getActiveDelegate().getQuarantineStock(productId);
   }
 
   async getActiveShift(): Promise<CashierShift | null> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getActiveShift();
   }
 
-  async openShift(_cashierName: string, _registerNumber: string, _initialCash: number): Promise<CashierShift> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async openShift(cashierName: string, registerNumber: string, initialCash: number): Promise<CashierShift> {
+    return this.getActiveDelegate().openShift(cashierName, registerNumber, initialCash);
   }
 
   async closeShift(
-    _shiftId: string,
-    _physicalCashCount: number,
-    _discrepancyReason?: string
+    shiftId: string,
+    physicalCashCount: number,
+    discrepancyReason?: string
   ): Promise<{ success: boolean; shift?: CashierShift; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().closeShift(shiftId, physicalCashCount, discrepancyReason);
   }
 
-  async getPosTransactions(_shiftId?: string): Promise<PosTransaction[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getPosTransactions(shiftId?: string): Promise<PosTransaction[]> {
+    return this.getActiveDelegate().getPosTransactions(shiftId);
   }
 
   async createPosTransaction(
-    _data: Omit<PosTransaction, "id" | "receiptNumber" | "timestamp" | "isReturned">
+    data: Omit<PosTransaction, "id" | "receiptNumber" | "timestamp" | "isReturned">
   ): Promise<{ success: boolean; transaction?: PosTransaction; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createPosTransaction(data);
   }
 
   async createPosReturn(
-    _data: Omit<PosReturn, "id" | "returnNumber" | "timestamp">
+    data: Omit<PosReturn, "id" | "returnNumber" | "timestamp">
   ): Promise<{ success: boolean; returnRecord?: PosReturn; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createPosReturn(data);
   }
 
+  // --- Tahap 07: Keuangan, Jurnal & Laporan ---
   async getCashAccounts(): Promise<CashAccount[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getCashAccounts();
   }
 
   async getCashTransactions(): Promise<CashTransaction[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getCashTransactions();
   }
 
   async createExpense(
-    _data: Omit<CashTransaction, "id" | "trxNumber" | "type">
+    data: Omit<CashTransaction, "id" | "trxNumber" | "type">
   ): Promise<CashTransaction> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createExpense(data);
   }
 
   async createInternalTransfer(
-    _sourceId: string,
-    _targetId: string,
-    _amount: number,
-    _notes: string,
-    _actor: string
+    sourceId: string,
+    targetId: string,
+    amount: number,
+    notes: string,
+    actor: string
   ): Promise<{ success: boolean; transaction?: CashTransaction; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createInternalTransfer(sourceId, targetId, amount, notes, actor);
   }
 
-  async getMemberDeposits(_memberId?: string): Promise<MemberDepositRecord[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+  async getMemberDeposits(memberId?: string): Promise<MemberDepositRecord[]> {
+    return this.getActiveDelegate().getMemberDeposits(memberId);
   }
 
   async createMemberDeposit(
-    _data: Omit<MemberDepositRecord, "id" | "depositNumber">
+    data: Omit<MemberDepositRecord, "id" | "depositNumber">
   ): Promise<MemberDepositRecord> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createMemberDeposit(data);
   }
 
   async getJournalEntries(): Promise<JournalEntry[]> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getJournalEntries();
   }
 
   async createJournalEntry(
-    _data: Omit<JournalEntry, "id" | "entryNumber" | "status">
+    data: Omit<JournalEntry, "id" | "entryNumber" | "status">
   ): Promise<{ success: boolean; entry?: JournalEntry; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().createJournalEntry(data);
   }
 
   async reverseJournalEntry(
-    _journalId: string,
-    _reason: string,
-    _actor: string
+    journalId: string,
+    reason: string,
+    actor: string
   ): Promise<{ success: boolean; reversalEntry?: JournalEntry; error?: string }> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().reverseJournalEntry(journalId, reason, actor);
   }
 
   async getFinancialReportSummary(): Promise<FinancialReportSummary> {
-    this.assertConfigured();
-    throw new Error("Koneksi klien Supabase produksi aktif pada Tahap 10.");
+    return this.getActiveDelegate().getFinancialReportSummary();
   }
 }

@@ -17,6 +17,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="sb_publishable_..."
 
 Nama variabel aplikasi masih `ANON_KEY`, tetapi menurut dokumentasi Supabase key publik baru berawalan `sb_publishable_` dapat digunakan sebagai kunci klien. Jangan kirim nilainya melalui chat. `SUPABASE_SERVICE_ROLE_KEY` tetap kosong pada tahap ini; kunci rahasia hanya untuk server berwenang dan belum diperlukan untuk mencoba login biasa. Berkas `.env.local` sudah dikecualikan oleh `.gitignore`. Setelah menyimpan, **hentikan dan jalankan ulang** `npm.cmd run dev`.
 
+**Penting:** `NEXT_PUBLIC_SUPABASE_URL` harus berupa URL dasar proyek, misalnya `https://PROJECT_REF.supabase.co`. Jangan tambahkan `/auth/v1`, `/rest/v1`, atau jalur API lain. Tambahan jalur tersebut membuat permintaan login menuju alamat yang salah.
+
 Jika halaman login tetap menampilkan pesan belum dikonfigurasi, periksa nama variabel, tanda kutip, dan restart server. Jangan memakai nilai contoh sebagai kredensial.
 
 ## 3. Siapkan Auth

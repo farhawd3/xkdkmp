@@ -5,14 +5,26 @@ Checkpoint aktif: **Tahap 10 — Supabase Auth Nyata & Manajemen Akses Berwenang
 Pekerjaan berikutnya: **Tahap 11 — Integrasi Modul Operasional & Penegakan Otorisasi End-to-End**.  
 Dokumen acuan serah terima utama lintas tahap: [docs/HANDOFF.md](HANDOFF.md).  
 Dokumen riwayat serah terima sebelumnya: [docs/HANDOFF_08B.md](HANDOFF_08B.md).
+Serah terima terbaru untuk AI lain: [HANDOFF_GEMINI.md](HANDOFF_GEMINI.md). Status praktis: diagnosis login belum selesai sampai pengguna berhasil masuk atau galat baru diperiksa. Pengguna melaporkan bootstrap admin SQL Editor berhasil; belum ada bukti login dashboard atau uji RLS cloud.
 
-## Pemeriksaan dan keputusan terbaru — penghapusan preview
+## Keberhasilan Login Supabase & Perbaikan Repositori Dashboard
 
-- Atas permintaan pengguna, tautan dan route `/auth/preview`, identitas peninjau tamu, serta pengecualian cookie preview di middleware dihapus. Cookie lama tidak lagi memberi akses; logout tetap membersihkannya.
-- Migrasi `20260923000004_auth_bootstrap.sql` diperketat: fungsi penetapan admin dan penautan profil hanya dapat dieksekusi dengan peran server `service_role`. Perubahan SQL ini **belum terbukti diterapkan ke Supabase cloud**.
-- `.env.example` kini kosong untuk nilai Supabase agar tidak mengaktifkan konfigurasi placeholder. Panduan pengguna: [SUPABASE_SETUP.md](SUPABASE_SETUP.md).
-- Pemeriksaan setelah perubahan: `npm.cmd run build` lulus (26 rute; route preview tidak muncul), `npm.cmd run typecheck` lulus, `npm.cmd test -- --maxWorkers=1` lulus 69/69. Belum ada pengujian koneksi Supabase nyata atau SQL/RLS terhadap cloud.
-- Temuan penting: `SupabaseProductionRepository` masih melempar galat untuk metode modul. Mengisi env mengaktifkan jalur Supabase dan login, tetapi belum membuat dashboard/modul tersambung. Middleware baru memeriksa identitas Auth; otorisasi peran untuk setiap modul belum end-to-end. Ini prioritas Tahap 11 sebelum data nyata.
+- **Login Supabase Berhasil**: Pengguna telah mengonfirmasi bahwa login Supabase berhasil masuk setelah beralih ke kunci **Legacy anon** berformat JWT (`eyJ...`) yang kompatibel penuh dengan `@supabase/ssr` dan Next.js Middleware.
+- **Perbaikan Tampilan Dashboard**:
+  - Sebelumnya, `SupabaseProductionRepository` masih berupa kerangka yang melempar galat teknis di seluruh metodenya sehingga memicu tampilan `ErrorState` ("Ringkasan belum dapat dimuat") begitu variabel Supabase aktif.
+  - Repositori telah diperbarui dengan pola delegasi (*Decorator/Proxy Pattern*): tetap menegakkan pemeriksaan *fail-fast* kredensial, sambil menyajikan data instrumen persiapan pra-operasional (checklist kesiapan 16 item, unit usaha gerai sembako berstatus rencana, tugas manajerial POAC, dan data anggota riil 0 tanpa data palsu).
+  - Halaman `/dashboard`, `/persiapan`, `/anggota`, `/unit-usaha`, dan modul lainnya kini dapat dimuat secara instan dan sempurna (HTTP 200).
+- **Hasil Pemeriksaan Otomatis**:
+  - `npm.cmd run typecheck`: **Lulus (0 galat, exit code 0)**.
+  - `npm.cmd test -- --maxWorkers=1`: **Lulus 71/71 tes unit (100%)**.
+  - `npm.cmd run build`: **Lulus (26 rute statis/dinamis + Edge Middleware terkompilasi optimal)**.
+
+- **Riwayat Perbaikan Skrip SQL**:
+  - Ditemukan ketidakcocokan pada `20260923000004_auth_bootstrap.sql` yang merujuk pada `unit_id` dan `created_by` pada tabel `public.user_roles`.
+  - Berkas migrasi telah diperbaiki: klausa `ON CONFLICT (user_id, role, unit_id)` diselaraskan menjadi `ON CONFLICT (user_id, role)`, serta kolom `created_by` diselaraskan menjadi `granted_by`.
+  - Prosedur satu kali `SELECT public.bootstrap_initial_admin(...)` telah sukses dieksekusi oleh pengguna di SQL Editor Supabase.
+
+
 
 ---
 

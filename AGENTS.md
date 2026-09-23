@@ -40,7 +40,8 @@ Aturan ini berlaku untuk seluruh agen dan percakapan dalam workspace ini.
 
 ## 6. Serah Terima Lintas Editor / AI
 - Mulai dengan README.md, docs/HANDOFF.md, docs/STATUS.md, dan docs/DECISIONS.md. Tidak ada kewajiban model AI, editor, plugin, atau MCP tertentu.
+- Untuk perpindahan ke Gemini setelah perbaikan login, baca docs/HANDOFF_GEMINI.md. Dokumen ini mencatat hasil tes terbaru dan masalah login yang masih menunggu verifikasi pengguna; jangan menganggap klaim tes lama sebagai hasil terkini.
 - Serah terima 23 September 2026: baca [docs/HANDOFF.md](docs/HANDOFF.md) sebagai panduan serah terima utama lintas tahap. Dokumen [docs/HANDOFF_08B.md](docs/HANDOFF_08B.md) dipertahankan sebagai riwayat historis perbaikan frontend 08B. Tahap 08B dan Tahap 09 telah selesai dan seluruh pengujian (58/58 unit test, typecheck, build) terverifikasi lulus.
 - AGENTS.md ini adalah aturan utama. Salinan lama di .agents/rules dan referensi Stitch adalah konteks historis; keputusan pastel terbaru mengungguli instruksi Crimson lama.
-- Saat ini repositori database Supabase telah dirancang dengan DDL, RLS default deny, dan RPC atomik di `supabase/migrations/` serta implementasi fail-fast di `src/lib/repository/supabase.ts`. Proyek sesi in-memory tetap bersih tanpa data contoh rekaan. Jangan mengklaim database cloud atau login produksi aktif sebelum Tahap 10 dikerjakan dan diverifikasi.
+- Skema/RLS/RPC tersedia di `supabase/migrations/`, tetapi penerapan dan uji cloud belum dibuktikan dari aplikasi. `src/lib/repository/supabase.ts` masih kerangka fail-fast. Jangan mengklaim login dashboard atau operasi produksi aktif sebelum diuji nyata.
 - Jalankan pemeriksaan sendiri. Klaim historis dalam dokumen bukan bukti tes terkini. Jangan melaporkan skrip placeholder sebagai E2E lulus.
