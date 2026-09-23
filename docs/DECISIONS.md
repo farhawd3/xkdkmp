@@ -1,7 +1,46 @@
 # DECISIONS — KOPDES MERAH PUTIH LADANG LAWEH
 
+## Keputusan v2.9 — 23 September 2026
+
+- Pertahankan aplikasi pribadi dan fondasi v2.8; penyegaran bertahap pada komponen bersama/dashboard dan perbaikan alur, bukan penulisan ulang sistem.
+- Keterangan data harus membedakan cuplikan prioritas, rekap tersimpan, data kosong, galat, selisih operasional dan laporan akuntansi. Jangan memberi label “terverifikasi” berdasarkan keberhasilan query saja.
+- Dropdown tetap kontrol HTML asli; picker bergaya hanya pada browser yang mendukung `appearance: base-select`, dengan fallback native yang tetap bekerja.
+- Server lokal bind 127.0.0.1. Header IP proxy dari klien bukan bukti izin; kunci tidak disisipkan dalam URL. Akses tablet/LAN/hosting perlu gateway privat dan pengaturan jaringan tepercaya yang disetujui. Tidak ada login internal dihidupkan kembali.
+- Restore lintas tabel belum atomik dan backup belum terbukti mencakup >1.000 baris. Tidak boleh mengklaim aman/lengkap tanpa uji. Rancangan SQL transaksi hanya ditindaklanjuti setelah ruang lingkup disetujui, dan eksekusi SQL menunggu konfirmasi pengguna atas isi migrasinya.
+
+Bagian berikut adalah riwayat; lihat STATUS.md untuk checkpoint dan bukti terkini.
+
 **Tanggal Pembaruan**: 23 September 2026  
-**Status**: Aktif — Tahap 11 berlangsung
+**Status**: Seluruh 6 Tahap Roadmap Transformasi Aplikasi Pribadi Manajer SELESAI & Diverifikasi Penuh (v2.8.0).
+
+## Keputusan & Hasil Implementasi — Aplikasi Pribadi Manajer (23 September 2026)
+
+1. **Aplikasi Pribadi Tanpa Login (Tahap 1 — SELESAI)**:
+   - Fitur login dan menu pengelolaan pengguna dihapus. Aplikasi langsung membuka `/dashboard` secara cepat.
+   - Sesi terlindungi di lingkungan privat lokal/LAN, anti-CSRF aktif, dan dependensi sesi lama diarahkan ke `null` secara elegan.
+2. **Kejujuran Data & Audit Kas/Laba (Tahap 2 — SELESAI)**:
+   - Angka fiktif di endpoint keuangan dihapus (kas bank 25jt, aset 15jt, valuasi 20rb ditiadakan).
+   - Kueri yang gagal ditangani secara transparan (*fail-fast*, status 500 tanpa masking 0).
+   - Setoran kas bernilai 0 dipertahankan, kerugian/defisit negatif didukung, zona waktu WIB (`Asia/Jakarta`) diberlakukan seragam, dan evaluasi kepatuhan lapor hanya untuk gerai berstatus aktif.
+3. **Kustomisasi Profil Lembaga Permanen di Supabase (Tahap 3 — SELESAI)**:
+   - Skema tabel ke-7 `public.organization_profile` (migrasi 00008) dibuat dan sukses diterapkan di Supabase Cloud.
+   - Endpoint GET/PATCH `/api/organization/profile` terhubung langsung dengan validasi Zod dan dibagikan secara global melalui `OrganizationContext`.
+4. **Desain Visual & ConfirmDialog Modal (Tahap 4 — SELESAI)**:
+   - Seluruh pemanggilan `window.confirm()` dihapus dan diganti dengan modal interaktif `ConfirmDialog`.
+   - Kalender dipecah ke `TaskCalendarView` modular, filter terpadu diterapkan serentak, dan target sentuh tablet distandarisasi 44–48 px.
+5. **Fitur Fokus Manajer (Tahap 5 — SELESAI)**:
+   - Panel Fokus Hari Ini di dashboard merangkum 3 pilar mendesak (tugas jatuh tempo/terlambat, gerai aktif belum lapor, komoditas stok kritis).
+   - Filter, reset, dan ekspor CSV aman dari formula injection diterapkan di `/monitoring`, `/pekerjaan`, dan `/stok`.
+   - Ringkasan berkala dan format cetak resmi A4 disematkan pada `/monitoring`.
+   - Konversi kendala lapangan menjadi tugas tindak lanjut dibuat otomatis dengan deteksi duplikasi.
+   - Sistem pencadangan dan pemulihan data komprehensif JSON Backup/Restore di `/pengaturan` aktif.
+6. **Kerapian Kode, Penyatuan Tipe, & Verifikasi Menyeluruh (Tahap 6 — SELESAI)**:
+   - Model kanonikal PostgreSQL terpadu di `src/types/models.ts`.
+   - Halaman monolitik dipecah menjadi subkomponen mandiri yang ramping.
+   - Mock warisan `preparationRepository` di `/unit-usaha/[id]` dan `/anggota/[id]` dihapus dan dialihkan ke Route Handlers riil.
+   - Seluruh pengujian (153 unit test Vitest) lulus 100%, 0 galat TypeScript, dan Next.js production build 33 rute berhasil.
+
+Bagian setelah ini adalah riwayat keputusan terdahulu.
 
 ## Keputusan Tahap 11A — batas data produksi
 

@@ -358,8 +358,8 @@ function PersiapanContent() {
         <CardContent className="p-5 md:p-6 space-y-4">
           <div className="flex flex-col md:flex-row gap-3">
             {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <div className="relative flex-1 flex items-center">
+              <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Cari poin checklist, kata kunci, atau nama PIC..."

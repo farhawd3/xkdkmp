@@ -7,32 +7,34 @@ BACA TERLEBIH DAHULU:
 4. docs/CHANGELOG.md (catatan perubahan kronologis)
 5. docs/DECISIONS.md (keputusan bisnis dan arsitektur yang telah diambil)
 
-KONDISI SAAT INI:
-- Website adalah SISTEM INFORMASI MANAJEMEN & PEMANTAUAN GERAI KOPERASI (bukan kasir POS).
+KONDISI SAAT INI (v2.8.0 — Seluruh 6 Tahap Selesai 100%):
+- Website adalah SISTEM INFORMASI MANAJEMEN & PEMANTAUAN GERAI KOPERASI (pribadi tanpa login/user).
+- Seluruh 6 tahap roadmap telah selesai:
+  1. Aplikasi pribadi tanpa login (langsung dashboard, menu akun dihapus).
+  2. Kejujuran data & audit kas/laba (tanpa angka fiktif, fail-fast, zona waktu WIB).
+  3. Profil organisasi permanen di Supabase (migrasi 00008 sukses diterapkan).
+  4. Desain visual pastel rose, dialog konfirmasi modal (ConfirmDialog), area sentuh tablet 44-48 px.
+  5. Fitur fokus manajer (Fokus Hari Ini, filter terpadu, cetak A4, kendala jadi tugas, backup/restore JSON).
+  6. Kerapian kode (tipe kanonikal src/types/models.ts, modularisasi komponen, pembersihan mock detail).
 - Modul inti aktif:
-  * Dashboard Manajer (/dashboard) — KPI metrik, tren omset 7 hari, tugas mendesak, kepatuhan pelaporan
+  * Dashboard Manajer (/dashboard) — KPI metrik, tren omset 7 hari, panel Fokus Hari Ini, kepatuhan pelaporan
   * Manajemen Tugas & Agenda (/pekerjaan) — daftar tugas + kalender agenda bulanan
-  * Pemantauan Gerai (/monitoring) — input rekap harian manual + riwayat
-  * Daftar & Edit Gerai (/unit-usaha) — profil gerai, PIC, target omset
-  * Barang & Stok (/stok) — pantau angka stok fisik sederhana
-  * Data Anggota (/anggota) — daftar dan jumlah anggota koperasi
-  * Kas & Buku Besar (/keuangan) — buku besar kas, mutasi setoran, simpanan anggota
-  * Neraca & SHU (/laporan) — neraca seimbang, laba rugi, alokasi SHU sesuai AD/ART
-- Database Supabase: 7 tabel inti (migrasi 20260923000007_clean_simple_schema.sql)
-- API aktif: /api/dashboard/executive, /api/tasks, /api/units, /api/monitoring/records, /api/stock-simple, /api/members, /api/finance/summary
-- Pengujian: 95 unit test lulus 100%, TypeScript typecheck 0 galat, build Next.js sukses.
-- Desain: Pastel lembut, gradient halus, aksen rose #A64768, Plus Jakarta Sans, sidebar kiri, target tablet.
-- Fondasi visual v2.2: Input/Select/DateInput/Textarea seragam, dialog responsif, kalender ramah tablet/ponsel, serta tema Terang/Gelap/Ikuti Perangkat.
+  * Pemantauan Gerai (/monitoring) — input rekap harian manual + riwayat + ringkasan & cetak A4
+  * Daftar & Edit Gerai (/unit-usaha) — profil gerai, PIC, target omset, edit & detail
+  * Barang & Stok (/stok) — pantau angka stok fisik riil
+  * Data Anggota (/anggota) — daftar dan jumlah anggota koperasi, tambah, impor, ekspor
+  * Kas & Buku Besar (/keuangan) & Jurnal Simulasi (/keuangan/jurnal)
+  * Neraca & SHU (/laporan)
+  * Pengaturan (/pengaturan) — profil Supabase & Backup/Restore JSON
+  * Panduan Sistem (/bantuan) & Kesiapan (/persiapan)
+- Database Supabase: 7 tabel inti (migrasi 20260923000007 dan 20260923000008 telah diterapkan di Supabase Cloud).
+- API aktif: /api/dashboard/executive, /api/tasks, /api/units, /api/monitoring/records, /api/stock-simple, /api/members, /api/finance/summary, /api/organization/profile, /api/backup.
+- Pengujian: 153 unit test lulus 100%, TypeScript typecheck 0 galat, build Next.js 33 rute sukses.
+- Desain: Pastel lembut, gradient halus, aksen rose #A64768, Plus Jakarta Sans, sidebar kiri, target tablet (44-48 px).
 
-BATAS YANG WAJIB DIPAHAMI:
-- Profil organisasi pada /pengaturan masih memakai repository persiapan lama. Jangan mengklaim tersimpan permanen ke Supabase sebelum endpoint organization_profile dibuat dan diuji.
-- /api/finance/summary masih harus diaudit karena ada angka keuangan konstan. Data keuangan produksi tidak boleh memakai angka contoh.
-- Audit visual langsung terakhir hanya mencakup layar login desktop dan tablet dark mode; halaman internal memerlukan sesi akun uji yang aman.
-- Baca bagian 7–9 docs/HANDOFF.md untuk rencana pembangunan, prioritas, dan prosedur pemeriksaan lengkap.
-
-INSTRUKSI:
-- Periksa git diff dan status lokal sebelum mulai.
+INSTRUKSI UNTUK AI BERIKUTNYA:
+- Seluruh fondasi dan 6 tahap utama sudah selesai. Jangan merombak ulang yang sudah berjalan stabil.
 - Gunakan bahasa Indonesia sederhana dan lugas untuk Bapak Abdul Halim.
-- Jalankan verifikasi teknis setelah perubahan: npm.cmd test -- --maxWorkers=1, npm.cmd run typecheck, npm.cmd run build.
-- Gunakan npm.cmd atau npx.cmd (bukan npm/npx) di environment Windows.
-- Perbarui docs/STATUS.md dan docs/CHANGELOG.md setiap ada perubahan signifikan.
+- Jalankan verifikasi teknis setelah setiap perubahan: npm.cmd test -- --run, npm.cmd run typecheck, npm.cmd run build.
+- Gunakan npm.cmd atau npx.cmd di environment Windows.
+- Perbarui docs/STATUS.md dan docs/CHANGELOG.md setiap ada perkembangan baru.

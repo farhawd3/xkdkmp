@@ -25,15 +25,13 @@ import {
   ClipboardList,
   Scale,
   X,
-  LogOut,
-  LogIn,
   LucideIcon,
 } from "lucide-react";
 import { NAVIGATION_GROUPS, APP_CONFIG } from "@/lib/constants";
-import { useCurrentUser } from "@/lib/useCurrentUser";
 import { Badge } from "@/components/ui/Badge";
 import { getActiveNavigationHref, PRODUCTION_READY_ROUTES } from "@/lib/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useOrganizationProfile } from "@/lib/OrganizationContext";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -67,8 +65,20 @@ export interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, className }) => {
   const pathname = usePathname();
   const activeHref = getActiveNavigationHref(pathname);
-  const user = useCurrentUser();
   const productionMode = isSupabaseConfigured();
+  const { profile } = useOrganizationProfile();
+
+  const orgName = profile.display_name || APP_CONFIG.shortName;
+  const statusLabel = profile.business_status === "aktif" ? "Operasional Aktif" : "Mode Persiapan";
+  const managerName = profile.manager_name || "Abdul Halim";
+  const managerTitle = profile.manager_title || "Manajer Koperasi";
+  const initials = managerName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("") || "AH";
+
   const visibleGroups = NAVIGATION_GROUPS.map((group) => ({
     ...group,
     items: productionMode ? group.items.filter((item) => PRODUCTION_READY_ROUTES.has(item.href)) : group.items,
@@ -89,10 +99,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate leading-tight">
-              {APP_CONFIG.shortName}
+              {orgName}
             </h1>
             <p className="text-xs font-bold text-primary-container dark:text-rose-400 uppercase tracking-wider mt-0.5">
-              {APP_CONFIG.status}
+              {statusLabel}
             </p>
           </div>
         </div>
@@ -172,44 +182,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
         )}
       </div>
 
-      {/* User Info Footer */}
-      <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-700/70 bg-slate-50/60 dark:bg-[#252F40] shrink-0">
+      {/* Manager Profile Footer — Aplikasi Pribadi */}
+      <div className="px-4 py-3.5 border-t border-slate-100 dark:border-slate-700/70 bg-slate-50/60 dark:bg-[#252F40] shrink-0">
         <div className="flex items-center gap-3">
-          <div
-            className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-sm shadow-sm transition-colors",
-              user.isLoggedIn
-                ? "bg-primary-container text-white"
-                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-            )}
-          >
-            {user.initials}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-sm bg-primary-container text-white shadow-sm">
+            {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{user.name}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-              {user.roleLabel}
+            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{managerName}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              {managerTitle}
             </p>
           </div>
-          {user.isLoggedIn ? (
-            <Link
-              href="/auth/logout"
-              title="Keluar dari sistem"
-              aria-label="Keluar dari sistem"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-700 dark:hover:text-rose-300 transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              title="Masuk ke sistem"
-              aria-label="Masuk ke sistem"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-primary-container hover:bg-rose-50 dark:hover:bg-slate-700 dark:text-rose-300 transition-colors"
-            >
-              <LogIn className="h-4 w-4" />
-            </Link>
-          )}
+          <div className="shrink-0">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200/60 dark:border-rose-900/60">
+              Pribadi
+            </span>
+          </div>
         </div>
       </div>
     </div>

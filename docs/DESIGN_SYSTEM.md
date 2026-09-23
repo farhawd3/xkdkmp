@@ -1,5 +1,19 @@
 # DESIGN SYSTEM — KOPDES MERAH PUTIH LADANG LAWEH
 
+## Acuan pekerjaan berikutnya — dashboard manajer
+
+Rancangan hierarki layar, keadaan data, matriks visual terang/gelap, dan kriteria fitur berikutnya tertulis di [ROADMAP_MANAJER_BERIKUTNYA.md](ROADMAP_MANAJER_BERIKUTNYA.md). Pada dashboard, jangan mengulang sapaan/tanggal dalam header, baris navigasi dan teks terpisah. Aksi data dikelompokkan di header; grafik kosong memakai pesan ringkas, bukan ruang gambar tanpa informasi. Ini acuan untuk fitur baru, bukan klaim seluruh layar sudah lolos audit visual.
+
+Spesifikasi layar dan interaksi untuk usulan Meja Kerja, Kinerja Gerai, kendala, laporan mingguan, serta fitur kompleks tercantum di [prompt lanjutan](../prompts/91_Pengembangan_Fitur_Manajer_Lanjutan.md#G-Desain-antarmuka-yang-harus-diturunkan-ke-setiap-fitur). Terapkan prinsip yang sama di mode terang dan gelap; jangan menambah menu hanya karena spesifikasinya ada.
+
+## Penyegaran v2.9
+
+- Permukaan netral lebih dominan: header halaman putih/kartu biru-abu gelap, aksen pastel hanya pada indikator dan pilihan. Aksen rose serta Plus Jakarta Sans dipertahankan.
+- Dashboard memprioritaskan omset, kepatuhan gerai aktif, tugas belum selesai, stok perlu perhatian; tindakan detail di bawah setiap kartu. Filter tindak lanjut dan CSV memakai definisi data yang sama.
+- Picker `Select` memakai progressive enhancement CSS `appearance: base-select`: padding 6px, opsi minimal 44px, radius 10/16px, hover netral, selected rose. Browser yang tidak mendukung tetap memakai picker native; jangan mengklaim tampil identik di semua OS.
+- Hover tombol rose pada tema gelap tetap gelap agar teks putih kontras. Kalender memakai panel bertumpuk sampai layar 2xl, aksi minimal 44px, hari WIB dan tanggal aktif jelas.
+- Grafik tersedia bersama rincian tekstual angka. Nol tidak digambar sebagai batang penjualan fiktif. Tampilkan batas rekap, cuplikan prioritas dan waktu pengambilan data.
+
 **Tanggal Pembaruan**: 23 September 2026  
 **Status**: Acuan Desain Baku (Single Source of Design Truth) — diperkuat pada v2.2
 

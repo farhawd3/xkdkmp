@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { PRODUCTION_READY_ROUTES, SEARCH_MODULES } from "@/lib/navigation";
 import { formatTanggal } from "@/lib/utils";
-import { useCurrentUser } from "@/lib/useCurrentUser";
 import { Dialog } from "@/components/ui/Dialog";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -50,7 +49,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, toggleTheme } = useTheme();
-  const user = useCurrentUser();
 
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -92,13 +90,13 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
   return (
     <header className="sticky top-0 z-30 h-16 sm:h-[70px] w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm transition-colors">
-      <div className="flex h-full w-full items-center justify-between px-4 md:px-6 lg:px-8">
+      <div className="flex h-full w-full items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
         {/* Kiri: Toggle Menu (Mobile & Tablet) + Status Tanggal */}
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuToggle}
             aria-label="Buka navigasi menu"
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white lg:hidden transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white xl:hidden transition-colors"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -110,14 +108,14 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         </div>
 
         {/* Tengah: Quick Search Finder */}
-        <div className="hidden lg:flex items-center relative max-w-xs w-full">
-          <Search className="absolute left-3 h-4 w-4 text-slate-400 pointer-events-none" />
+        <div className="hidden xl:flex min-w-0 flex-1 items-center relative max-w-xs w-full">
+          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
           <button
             onClick={() => {
               setSearchQuery("");
               setIsSearchOpen(true);
             }}
-            className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-9 pr-3 text-left text-xs text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex items-center justify-between shadow-sm"
+            className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-10 pr-3 text-left text-xs text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex items-center justify-between shadow-sm"
           >
             <span>Cari menu...</span>
             <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded font-mono">
@@ -128,7 +126,16 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
         {/* Kanan: Toggle Mode Gelap, Bantuan, Notifikasi, Status Mode */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button aria-label="Cari menu" onClick={() => { setSearchQuery(""); setIsSearchOpen(true); }} className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 lg:hidden"><Search className="h-5 w-5" /></button>
+          <button
+            aria-label="Cari menu"
+            onClick={() => {
+              setSearchQuery("");
+              setIsSearchOpen(true);
+            }}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors xl:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </button>
           <button
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Ganti ke Mode Terang" : "Ganti ke Mode Gelap"}
@@ -206,22 +213,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
             )}
           </div>
 
-          {/* Indikator Status Mode — menggantikan profil mini (yang sudah ada di Sidebar) */}
+          {/* Indikator Mode Aplikasi Pribadi */}
           <div className="hidden md:flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-            {user.isLoggedIn ? (
-              <div className="flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 px-3 py-1.5">
-                <Shield className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Sesi Aktif</span>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-              >
-                <Shield className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
-                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">Masuk</span>
-              </Link>
-            )}
+            <div className="flex items-center gap-1.5 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/60 px-3 py-1.5">
+              <Shield className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+              <span className="text-[11px] font-bold text-rose-700 dark:text-rose-300">Aplikasi Pribadi</span>
+            </div>
           </div>
         </div>
       </div>
@@ -285,10 +282,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         onClose={() => setIsSearchOpen(false)}
         title="Navigasi Cepat Modul Koperasi"
         description="Cari nama menu untuk membuka halaman yang Anda perlukan."
+        position="top"
+        maxWidth="md"
       >
         <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <div className="relative flex items-center">
+            <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
             <input
               type="text"
               aria-label="Cari menu"
@@ -296,7 +295,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
               placeholder="Ketik kata kunci (misal: Kas, PO, Anggota, Laporan)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-9 pr-3 py-2.5 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-10 pr-3 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
           </div>
 

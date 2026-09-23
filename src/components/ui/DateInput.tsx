@@ -1,5 +1,4 @@
 import React, { useId } from "react";
-import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   fieldControlClass,
@@ -41,15 +40,12 @@ export const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
             aria-describedby={error || helperText ? descriptionId : undefined}
             className={cn(
               fieldControlClass,
-              "h-12 px-3.5 py-2.5 pr-11 [color-scheme:light] dark:[color-scheme:dark]",
+              "h-12 min-w-0 px-3.5 py-2.5 [color-scheme:light] dark:[color-scheme:dark]",
               error && fieldErrorClass,
               className
             )}
             {...props}
           />
-          <div className="pointer-events-none absolute right-3 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
-            <Calendar className="h-4 w-4" aria-hidden="true" />
-          </div>
         </div>
         {error ? (
           <p id={descriptionId} role="alert" className={cn(fieldMessageClass, "font-medium text-red-600 dark:text-red-400")}>

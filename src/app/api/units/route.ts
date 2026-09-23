@@ -1,14 +1,36 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
 import { BusinessUnitSchema } from "@/lib/validations/simple-schemas";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
 
     const supabase = await createClient();
+
+    if (id) {
+      const { data, error } = await supabase
+        .from("business_units")
+        .select("id, code, name, unit_type, status, pic_name, phone, location, monthly_target, readiness_percentage, operational_start_date, notes, created_at, updated_at")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) {
+        return NextResponse.json({ error: "Gagal memuat unit usaha dari Supabase: " + error.message }, { status: 500 });
+      }
+      if (!data) {
+        return NextResponse.json({ error: "Unit usaha tidak ditemukan." }, { status: 404 });
+      }
+      return NextResponse.json({ unit: data }, { headers: { "Cache-Control": "no-store" } });
+    }
+
     const { data, error } = await supabase
       .from("business_units")
       .select("id, code, name, unit_type, status, pic_name, phone, location, monthly_target, readiness_percentage, operational_start_date, notes, created_at, updated_at")
@@ -27,13 +49,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
-
-    // Hanya admin atau manajer yang boleh menambah gerai
-    const canManage = user.roles.some((r) => ["admin", "manajer"].includes(r));
-    if (!canManage) {
-      return NextResponse.json({ error: "Hanya Admin atau Manajer yang dapat mendaftarkan unit usaha baru." }, { status: 403 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
     }
 
     const body = await request.json();
@@ -63,7 +81,7 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: "Gagal menyimpan gerai baru ke Supabase: " + error.message }, { status: 500 });
+      return NextResponse.json({ error: "Gagal mendaftarkan unit usaha ke Supabase: " + error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, unit: data });
@@ -75,12 +93,9 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
-
-    const canManage = user.roles.some((r) => ["admin", "manajer"].includes(r));
-    if (!canManage) {
-      return NextResponse.json({ error: "Hanya Admin atau Manajer yang dapat mengedit data unit usaha." }, { status: 403 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
     }
 
     const body = await request.json();
@@ -98,16 +113,15 @@ export async function PATCH(request: Request) {
     };
 
     if (parsed.data.name !== undefined) updates.name = parsed.data.name;
-    if (parsed.data.code !== undefined) updates.code = parsed.data.code;
     if (parsed.data.unit_type !== undefined) updates.unit_type = parsed.data.unit_type;
     if (parsed.data.status !== undefined) updates.status = parsed.data.status;
     if (parsed.data.pic_name !== undefined) updates.pic_name = parsed.data.pic_name;
-    if (parsed.data.phone !== undefined) updates.phone = parsed.data.phone;
+    if (parsed.data.phone !== undefined) updates.phone = parsed.data.phone || null;
     if (parsed.data.location !== undefined) updates.location = parsed.data.location;
     if (parsed.data.monthly_target !== undefined) updates.monthly_target = parsed.data.monthly_target;
     if (parsed.data.readiness_percentage !== undefined) updates.readiness_percentage = parsed.data.readiness_percentage;
-    if (parsed.data.operational_start_date !== undefined) updates.operational_start_date = parsed.data.operational_start_date;
-    if (parsed.data.notes !== undefined) updates.notes = parsed.data.notes;
+    if (parsed.data.operational_start_date !== undefined) updates.operational_start_date = parsed.data.operational_start_date || null;
+    if (parsed.data.notes !== undefined) updates.notes = parsed.data.notes || null;
 
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -118,7 +132,7 @@ export async function PATCH(request: Request) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: "Gagal memperbarui data gerai di Supabase: " + error.message }, { status: 500 });
+      return NextResponse.json({ error: "Gagal memperbarui unit usaha di Supabase: " + error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, unit: data });

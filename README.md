@@ -23,36 +23,42 @@ Website ini adalah **Pusat Komando & Pemantauan Manajer Koperasi** (Bukan aplika
 
 ## Database Supabase (Sederhana & Bersih)
 
-Database telah disederhanakan melalui migrasi [20260923000007_clean_simple_schema.sql](supabase/migrations/20260923000007_clean_simple_schema.sql) dan hanya terdiri dari **7 tabel inti**:
+Database terdiri dari **7 tabel inti** yang didukung oleh migrasi Supabase:
+- [20260923000007_clean_simple_schema.sql](supabase/migrations/20260923000007_clean_simple_schema.sql)
+- [20260923000008_organization_profile.sql](supabase/migrations/20260923000008_organization_profile.sql)
+
+Tabel inti:
 - `business_units`: Data profil unit usaha/gerai koperasi.
 - `unit_daily_reports`: Rekapitulasi laporan pemantauan harian gerai.
 - `tasks`: Manajemen tugas dan instruksi kerja operasional.
 - `products`: Katalog barang dan angka ketersediaan stok fisik.
 - `members`: Data anggota koperasi.
-- `user_roles`: Hak akses peran akun pengguna.
-- `organization_profile`: Profil kelembagaan koperasi.
+- `user_roles`: Hak akses peran.
+- `organization_profile`: Profil kelembagaan koperasi & manajer.
 
 ---
 
-## Cara Menjalankan Lokal
+## Cara Menjalankan Aplikasi
 
-```sh
-# Instalasi dependensi
+Aplikasi berjalan sebagai aplikasi pribadi manajer tunggal tanpa layar login:
+
+```powershell
+# Instalasi dependensi (jika baru pertama kali)
 npm ci
 
 # Jalankan server pengembangan
 npm.cmd run dev
 ```
 
-Buka `http://localhost:3000` di peramban web (browser/tablet).
+Buka `http://localhost:3000` di peramban web komputer atau tablet.
 
 ---
 
 ## Pemeriksaan Kualitas & Pengujian
 
-```sh
-# Menjalankan 99 unit test otomatis
-npm.cmd test -- --maxWorkers=1
+```powershell
+# Menjalankan seluruh unit test otomatis
+npm.cmd test -- --run
 
 # Pemeriksaan kesesuaian tipe data TypeScript
 npm.cmd run typecheck
@@ -61,7 +67,12 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-**Status Kualitas Terkini:**
-- Unit Test Vitest: **99/99 Lulus 100%** (11 berkas uji).
+**Status Kualitas Terkini (v2.8.0):**
+- Unit Test Vitest: **153/153 Lulus 100%** (15 berkas uji).
 - Typecheck: **Lulus (0 galat)**.
-- Build Produksi: **Lulus sukses (38 rute terkompilasi optimal)**.
+- Build Produksi: **Lulus sukses (33 rute terkompilasi optimal)**.
+# Catatan akses lokal v2.9
+
+`npm.cmd run dev` dan `npm.cmd start` kini mendengarkan hanya pada `127.0.0.1` (komputer ini). Buka `http://127.0.0.1:3000`. Jangan membagikan URL publik tanpa perlindungan. Header `x-forwarded-for`/`x-real-ip` tidak lagi dianggap bukti akses privat; kunci lewat query `kopdes_key` tidak diterima. Untuk tablet/LAN, bahas gateway privat terlebih dahulu; jangan membuka semua interface tanpa batas jaringan. Tidak ada login aplikasi yang diaktifkan kembali.
+
+Checkpoint terbaru, hasil uji dan pekerjaan tertunda: [docs/STATUS.md](docs/STATUS.md). Pemulihan JSON masih per tabel (dapat parsial jika gagal), bukan transaksi atomik; buat cadangan sebelum pemulihan dan jangan gunakan berkas tidak tepercaya.

@@ -1,8 +1,6 @@
 "use client";
 
-import { ButtonLink } from "@/components/ui/Button";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   User,
@@ -14,12 +12,10 @@ import {
   Calendar,
   Phone,
   MapPin,
-  Briefcase,
   AlertTriangle,
   CheckCircle2,
   Archive,
-  Clock,
-  AlertCircle,
+  Info,
 } from "lucide-react";
 import {
   Card,
@@ -28,51 +24,63 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useToast } from "@/components/ui/Toast";
-import { preparationRepository } from "@/lib/repository";
-import { Member, MemberStatus } from "@/types";
-import { formatRupiah, formatTanggal } from "@/lib/utils";
+import { MemberRecord } from "@/types/models";
+import { formatTanggal } from "@/lib/utils";
 
 export default function DetailAnggotaPage() {
   const params = useParams();
   const router = useRouter();
   const memberId = typeof params?.id === "string" ? params.id : "";
 
-  const [member, setMember] = useState<Member | null>(null);
+  const [member, setMember] = useState<MemberRecord | null>(null);
   const [activeTab, setActiveTab] = useState<"profil" | "status" | "simpanan" | "partisipasi" | "dokumen">("profil");
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { showToast } = useToast();
 
-  useEffect(() => {
-    async function loadMember() {
-      if (!memberId) return;
-      try {
-        const data = await preparationRepository.getMemberById(memberId);
-        setMember(data);
-      } catch (err) {
-        console.error("Gagal memuat data anggota:", err);
-      } finally {
-        setIsLoading(false);
+  const loadMember = async () => {
+    if (!memberId) return;
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch(`/api/members?id=${memberId}`, { cache: "no-store" });
+      if (!res.ok) {
+        if (res.status === 404) {
+          setMember(null);
+          return;
+        }
+        throw new Error("Gagal mengambil data anggota dari server.");
       }
+      const data = await res.json();
+      setMember(data.member || null);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Terjadi kendala saat memuat data.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadMember();
   }, [memberId]);
 
   if (isLoading) {
-    return (
-      <div className="p-8 text-center text-sm text-slate-500">
-        Memuat data rincian anggota...
-      </div>
-    );
+    return <LoadingState label="Memuat rincian data anggota dari Supabase..." />;
   }
 
-  // Jika ID tidak ditemukan, tampilkan Not Found khusus modul anggota
+  if (errorMsg) {
+    return <ErrorState message={errorMsg} onRetry={loadMember} />;
+  }
+
   if (!member) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
@@ -81,33 +89,59 @@ export default function DetailAnggotaPage() {
         </div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Anggota Tidak Ditemukan</h2>
         <p className="mt-1 max-w-sm text-xs md:text-sm text-slate-500 dark:text-slate-400">
-          Nomor identitas anggota dengan ID &quot;{memberId}&quot; tidak terdaftar dalam basis data koperasi.
+          Data anggota dengan ID &quot;{memberId}&quot; tidak terdaftar dalam database koperasi.
         </p>
         <div className="mt-6">
           <ButtonLink href="/anggota" variant="primary" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali ke Daftar Anggota
-            </ButtonLink>
+            <ArrowLeft className="h-4 w-4" />
+            Kembali ke Daftar Anggota
+          </ButtonLink>
         </div>
       </div>
     );
   }
 
-  const handleUpdateStatus = async (newStatus: MemberStatus) => {
-    const updated = await preparationRepository.updateMember(member.id, {
-      status: newStatus,
-    });
-    if (updated) {
-      setMember(updated);
+  const handleUpdateStatus = async (newStatus: "calon" | "aktif" | "nonaktif") => {
+    setIsUpdating(true);
+    try {
+      const res = await fetch("/api/members", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: member.id, status: newStatus }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "Gagal memperbarui status.");
+      }
+      const data = await res.json();
+      setMember(data.member);
       showToast("success", "Status Anggota Diperbarui", `Status berhasil diubah menjadi ${newStatus.toUpperCase()}.`);
+    } catch (err) {
+      showToast("error", "Pembaruan Gagal", err instanceof Error ? err.message : "Gagal memperbarui status anggota.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   const handleArchive = async () => {
-    const success = await preparationRepository.archiveMember(member.id);
-    if (success) {
-      showToast("info", "Data Anggota Diarsipkan", "Anggota telah diarsipkan tanpa menghapus rekam jejak.");
+    setIsUpdating(true);
+    try {
+      const res = await fetch("/api/members", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: member.id, is_archived: true }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "Gagal mengarsipkan anggota.");
+      }
+      showToast("info", "Data Anggota Diarsipkan", "Anggota telah diarsipkan tanpa menghapus riwayat kelembagaan.");
       router.push("/anggota");
+    } catch (err) {
+      showToast("error", "Arsip Gagal", err instanceof Error ? err.message : "Gagal mengarsipkan anggota.");
+    } finally {
+      setIsUpdating(false);
+      setIsArchiveModalOpen(false);
     }
   };
 
@@ -118,7 +152,7 @@ export default function DetailAnggotaPage() {
         items={[
           { label: "Kelembagaan", href: "/anggota" },
           { label: "Data Anggota", href: "/anggota" },
-          { label: member.fullName, active: true },
+          { label: member.full_name, active: true },
         ]}
       />
 
@@ -127,17 +161,15 @@ export default function DetailAnggotaPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-primary dark:text-rose-400 font-bold text-lg">
-              {member.fullName.substring(0, 2).toUpperCase()}
+              {member.full_name.substring(0, 2).toUpperCase()}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">{member.fullName}</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">{member.full_name}</h1>
                 <Badge
                   variant={
                     member.status === "aktif"
                       ? "success"
-                      : member.status === "terverifikasi"
-                      ? "info"
                       : member.status === "calon"
                       ? "warning"
                       : "neutral"
@@ -147,21 +179,21 @@ export default function DetailAnggotaPage() {
                 </Badge>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
-                No. Anggota: <strong className="text-slate-700 dark:text-slate-300">{member.memberNo}</strong> • Terdaftar sejak: {member.joinDate}
+                No. Anggota: <strong className="text-slate-700 dark:text-slate-300">{member.member_number}</strong> • Terdaftar: {formatTanggal(member.join_date)}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <ButtonLink href="/anggota" variant="outline" size="sm" className="gap-1 text-xs">
-                <ArrowLeft className="h-4 w-4" />
-                Kembali
-              </ButtonLink>
+            <ButtonLink href="/anggota" variant="outline" size="sm" className="gap-1.5 min-h-11 px-4 text-xs font-semibold">
+              <ArrowLeft className="h-4 w-4" />
+              Kembali
+            </ButtonLink>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsArchiveModalOpen(true)}
-              className="gap-1 text-xs text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/40"
+              className="gap-1.5 min-h-11 px-4 text-xs font-semibold text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/40"
             >
               <Archive className="h-4 w-4" />
               Arsipkan
@@ -175,15 +207,14 @@ export default function DetailAnggotaPage() {
             { id: "profil", label: "Profil Lengkap", icon: User },
             { id: "status", label: "Status & Verifikasi", icon: Shield },
             { id: "simpanan", label: "Buku Simpanan", icon: Wallet },
-            { id: "partisipasi", label: "Partisipasi Belanja", icon: ShoppingBag },
-            { id: "dokumen", label: "Dokumen Identitas", icon: FileText },
+            { id: "partisipasi", label: "Partisipasi Gerai", icon: ShoppingBag },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
                     ? "bg-primary text-white shadow-sm"
@@ -203,56 +234,45 @@ export default function DetailAnggotaPage() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Informasi Identitas Kependudukan</CardTitle>
-              <CardDescription>Biodata resmi warga terdaftar.</CardDescription>
+              <CardTitle className="text-base">Informasi Identitas Anggota</CardTitle>
+              <CardDescription>Biodata resmi warga terdaftar dalam database.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-xs">
               <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-500 dark:text-slate-400">Nama Lengkap:</span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">{member.fullName}</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{member.full_name}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-500 dark:text-slate-400">Nomor Anggota:</span>
-                <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{member.memberNo}</span>
+                <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{member.member_number}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">NIK (Masked):</span>
-                <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{member.maskedNik}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400">Pekerjaan:</span>
-                <span className="text-slate-800 dark:text-slate-200">{member.job || "-"}</span>
+                <span className="text-slate-500 dark:text-slate-400">Status Keanggotaan:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200 uppercase">{member.status}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-slate-500 dark:text-slate-400">Tanggal Pendaftaran:</span>
-                <span className="text-slate-800 dark:text-slate-200">{member.joinDate}</span>
+                <span className="text-slate-800 dark:text-slate-200">{formatTanggal(member.join_date)}</span>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Domisili & Kontak</CardTitle>
-              <CardDescription>Wilayah tempat tinggal di Nagari Ladang Laweh.</CardDescription>
+              <CardTitle className="text-base">Kontak & Catatan</CardTitle>
+              <CardDescription>Komunikasi dan catatan penanggung jawab keanggotaan.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-xs">
-              <div className="flex items-start gap-3 py-2 border-b border-slate-100 dark:border-slate-800">
-                <MapPin className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5" />
-                <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">Domisili Jorong:</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{member.domicile}</span>
-                </div>
-              </div>
               <div className="flex items-start gap-3 py-2 border-b border-slate-100 dark:border-slate-800">
                 <Phone className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5" />
                 <div>
                   <span className="text-slate-500 dark:text-slate-400 block">Nomor Telepon / WA:</span>
-                  <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">{member.phone}</span>
+                  <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">{member.phone || "Tidak ada nomor"}</span>
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 leading-relaxed">
-                Nomor kontak ini digunakan untuk koordinasi kehadiran dalam Rapat Anggota Tahunan (RAT)
-                dan konfirmasi pengambilan SHU.
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 leading-relaxed">
+                <span className="font-semibold block mb-1">Catatan Tambahan:</span>
+                <p className="italic">{member.notes ? `"${member.notes}"` : "Belum ada catatan khusus."}</p>
               </div>
             </CardContent>
           </Card>
@@ -263,182 +283,104 @@ export default function DetailAnggotaPage() {
       {activeTab === "status" && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Tahapan Siklus Keanggotaan</CardTitle>
-            <CardDescription>
-              Perubahan status keanggotaan mengikuti alur: Calon → Terverifikasi → Aktif.
-            </CardDescription>
+            <CardTitle className="text-base">Pengaturan Status Keanggotaan</CardTitle>
+            <CardDescription>Tentukan status kepatuhan dan keaktifan warga dalam koperasi.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-900/50 space-y-3 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Status Saat Ini:</span>
-                <Badge
-                  variant={
-                    member.status === "aktif"
-                      ? "success"
-                      : member.status === "terverifikasi"
-                      ? "info"
-                      : "warning"
-                  }
-                >
-                  {member.status.toUpperCase()}
-                </Badge>
-              </div>
-
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400 mr-2">Simulasikan Ubah Status:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleUpdateStatus("calon")}
-                  className="text-xs h-8"
-                >
-                  Calon
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleUpdateStatus("terverifikasi")}
-                  className="text-xs h-8"
-                >
-                  Terverifikasi
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleUpdateStatus("aktif")}
-                  className="text-xs h-8"
-                >
-                  Aktif
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleUpdateStatus("nonaktif")}
-                  className="text-xs h-8 text-slate-600 dark:text-slate-400"
-                >
-                  Nonaktif
-                </Button>
-              </div>
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
+              <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Status Saat Ini:</span>
+              <Badge variant={member.status === "aktif" ? "success" : member.status === "calon" ? "warning" : "neutral"} className="text-sm">
+                {member.status.toUpperCase()}
+              </Badge>
             </div>
 
-            <div className="rounded-2xl border border-amber-200/80 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/40 p-4 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3 shadow-sm">
-              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <div className="leading-relaxed">
-                <p className="font-semibold text-amber-900 dark:text-amber-100 mb-1">Ketentuan Arsip &amp; Audit</p>
-                <p className="text-amber-800 dark:text-amber-300">
-                  Koperasi tidak mengizinkan tombol hapus permanen yang melenyapkan sejarah keanggotaan.
-                  Jika anggota mengundurkan diri atau dinonaktifkan, gunakan fitur arsipkan agar seluruh
-                  riwayat tetap tersedia selama sesi ini.
-                </p>
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Ubah Status Menjadi:</span>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={member.status === "aktif" ? "primary" : "outline"}
+                  disabled={isUpdating || member.status === "aktif"}
+                  onClick={() => handleUpdateStatus("aktif")}
+                  className="min-h-11 px-4 text-xs"
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-1.5" />
+                  Tetapkan Aktif
+                </Button>
+                <Button
+                  size="sm"
+                  variant={member.status === "calon" ? "primary" : "outline"}
+                  disabled={isUpdating || member.status === "calon"}
+                  onClick={() => handleUpdateStatus("calon")}
+                  className="min-h-11 px-4 text-xs"
+                >
+                  Tetapkan Calon
+                </Button>
+                <Button
+                  size="sm"
+                  variant={member.status === "nonaktif" ? "primary" : "outline"}
+                  disabled={isUpdating || member.status === "nonaktif"}
+                  onClick={() => handleUpdateStatus("nonaktif")}
+                  className="min-h-11 px-4 text-xs text-slate-600"
+                >
+                  Nonaktifkan
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Konten Tab 3: Buku Simpanan */}
+      {/* Konten Tab 3: Simpanan */}
       {activeTab === "simpanan" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Card>
-              <CardContent className="p-5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Simpanan Pokok
-                </span>
-                <div className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
-                  {formatRupiah(member.simpananPokokAmount)}
-                </div>
-                <Badge variant={member.simpananPokokPaid ? "success" : "warning"} className="mt-2">
-                  {member.simpananPokokPaid ? "Lunas" : "Belum Disetorkan"}
-                </Badge>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Simpanan Wajib
-                </span>
-                <div className="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
-                  {formatRupiah(member.simpananWajibAmount)}
-                </div>
-                <Badge variant={member.simpananWajibPaid ? "success" : "neutral"} className="mt-2">
-                  {member.simpananWajibPaid ? "Tercatat" : "Belum Berjalan"}
-                </Badge>
-              </CardContent>
-            </Card>
-          </div>
-
-          <EmptyState
-            icon={<Wallet className="h-7 w-7 text-slate-400 dark:text-slate-500" />}
-            title="Buku Simpanan Menunggu Modul Akuntansi & Kas"
-            description="Pendaftaran identitas anggota tidak menandai simpanan pokok telah disetor. Mutasi simpanan akan diverifikasi otomatis saat modul transaksi keuangan resmi diaktifkan."
-            action={
-              <ButtonLink href="/keuangan" variant="outline" size="sm">
-                  Periksa Modul Kas & Simpanan
-                </ButtonLink>
-            }
-          />
-        </div>
-      )}
-
-      {/* Konten Tab 4: Partisipasi Belanja */}
-      {activeTab === "partisipasi" && (
-        <EmptyState
-          icon={<ShoppingBag className="h-7 w-7 text-slate-400 dark:text-slate-500" />}
-          title="Belum Ada Riwayat Belanja di Gerai Sembako"
-          description="Gerai Sembako Ladang Laweh saat ini masih dalam tahap persiapan fisik. Rekam jejak partisipasi belanja anggota akan tercatat otomatis saat kasir POS mulai melayani transaksi."
-          action={
-            <ButtonLink href="/unit-usaha" variant="outline" size="sm">
-                Lihat Kesiapan Gerai Sembako
-              </ButtonLink>
-          }
-        />
-      )}
-
-      {/* Konten Tab 5: Dokumen Identitas */}
-      {activeTab === "dokumen" && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Dokumen Persyaratan Keanggotaan</CardTitle>
-            <CardDescription>Status kelengkapan berkas fisik untuk akta notaris.</CardDescription>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Wallet className="h-4 w-4 text-amber-600" />
+              Buku Catatan Simpanan Anggota
+            </CardTitle>
+            <CardDescription>Pencatatan simpanan pokok, simpanan wajib, dan sukarela.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-xs">
-              <div className="flex items-center gap-3">
-                <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-slate-100 block">Fotokopi KTP / Identitas</span>
-                  <span className="text-slate-500 dark:text-slate-400">Status: Belum diunggah / Berkas fisik di kantor desa</span>
-                </div>
-              </div>
-              <Badge variant="neutral">Belum Diperiksa</Badge>
-            </div>
-
-            <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-xs">
-              <div className="flex items-center gap-3">
-                <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                <div>
-                  <span className="font-bold text-slate-900 dark:text-slate-100 block">Surat Pernyataan Kesediaan Anggota</span>
-                  <span className="text-slate-500 dark:text-slate-400">Status: Menunggu tanda tangan basah musyawarah</span>
-                </div>
-              </div>
-              <Badge variant="neutral">Belum Diperiksa</Badge>
+          <CardContent>
+            <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 text-xs text-amber-900 dark:text-amber-200 leading-relaxed flex items-start gap-2.5">
+              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>
+                Pencatatan simpanan resmi dilakukan terpusat melalui pembukuan kas pada menu <strong>/keuangan</strong>. Sesuai prinsip kejujuran data, rekapitulasi mutasi simpanan per individu akan ditautkan setelah modul buku besar simpanan disahkan pada RAT awal 2027.
+              </span>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Konfirmasi Arsipkan Anggota */}
+      {/* Konten Tab 4: Partisipasi Gerai */}
+      {activeTab === "partisipasi" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <ShoppingBag className="h-4 w-4 text-sky-600" />
+              Partisipasi Belanja di Gerai Koperasi
+            </CardTitle>
+            <CardDescription>Pemantauan aktivitas anggota pada unit-unit usaha nagari.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Seluruh gerai koperasi saat ini berada dalam tahap persiapan operasional (Kickoff awal 2027). Rekam jejak transaksi anggota akan otomatis terakumulasi untuk perhitungan pembagian Jasa Usaha SHU setelah gerai beroperasi aktif.
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Dialog Konfirmasi Arsip */}
       <ConfirmDialog
         isOpen={isArchiveModalOpen}
         onClose={() => setIsArchiveModalOpen(false)}
-        onConfirm={handleArchive}
-        title="Arsipkan Data Anggota"
-        message={`Apakah Anda yakin ingin mengarsipkan ${member.fullName}? Data akan dipindahkan ke status nonaktif dan riwayat keanggotaan tetap tersimpan dalam sistem.`}
+        title="Arsipkan Data Anggota?"
+        message={`Anda akan mengarsipkan anggota "${member.full_name}" (${member.member_number}). Data tidak akan dihapus dari database Supabase, namun tidak lagi muncul di daftar aktif utama.`}
         confirmText="Ya, Arsipkan Anggota"
         cancelText="Batal"
+        isDestructive
+        isLoading={isUpdating}
+        onConfirm={handleArchive}
       />
     </div>
   );

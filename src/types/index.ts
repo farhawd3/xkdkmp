@@ -543,4 +543,13 @@ export interface FinancialReportSummary {
   totalEquity: number;
 }
 
+export type {
+  UnitOption,
+  TaskItem as CanonicalTaskItem,
+  BusinessUnit as CanonicalBusinessUnit,
+  DailyReportRecord,
+  MemberRecord,
+  CatalogProduct,
+} from "./models";
+
 

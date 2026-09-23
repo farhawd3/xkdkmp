@@ -5,6 +5,15 @@ import { sanitizeRedirectUrl } from "@/lib/supabase/middleware";
 import { sanitizeAuthError, withAuthTimeout } from "@/lib/auth/utils";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CURRENT_USER } from "@/lib/constants";
+import { PERSONAL_MANAGER_USER } from "@/lib/auth/session";
+import {
+  isPrivateIp,
+  isLoopbackHost,
+  isSameOriginMutation,
+  verifyPrivateAccess,
+  verifyPrivateApiAccess,
+} from "@/lib/security/private-access";
+import { NextRequest } from "next/server";
 
 describe("Tahap 10 — Keamanan Autentikasi & Pencegahan Open Redirect", () => {
   it("memvalidasi dan mengizinkan path relatif lokal yang sah", () => {
@@ -24,7 +33,7 @@ describe("Tahap 10 — Keamanan Autentikasi & Pencegahan Open Redirect", () => {
   });
 
   it("mengembalikan defaultUrl kustom jika target pengalihan kosong atau tidak valid", () => {
-    expect(sanitizeRedirectUrl(null, "/login")).toBe("/login");
+    expect(sanitizeRedirectUrl(null, "/dashboard")).toBe("/dashboard");
     expect(sanitizeRedirectUrl(undefined, "/anggota")).toBe("/anggota");
     expect(sanitizeRedirectUrl("", "/persiapan")).toBe("/persiapan");
   });
@@ -101,20 +110,87 @@ describe("Tahap 10 — Integritas Kebijakan Akses Database & Klien Administrasi"
   });
 });
 
-describe("Tahap 10 — Perlindungan Identitas Belum Login", () => {
-  it("memastikan nilai default CURRENT_USER tidak mengekspos nama Abdul Halim sebelum login", () => {
-    expect(CURRENT_USER.name).not.toBe("Abdul Halim");
-    expect(CURRENT_USER.name).toBe("Tamu Sistem");
-    expect(CURRENT_USER.role).toBe("anggota");
+describe("Tahap 1 — Batas Akses Privat & Keamanan Aplikasi Pribadi Manajer", () => {
+  it("memvalidasi deteksi alamat IP privat dan loopback", () => {
+    expect(isPrivateIp("127.0.0.1")).toBe(true);
+    expect(isPrivateIp("::1")).toBe(true);
+    expect(isPrivateIp("localhost")).toBe(true);
+    expect(isPrivateIp("192.168.1.50")).toBe(true);
+    expect(isPrivateIp("10.0.0.15")).toBe(true);
+    expect(isPrivateIp("172.20.5.1")).toBe(true);
+
+    // IP publik
+    expect(isPrivateIp("8.8.8.8")).toBe(false);
+    expect(isPrivateIp("103.25.10.1")).toBe(false);
+    expect(isPrivateIp(null)).toBe(false);
   });
 
-  it("jalur login tamu tidak tersedia dan middleware mengabaikan cookie pratinjau lama", () => {
-    const root = process.cwd();
-    expect(fs.existsSync(path.resolve(root, "src/app/auth/preview/route.ts"))).toBe(false);
-    const middleware = fs.readFileSync(path.resolve(root, "src/lib/supabase/middleware.ts"), "utf8");
-    const login = fs.readFileSync(path.resolve(root, "src/app/login/page.tsx"), "utf8");
-    expect(middleware).not.toContain("kopdes_preview_mode");
-    expect(login).not.toContain("/auth/preview");
+  it("memvalidasi deteksi hostname loopback komputer lokal", () => {
+    expect(isLoopbackHost("localhost")).toBe(true);
+    expect(isLoopbackHost("localhost:3000")).toBe(true);
+    expect(isLoopbackHost("127.0.0.1:3000")).toBe(true);
+    expect(isLoopbackHost("kopdes-ladanglaweh.vercel.app")).toBe(false);
+    expect(isLoopbackHost("koperasi.id")).toBe(false);
+  });
+
+  it("mengizinkan akses lokal langsung tanpa login untuk loopback", () => {
+    const req = new NextRequest("http://localhost:3000/dashboard");
+    const result = verifyPrivateAccess(req);
+    expect(result.allowed).toBe(true);
+  });
+
+  it("menolak akses publik jika kunci akses privat belum dikonfigurasi", () => {
+    const originalKey = process.env.KOPDES_PRIVATE_ACCESS_KEY;
+    try {
+      delete process.env.KOPDES_PRIVATE_ACCESS_KEY;
+      const req = new NextRequest("https://kopdes.nagari.id/dashboard", {
+        headers: { host: "kopdes.nagari.id" },
+      });
+      const result = verifyPrivateAccess(req);
+      expect(result.allowed).toBe(false);
+      expect(result.status).toBe(403);
+      expect(result.reason).toContain("Aplikasi pribadi ini belum dikonfigurasi");
+    } finally {
+      if (originalKey) process.env.KOPDES_PRIVATE_ACCESS_KEY = originalKey;
+    }
+  });
+
+  it("mengizinkan akses publik saat kunci privat valid disertakan pada header", () => {
+    const originalKey = process.env.KOPDES_PRIVATE_ACCESS_KEY;
+    try {
+      process.env.KOPDES_PRIVATE_ACCESS_KEY = "kunci-rahasia-manajer-123";
+      const req = new NextRequest("https://kopdes.nagari.id/dashboard", {
+        headers: {
+          host: "kopdes.nagari.id",
+          "x-kopdes-access-key": "kunci-rahasia-manajer-123",
+        },
+      });
+      const result = verifyPrivateAccess(req);
+      expect(result.allowed).toBe(true);
+    } finally {
+      if (originalKey) process.env.KOPDES_PRIVATE_ACCESS_KEY = originalKey;
+      else delete process.env.KOPDES_PRIVATE_ACCESS_KEY;
+    }
+  });
+
+  it("menolak mutasi lintas origin (anti-CSRF) pada endpoint API", () => {
+    const req = new Request("http://localhost:3000/api/tasks", {
+      method: "POST",
+      headers: {
+        host: "localhost:3000",
+        origin: "https://evil-attacker.com",
+      },
+    });
+    expect(isSameOriginMutation(req)).toBe(false);
+    const result = verifyPrivateApiAccess(req);
+    expect(result.allowed).toBe(false);
+    expect(result.error).toContain("CSRF");
+  });
+
+  it("memastikan profil manajer Abdul Halim terdefinisi untuk aplikasi pribadi", () => {
+    expect(PERSONAL_MANAGER_USER.fullName).toBe("Abdul Halim");
+    expect(PERSONAL_MANAGER_USER.roles).toContain("manajer");
+    expect(CURRENT_USER.name).toBe("Abdul Halim");
+    expect(CURRENT_USER.role).toBe("manajer");
   });
 });
-

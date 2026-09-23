@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/layout";
 import { ThemeProvider } from "@/lib/ThemeContext";
+import { OrganizationProvider } from "@/lib/OrganizationContext";
 
 export const metadata: Metadata = {
   title: "Kopdes Merah Putih — Ladang Laweh",
@@ -53,7 +54,9 @@ export default function RootLayout({
       </head>
       <body className="h-full bg-background dark:bg-slate-950 text-on-surface dark:text-slate-100 antialiased selection:bg-rose-100 dark:selection:bg-rose-950/60 selection:text-rose-900 dark:selection:text-rose-200">
         <ThemeProvider>
-          <AppShell>{children}</AppShell>
+          <OrganizationProvider>
+            <AppShell>{children}</AppShell>
+          </OrganizationProvider>
         </ThemeProvider>
       </body>
     </html>

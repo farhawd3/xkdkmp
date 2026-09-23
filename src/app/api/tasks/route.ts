@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
 import { TaskSchema, TaskStatusUpdateSchema } from "@/lib/validations/simple-schemas";
 
 export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const unitId = searchParams.get("unit_id");
@@ -37,8 +39,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const body = await request.json();
     const parsed = TaskSchema.safeParse(body);
@@ -76,8 +80,10 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const body = await request.json();
 
@@ -140,8 +146,10 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

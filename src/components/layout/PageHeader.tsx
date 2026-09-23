@@ -38,7 +38,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       )}
 
       {/* Baris Judul & Aksi Utama yang Terstandarisasi */}
-      <div className="relative flex flex-col gap-5 overflow-hidden rounded-[1.5rem] border border-rose-100/80 bg-gradient-to-br from-white via-white to-rose-50/70 p-5 shadow-sm dark:border-slate-700/70 dark:from-[#252F40] dark:via-[#252F40] dark:to-[#303B4F] md:p-7 2xl:flex-row 2xl:items-start 2xl:justify-between">
+      <div className="relative flex flex-col gap-5 rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-sm dark:border-slate-700/70 dark:bg-[#252F40] md:p-6 2xl:flex-row 2xl:items-start 2xl:justify-between">
         <div className="space-y-1.5 min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">

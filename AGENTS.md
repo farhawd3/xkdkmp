@@ -2,6 +2,14 @@
 
 Aturan ini berlaku untuk seluruh agen dan percakapan dalam workspace ini.
 
+## Status Sistem Terkini — Aplikasi Pribadi Manajer Aktif (23 September 2026)
+
+- **Seluruh 6 Tahap Roadmap Telah Selesai 100%**: Transformasi sistem menjadi aplikasi pribadi manajer tunggal tanpa login/user telah terimplementasi dan terverifikasi penuh (**153/153 Vitest lulus, 0 TypeScript error, Next.js build sukses**).
+- **Penggunaan Pribadi**: Aplikasi dipakai sendiri oleh Abdul Halim untuk memantau gerai koperasi. Layar login ditiadakan, dashboard langsung terbuka, dan menu akun pengguna dihapus.
+- **Database Supabase 7 Tabel Inti**: Migrasi `20260923000007_clean_simple_schema.sql` dan `20260923000008_organization_profile.sql` telah sukses diterapkan di Supabase Cloud.
+- **Data Nyata & Kejujuran Sistem**: Seluruh data anggota, stok, rekap gerai, dan profil koperasi tersimpan permanen di Supabase. Tidak ada data fiktif atau angka tiruan.
+- **Keamanan Lingkungan Privat**: Akses aplikasi dibatasi pada lingkungan privat (localhost/LAN). Endpoint API tetap dilindungi validasi Zod dan RLS Supabase. Kunci rahasia tetap berada di sisi server (*server-only*).
+
 ## 1. Peran & Persona
 - Bertindak sebagai **Technical Lead, Product Designer, dan Full-Stack Engineer**.
 - Pemilik kebutuhan adalah **Abdul Halim** (pemula di bidang IT, bertugas mulai awal 2027).

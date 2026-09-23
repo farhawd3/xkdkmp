@@ -17,6 +17,7 @@ export interface DialogProps {
   bodyClassName?: string;
   closeOnBackdrop?: boolean;
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl";
+  position?: "bottom" | "top" | "center";
 }
 
 export const Dialog: React.FC<DialogProps> = ({
@@ -30,6 +31,7 @@ export const Dialog: React.FC<DialogProps> = ({
   bodyClassName,
   closeOnBackdrop = true,
   maxWidth = "md",
+  position = "bottom",
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -52,9 +54,26 @@ export const Dialog: React.FC<DialogProps> = ({
     "2xl": "max-w-2xl",
   }[maxWidth];
 
+  const overlayPositionClass =
+    position === "top"
+      ? "items-start justify-center p-3 pt-6 sm:items-center sm:p-4"
+      : position === "center"
+      ? "items-center justify-center p-3 sm:p-4"
+      : "items-end justify-center p-0 sm:items-center sm:p-4";
+
+  const panelPositionClass =
+    position === "top"
+      ? "rounded-2xl border border-slate-200/90 dark:border-slate-700 animate-in slide-in-from-top-4 duration-200 sm:rounded-3xl sm:zoom-in-95"
+      : position === "center"
+      ? "rounded-2xl border border-slate-200/90 dark:border-slate-700 animate-in zoom-in-95 duration-200 sm:rounded-3xl"
+      : "rounded-t-3xl border border-slate-200/90 dark:border-slate-700 animate-in slide-in-from-bottom-3 duration-200 sm:rounded-3xl sm:zoom-in-95";
+
   const dialogContent = (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/65 p-0 backdrop-blur-[3px] animate-in fade-in duration-200 sm:items-center sm:p-4"
+      className={cn(
+        "fixed inset-0 z-50 flex bg-slate-950/65 backdrop-blur-[3px] animate-in fade-in duration-200",
+        overlayPositionClass
+      )}
       onClick={closeOnBackdrop ? onClose : undefined}
       role="dialog"
       aria-modal="true"
@@ -65,7 +84,8 @@ export const Dialog: React.FC<DialogProps> = ({
         ref={panelRef}
         tabIndex={-1}
         className={cn(
-          "flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-slate-200/90 bg-white shadow-2xl animate-in slide-in-from-bottom-3 duration-200 dark:border-slate-700 dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)] sm:rounded-3xl sm:zoom-in-95",
+          "flex max-h-[92dvh] w-full flex-col overflow-hidden bg-white shadow-2xl dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)]",
+          panelPositionClass,
           maxWidthClasses
         )}
         onClick={(e) => e.stopPropagation()}
@@ -101,9 +121,9 @@ export const Dialog: React.FC<DialogProps> = ({
           {children}
         </div>
 
-        {/* Footer Modal */}
+        {/* Footer Modal (Opsional) */}
         {footer && (
-          <div className="flex shrink-0 flex-col-reverse items-stretch justify-end gap-3 border-t border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-900/40 sm:flex-row sm:items-center md:px-6 md:py-5">
+          <div className="shrink-0 border-t border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/80 md:px-6 md:py-4">
             {footer}
           </div>
         )}

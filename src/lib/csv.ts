@@ -33,3 +33,17 @@ export function serializeCsv(rows: readonly (readonly unknown[])[]): string {
     return `"${safe.replaceAll('"', '""')}"`;
   }).join(",")).join("\r\n");
 }
+
+/** Mengunduh data baris CSV ke file lokal browser pengguna */
+export function downloadCsvFile(filename: string, rows: readonly (readonly unknown[])[]): void {
+  const csvContent = serializeCsv(rows);
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename.endsWith(".csv") ? filename : `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

@@ -251,6 +251,14 @@ export default function JurnalPage() {
         }
       />
 
+      {/* Banner Edukasi Modul Persiapan Jurnal Akuntansi */}
+      <div className="rounded-2xl border border-amber-200/80 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/30 p-4 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3 shadow-sm">
+        <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="leading-relaxed">
+          <strong className="text-amber-950 dark:text-amber-100">Modul Simulasi Pembukuan Akuntansi (Double-Entry):</strong> Modul ini disediakan untuk instrumen pembelajaran tata kelola akuntansi berstandar SAK EP kelak. Untuk pemantauan operasional gerai harian saat ini, seluruh arus kas nyata dipantau melalui menu <strong className="underline">/keuangan</strong> dan <strong className="underline">/monitoring</strong>.
+        </div>
+      </div>
+
       {/* 3 Kartu Metrik Ringkasan Jurnal (Gaya /persiapan) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <CardMetric

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Package, PackageX, Search, Edit3, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Package, PackageX, Search, Edit3, CheckCircle2, Download, RotateCcw } from "lucide-react";
 import { PageHeader } from "@/components/layout";
 import { Card, CardContent, CardMetric } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -10,17 +10,9 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useToast } from "@/components/ui/Toast";
 import { useResource } from "@/lib/useResource";
-
-interface CatalogProduct {
-  id: string;
-  sku: string;
-  name: string;
-  category: string;
-  base_unit: string;
-  current_stock: number;
-  min_stock: number;
-  notes?: string | null;
-}
+import { downloadCsvFile } from "@/lib/csv";
+import { getTodayWIB } from "@/lib/utils";
+import { CatalogProduct } from "@/types/models";
 
 async function loadCatalog(): Promise<CatalogProduct[]> {
   const response = await fetch("/api/stock-simple", { cache: "no-store" });
@@ -81,7 +73,7 @@ export function ProductionStockPage() {
     }
   };
 
-  if (error) return <ErrorState message="Katalog Supabase belum dapat dimuat. Periksa sesi dan hak akses akun." onRetry={reload} />;
+  if (error) return <ErrorState message="Katalog stok belum dapat dimuat. Periksa koneksi dan kesesuaian struktur database." onRetry={reload} />;
   if (loading || !data) return <LoadingState label="Membaca katalog stok Supabase…" />;
 
   const empty = data.filter((product) => product.current_stock === 0).length;
@@ -92,6 +84,49 @@ export function ProductionStockPage() {
     const productCondition = product.current_stock === 0 ? "kosong" : product.current_stock <= product.min_stock ? "menipis" : "cukup";
     return matchesQuery && (condition === "semua" || condition === productCondition);
   });
+
+  const isFilterActive = query.trim() !== "" || condition !== "semua";
+
+  const handleResetFilters = () => {
+    setQuery("");
+    setCondition("semua");
+  };
+
+  const handleExportCsv = () => {
+    if (visibleProducts.length === 0) {
+      showToast("error", "Tidak Ada Data", "Tidak ada barang terfilter untuk diekspor.");
+      return;
+    }
+
+    const headers = [
+      "SKU",
+      "Nama Barang / Komoditas",
+      "Kategori",
+      "Stok Fisik",
+      "Satuan",
+      "Batas Minimum",
+      "Kondisi Stok",
+      "Catatan",
+    ];
+
+    const rows = visibleProducts.map((p) => {
+      const cond = p.current_stock === 0 ? "Kosong" : p.current_stock <= p.min_stock ? "Menipis" : "Cukup";
+      return [
+        p.sku,
+        p.name,
+        p.category,
+        p.current_stock,
+        p.base_unit,
+        p.min_stock,
+        cond,
+        p.notes || "",
+      ];
+    });
+
+    const todayStr = getTodayWIB();
+    downloadCsvFile(`stok-komoditas-kopdes-${todayStr}.csv`, [headers, ...rows]);
+    showToast("success", "Ekspor Berhasil", "Berkas CSV stok fisik telah diunduh.");
+  };
 
   return (
     <div className="space-y-6">
@@ -115,17 +150,19 @@ export function ProductionStockPage() {
       <Card>
         <CardContent className="space-y-4 py-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="relative w-full sm:max-w-sm">
+            <div className="w-full sm:max-w-sm">
               <label htmlFor="stock-search" className="mb-1.5 block text-sm font-semibold">Cari barang</label>
-              <Search aria-hidden="true" className="pointer-events-none absolute bottom-3.5 left-3.5 h-4 w-4 text-slate-400" />
-              <input
-                id="stock-search"
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Nama, SKU, atau kategori"
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
-              />
+              <div className="relative flex items-center">
+                <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400" />
+                <input
+                  id="stock-search"
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Nama, SKU, atau kategori"
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
+                />
+              </div>
             </div>
             <div className="w-full sm:w-48">
               <label htmlFor="stock-condition" className="mb-1.5 block text-sm font-semibold">Kondisi stok</label>
@@ -143,9 +180,34 @@ export function ProductionStockPage() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-500 dark:text-slate-400" aria-live="polite">
-            Menampilkan {visibleProducts.length} dari {data.length} komoditas barang.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400" aria-live="polite">
+              <span>
+                Menampilkan <strong>{visibleProducts.length}</strong> dari {data.length} komoditas barang.
+              </span>
+              {isFilterActive && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetFilters}
+                  className="h-7 px-2 text-xs text-rose-600 hover:text-rose-700 gap-1"
+                >
+                  <RotateCcw className="h-3 w-3" /> Reset Filter
+                </Button>
+              )}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={visibleProducts.length === 0}
+              className="min-h-11 sm:min-h-9 gap-1.5 font-bold text-xs"
+            >
+              <Download className="h-3.5 w-3.5 text-primary-container" />
+              Ekspor CSV ({visibleProducts.length})
+            </Button>
+          </div>
 
           {data.length === 0 ? (
             <p className="rounded-xl bg-slate-50 p-6 text-sm text-slate-600 dark:bg-slate-800/40 dark:text-slate-300">

@@ -53,7 +53,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         {/* Kontainer Utama Dua Kolom: Sidebar Sticky Kiri + Kolom Kanan */}
         <div className="flex flex-1 overflow-hidden min-h-0 relative">
           {/* Sidebar Desktop (>=1024px) */}
-          <aside className="hidden lg:flex flex-col h-full w-64 xl:w-72 shrink-0 z-20">
+          <aside className="hidden xl:flex flex-col h-full w-72 shrink-0 z-20">
             <Sidebar />
           </aside>
 

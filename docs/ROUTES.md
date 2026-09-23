@@ -37,9 +37,9 @@ Dokumen ini memetakan arsitektur rute, subhalaman, kebutuhan status bisnis organ
 ### D. Sistem & Bantuan
 | Rute | Nama Layar | Peran Berizin | Keterangan & Komponen Aksi |
 |---|---|---|---|
-| `/pengaturan` | Pengaturan Sistem | Admin, Manajer | Pengaturan profil lembaga koperasi dan tempat konfigurasi integrasi API kasir eksternal di masa depan. |
-| `/bantuan` | Panduan Sistem | Semua Pengguna Login | Petunjuk pengoperasian dan SOP tata kelola manajer dalam bahasa Indonesia sederhana. |
-| `/login` | Portal Masuk | Publik / Tamu | Form masuk dengan Supabase Auth. |
+| `/pengaturan` | Pengaturan Sistem | Manajer | Pengaturan profil lembaga koperasi permanen (Supabase), cadangan & pemulihan sistem (Backup/Restore JSON). |
+| `/bantuan` | Panduan Sistem | Manajer | Petunjuk pengoperasian dan SOP tata kelola manajer dalam bahasa Indonesia sederhana. |
+| `/login` | Portal Masuk (Dialihkan) | - | Otomatis dialihkan ke `/dashboard` (aplikasi pribadi tanpa login). |
 
 ---
 

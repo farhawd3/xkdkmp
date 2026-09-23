@@ -9,11 +9,11 @@ export const APP_CONFIG = {
 };
 
 export const CURRENT_USER: UserProfile = {
-  id: "",
-  name: "Tamu Sistem",
-  email: "",
-  role: "anggota",
-  unitName: "Akses Belum Masuk",
+  id: "manager-abdul-halim",
+  name: "Abdul Halim",
+  email: "manajer@kopdes-ladanglaweh.id",
+  role: "manajer",
+  unitName: "Manajemen Koperasi",
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {

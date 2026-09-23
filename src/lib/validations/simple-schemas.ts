@@ -93,3 +93,35 @@ export const SimpleMemberSchema = z.object({
   join_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   notes: z.string().trim().optional().default(""),
 });
+
+export const SimpleMemberUpdateSchema = SimpleMemberSchema.pick({
+  full_name: true, phone: true, status: true, notes: true,
+}).partial().extend({
+  id: z.string().uuid("ID anggota tidak valid"),
+  is_archived: z.boolean().optional(),
+}).strict().refine((data) => Object.keys(data).some((key) => key !== "id"), {
+  message: "Pilih data anggota yang akan diperbarui.",
+});
+
+// ------------------------------------------------------------------------------
+// SKEMA PROFIL ORGANISASI & KELEMBAGAAN (organization_profile)
+// ------------------------------------------------------------------------------
+export const OrganizationProfileUpdateSchema = z.object({
+  display_name: z.string().trim().min(3, "Nama tampilan koperasi minimal 3 karakter").max(150),
+  legal_name: z.string().trim().max(200).nullable().optional(),
+  business_status: z.enum(["persiapan", "siap_buka", "aktif", "ditutup_sementara"]).default("persiapan"),
+  manager_name: z.string().trim().min(2, "Nama manajer/pengelola minimal 2 karakter").max(150),
+  manager_title: z.string().trim().min(2, "Jabatan manajer minimal 2 karakter").max(100).default("Manajer Koperasi"),
+  region: z.string().trim().min(3, "Wilayah/domisili minimal 3 karakter").max(150),
+  full_address: z.string().trim().nullable().optional(),
+  fiscal_year: z.string().trim().min(4, "Tahun buku minimal 4 karakter").max(20).default("2026/2027"),
+  operational_target_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal harus YYYY-MM-DD").nullable().optional(),
+  phone: z.string().trim().nullable().optional(),
+  email: z.string().trim().email("Format email tidak valid").nullable().optional().or(z.literal("")),
+  bank_name: z.string().trim().nullable().optional(),
+  bank_account_number: z.string().trim().nullable().optional(),
+  bank_account_holder: z.string().trim().nullable().optional(),
+  notes: z.string().trim().nullable().optional(),
+});
+
+export type OrganizationProfileUpdateInput = z.infer<typeof OrganizationProfileUpdateSchema>;

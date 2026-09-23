@@ -2,7 +2,205 @@
 
 Catatan perubahan kronologis proyek untuk pelacakan lintas agen AI dan pengembang.
 
+## [Rancangan lanjutan — prompt fitur manajer] — 23 September 2026
+
+- Menulis prompt implementasi rinci `prompts/91_Pengembangan_Fitur_Manajer_Lanjutan.md`: usulan dua menu, alur harian/bulanan, fitur berbasis data saat ini dan fitur yang memerlukan database, aturan hitung, UX, uji, keamanan, prioritas dan pertanyaan bisnis.
+- Menautkan prompt dari roadmap, handoff, design system dan status. Tidak ada fitur atau perubahan Supabase yang dijalankan dalam langkah dokumentasi ini.
+
+## [v2.9.1 — perapian dashboard dan peta fitur] — 23 September 2026
+
+- Dashboard produksi: header lebih padat dan tidak berulang; grafik tujuh hari punya pesan kosong jujur saat tidak ada omset tercatat.
+- Menambah `docs/ROADMAP_MANAJER_BERIKUTNYA.md`: prioritas keamanan data, delapan rancangan fitur manajer, sumber data, syarat selesai, panduan visual terang/gelap, dan instruksi migrasi AI. Tidak ada fitur rancangan yang diklaim sudah dibangun.
+- Supabase dan data nyata tidak diubah. Setelah perubahan: 165 tes lulus, typecheck bersih, build 33 rute; tampilan dashboard desktop/tablet terang-gelap diperiksa. Batas visual lain dicatat pada STATUS.md.
+
+## [v2.9 — penyegaran manajer, audit bertahap] — 23 September 2026
+
+- Verifikasi akhir 165/165 tes, typecheck bersih, build 33 rute. Pemeriksaan browser tablet 1024 px memastikan header/form pemantauan dan pilihan gerai tidak bertumpuk setelah breakpoint diperbaiki; halaman gerai/keuangan dapat dibuka, anggota/stok menunjukkan galat cloud yang sudah diidentifikasi.
+- Pesan galat stok disesuaikan untuk aplikasi pribadi tanpa login. Sidebar, header dan form pemantauan memberi ruang penuh pada tablet; nilai pilihan dropdown panjang tidak membungkus baris.
+- Audit HTTP nyata menemukan anggota/stok 500 akibat skema cloud lama; OpenAPI read-only mengonfirmasi perbedaan kolom. Perbaikan Supabase belum dijalankan, menunggu konfirmasi; rincian migrasi yang perlu ditinjau ada di STATUS.md.
+- Draf SQL penyelarasan tersedia di `supabase/drafts/20260923000009_align_members_products.sql`, di luar migrasi aktif. Belum dieksekusi/diuji PostgreSQL; syarat persetujuan dan backup tertulis di HANDOFF.md.
+- Footer tetap terlihat pada modal tugas dan konversi kendala; tombol submit tetap terhubung ke formulir melalui atribut `form`, dilindungi status menyimpan.
+- Pemeriksaan browser menemukan ikon tanggal ganda dan lebar isian kurang; `DateInput` kini memakai satu picker native, dan tanggal modal tugas mendapat baris penuh.
+
+- Dashboard ringkas: indikator manajer, filter tindak lanjut terdeduplikasi, rincian omset harian, CSV ringkasan, identitas kustom, waktu pembacaan WIB.
+- Header halaman, picker dropdown progressive enhancement, kontras hover dark mode dan kalender tablet diperbarui.
+- Memperbaiki dua alur rusak: pembuatan agenda kalender mengirim ID kosong/PATCH; konversi kendala mengirim status tidak sah dan menurunkan prioritas mendesak.
+- Kepatuhan gerai aktif dan batas tanggal bulan dashboard diperbaiki; galat profil/rekap/tugas tidak disamarkan. Validasi perubahan anggota serta tanggal WIB diperkuat. Target gerai baru tidak diisi uang rekaan.
+- Akses lokal bind 127.0.0.1; tidak mempercayai header IP klien; tidak menerima kunci lewat URL. LAN memerlukan pengaturan privat tersendiri.
+- Baseline 153 tes; checkpoint baru 165 tes lulus dan typecheck lulus. Hasil build/visual final serta keterbatasan dicatat di STATUS.md.
+- Tidak ada migrasi atau penulisan data Supabase. Restore non-atomik dan pagination menjadi pekerjaan keselamatan berikutnya, bukan diklaim selesai.
+
+## [v2.8.0] — 23 September 2026 (Tahap 6 — Penyatuan Model Data Kanonikal, Modularisasi Komponen Ramping & Pembersihan Akses Cloud)
+
+### ✅ Ditambahkan & Ditingkatkan
+- **Penyatuan Model Data Kanonikal (`src/types/models.ts`)**:
+  - Menyediakan kontrak tipe data terpusat dan bersih yang memetakan langsung ke 7 tabel PostgreSQL Supabase: `TaskItem`, `BusinessUnit`, `DailyReportRecord`, `MemberRecord`, `CatalogProduct`, dan `UnitOption`.
+  - Mengeliminasi duplikasi interface lokal di berbagai halaman dan menyelaraskannya dengan skema validasi Zod (`src/lib/validations/simple-schemas.ts`).
+  - Mengekspor ulang model di `src/types/index.ts` untuk kompatibilitas penuh kode eksisting.
+- **Pembersihan Mock Warisan & Integrasi Cloud Riil**:
+  - `/unit-usaha/[id]`: Menghapus pemanggilan mock `preparationRepository`, membaca langsung data gerai via `GET /api/units?id=...`, dan memperbarui nama/target/status melalui `PATCH /api/units`.
+  - `/anggota/[id]`: Menghapus pemanggilan mock `preparationRepository`, membaca langsung data warga via `GET /api/members?id=...`, mendukung pengubahan status "Aktif" / "Calon" dan aksi pengarsipan data melalui `PATCH /api/members`.
+  - `GET /api/units` dan `GET /api/members`: Mendukung parameter kueri `?id=...` untuk pembacaan tunggal yang efisien.
+- **Modularisasi Arsitektur Halaman Monolitik (>500-1100 baris)**:
+  - `/monitoring` (1.148 baris $\to$ 157 baris koordinator):
+    - `src/components/monitoring/MonitoringReportForm.tsx`: Form input rekap harian gerai dengan kalkulasi otomatis.
+    - `src/components/monitoring/MonitoringHistoryTable.tsx`: Tabel riwayat laporan, filter, dan ekspor CSV.
+    - `src/components/monitoring/MonitoringPeriodicSummary.tsx`: Agregasi periodik & tata letak cetak resmi A4.
+    - `src/components/monitoring/MonitoringTaskModal.tsx`: Modal interaktif konversi kendala lapangan menjadi tugas.
+  - `/pekerjaan` (860 baris $\to$ 348 baris koordinator):
+    - `src/components/pekerjaan/TaskFormModal.tsx`: Form dialog pembuatan & penyuntingan tugas.
+    - `src/components/pekerjaan/TaskList.tsx`: Komponen daftar tugas terfilter dengan aksi status cepat 1-klik.
+    - `src/components/pekerjaan/TaskCalendarView.tsx`: Tampilan kalender visual agenda kerja.
+  - `/anggota` (874 baris $\to$ 332 baris koordinator):
+    - `src/components/anggota/MemberAddModal.tsx`: Form pendaftaran warga baru langsung ke Supabase.
+    - `src/components/anggota/MemberImportModal.tsx`: Modal impor data massal CSV langsung ke Supabase.
+  - `/stok` (973 baris $\to$ 10 baris koordinator):
+    - `src/app/stok/PreparationStockPage.tsx`: Ekstraksi tampilan arsip fase persiapan.
+    - Halaman utama `/stok` bertindak sebagai pemilih cerdas ke `ProductionStockPage` (mode produksi aktif).
+- **Banner Edukasi Simulasi Jurnal Keuangan (`/keuangan/jurnal`)**:
+  - Menambahkan banner informatif amber yang memperjelas bahwa halaman jurnal keuangan saat ini merupakan media simulasi pembukuan double-entry edukatif mandiri, tanpa memanipulasi data riil operasional gerai.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: **153/153 Lulus 100%** (15 berkas uji termasuk 11 tes baru di `tests/phase11-refactor-quality.test.ts`).
+- **TypeScript Typecheck**: 0 galat (`tsc --noEmit` bersih).
+- **Next.js Production Build**: 33 rute berhasil dikompilasi optimal tanpa komplain.
+
 ---
+
+## [v2.7.0] — 23 September 2026 (Tahap 5 — Fitur Fokus Manajer, Filter Terpadu, Cetak Laporan & Backup/Restore Sistem)
+
+### ✅ Ditambahkan & Ditingkatkan
+- **Panel "Fokus & Tindakan Hari Ini" di Dashboard Eksekutif (`/dashboard`)**:
+  - Menyaring dan merangkum isu operasional mendesak hari ini ke dalam 3 pilar prioritas:
+    1. *Tugas Jatuh Tempo / Lewat*: Tugas berstatus belum selesai dengan tenggat hari ini atau telah terlewat (WIB) berbadge merah, dengan tautan langsung ke `/pekerjaan`.
+    2. *Gerai Belum Rekap*: Gerai berstatus aktif yang belum memasukkan laporan harian per tanggal hari ini, dengan tautan langsung ke form input `/monitoring`.
+    3. *Stok Menipis / Kritis*: Komoditas barang dengan jumlah stok $\le$ batas minimum atau habis (0 unit), dengan tautan langsung ke `/stok`.
+  - Jika seluruh indikator aman, panel menampilkan status hijau tenang (*"Seluruh Operasional Terkendali"*).
+- **Standarisasi Filter, Pencarian, & Ekspor CSV Aman**:
+  - Filter seragam (Periode/Bulan, Status, Unit Usaha, Pencarian Teks) di `/monitoring`, `/pekerjaan`, dan `/stok`.
+  - Penghitung hasil aktif (misal: *"Menampilkan 12 dari 18 laporan"*).
+  - Tombol *"Reset Filter"* satu klik saat filter aktif mempersempit data.
+  - Utilitas `downloadCsvFile()` di `src/lib/csv.ts` dengan penambahan UTF-8 BOM untuk pembacaan akurat di Microsoft Excel dan netralisasi otomatis injeksi formula spreadsheet (`=`, `+`, `-`, `@`, `\t`, `\r`).
+- **Tab Ringkasan Berkala & Format Cetak Resmi di `/monitoring`**:
+  - Tab 3 *"Ringkasan & Cetak"* yang mengagregasikan total omset, kas keluar, estimasi laba kotor, dan setoran kas berdasarkan filter rentang tanggal.
+  - Pemecahan agregat performa per gerai usaha (omset, biaya, estimasi laba, jumlah hari beroperasi).
+  - Tampilan cetak resmi (`window.print()`) dengan kop surat koperasi otomatis dari profil organisasi, tabel ringkas monokrom kontras tinggi, kolom tanda tangan manajer, dan disclaimer operasional resmi.
+- **Konversi Kendala Lapangan Menjadi Tugas Operasional ("Jadikan Kendala sebagai Tugas")**:
+  - Tombol aksi cepat *"Jadikan Tugas"* pada setiap baris laporan harian yang memiliki catatan kendala di `/monitoring`.
+  - Modal interaktif terisi otomatis dengan konteks: judul tugas deskriptif, unit usaha terkait, PIC default unit, prioritas "Tinggi", tenggat otomatis besok hari (WIB), dan detail kendala.
+  - Deteksi dan peringatan cerdas jika tugas serupa untuk kendala gerai tersebut sudah pernah dibuat sebelumnya.
+- **Pencadangan & Pemulihan Sistem Lengkap (JSON Backup/Restore) di `/pengaturan`**:
+  - Endpoint terproteksi `/api/backup`:
+    - `GET`: Mengunduh arsip komprehensif 6 entitas data (`organization_profile`, `business_units`, `tasks`, `products`, `members`, `unit_daily_reports`) dalam format JSON terstruktur lengkap dengan metadata versi dan stempel waktu ISO.
+    - `POST`: Memvalidasi integritas file cadangan via Zod (`BackupPayloadSchema`) dan melakukan pemulihan/upsert aman ke Supabase.
+  - Antarmuka pencadangan di `/pengaturan` dengan panduan edukatif perbedaan CSV vs JSON Backup, inspeksi ringkasan berkas sebelum dipulihkan, dan pelindung modal konfirmasi ganda `ConfirmDialog`.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: 142/142 lulus 100% (14 berkas uji termasuk 7 tes komprehensif baru di `tests/phase11-manager-focus.test.ts`).
+- **TypeScript Typecheck**: 0 galat (`tsc --noEmit` sukses).
+- **Next.js Production Build**: 33 rute sukses terkompilasi optimal (termasuk rute baru `/api/backup`).
+
+---
+
+## [v2.6.0] — 23 September 2026 (Tahap 4 — Penyempurnaan Desain Seluruh Halaman, Kalender Modular & ConfirmDialog)
+
+### ✅ Ditambahkan & Disempurnakan
+- **Dialog Konfirmasi Modal Terstandar (`ConfirmDialog`)**:
+  - Menghapus pemanggilan `confirm(...)` browser pada penghapusan tugas di `/pekerjaan`.
+  - Mengintegrasikan `ConfirmDialog` modal interaktif dengan penjelasan risiko, nama tugas yang akan dihapus, tombol batal, dan tombol destruktif konfirmasi ganda.
+  - Seluruh basis kode kini bersih dari `window.confirm()`.
+- **Komponen Kalender Modular (`TaskCalendarView`)**:
+  - Memisahkan kalender tugas ke komponen tersendiri `src/components/pekerjaan/TaskCalendarView.tsx`.
+  - Mengenkapsulasi kontrol bulan/tahun, tombol "Hari Ini", navigasi panah kiri/kanan, dan pemetaan agenda per tanggal.
+  - Perbedaan visual kontras antara "Hari Ini" (lingkaran biru langit) dan "Tanggal Terpilih" (lingkaran aksen rose `#A64768` ber-ring sorotan).
+- **Bilah Pencarian & Filter Terpadu**:
+  - Menempatkan kartu filter (Unit Usaha, Status, Prioritas, Pencarian) di atas tab switcher sehingga berlaku serentak pada tampilan Daftar Tugas maupun Kalender Agenda.
+- **Panel Khusus Tugas Fleksibel (Tanpa Tenggat)**:
+  - Tugas yang belum memiliki tanggal tenggat ditampilkan dalam panel tersendiri di bawah kalender ("Tugas Fleksibel"), lengkap dengan tombol cepat "Atur Tanggal".
+- **Standardisasi Target Sentuh Tablet & Dark Mode**:
+  - Menyesuaikan ukuran tombol aksi di `/pekerjaan`, `/unit-usaha`, `/anggota`, dan `/anggota/[id]` ke standar minimal 44–48 px (`min-h-11`).
+  - Menyelaraskan kontras teks dan kartu pada tema gelap `#1D2533` dan `#252F40`.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: 135/135 lulus 100% (13 berkas uji termasuk 9 tes baru di `tests/phase11-visual-design.test.tsx`).
+- **TypeScript Typecheck**: 0 galat (`tsc --noEmit` sukses).
+- **Next.js Production Build**: 32 rute sukses terkompilasi optimal.
+
+---
+
+## [v2.5.0] — 23 September 2026 (Tahap 3 — Kustomisasi Profil Koperasi Permanen di Database Supabase)
+
+### ✅ Ditambahkan & Dihubungkan
+- **Skema & Migrasi SQL `organization_profile`**: Berkas migrasi `supabase/migrations/20260923000008_organization_profile.sql` meresmikan tabel ke-7 dengan RLS dan nilai awal terpercaya untuk identitas koperasi, domisili/nagari, manajer, tahun buku, dan rekening bank.
+- **Validasi Zod Server (`OrganizationProfileUpdateSchema`)**: Menambahkan skema validasi masukan profil di `src/lib/validations/simple-schemas.ts` yang memvalidasi nama tampilan, nama manajer, status bisnis, format tanggal ISO, serta email opsional.
+- **API Endpoint Terproteksi `/api/organization/profile`**:
+  - `GET`: Mengambil data profil organisasi secara cepat dan aman dari Supabase, atau fallback nilai aman jika tabel masih kosong.
+  - `PATCH`: Memvalidasi payload via Zod, memblokir akses publik tanpa token privat (status 403), dan melakukan upsert (`insert`/`update`) data permanen ke PostgreSQL Supabase.
+- **Penyedia Konteks Organisasi Global (`OrganizationContext`)**: Membungkus antarmuka aplikasi dengan `OrganizationProvider` di `src/app/layout.tsx`, menyediakan akses instan data profil ke seluruh halaman melalui hook `useOrganizationProfile()`.
+- **Integrasi Komponen Header & Sidebar**:
+  - `Sidebar.tsx`: Menampilkan nama koperasi dinamis, inisial adaptif (misal: "KP" / "KL"), nama manajer, dan jabatan yang bersumber langsung dari database, menggantikan teks hardcoded.
+- **Antarmuka Pengaturan Terintegrasi (`/pengaturan`)**:
+  - Form terhubung langsung ke API `/api/organization/profile`.
+  - Dilengkapi dirty-state detection (penanda belum disimpan), tombol Batal untuk mereset perubahan, tombol Simpan dengan indikator loading, dan notifikasi konfirmasi.
+  - Preferensi tema (Terang / Gelap / Ikuti perangkat) tetap tersimpan di penyimpanan lokal per perangkat.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: 126/126 lulus 100% (12 berkas uji termasuk 16 tes baru di `tests/phase11-organization-profile.test.ts`).
+- **TypeScript Typecheck**: 0 galat (`tsc --noEmit` sukses).
+- **Next.js Production Build**: 32 rute sukses terkompilasi optimal (termasuk rute baru `/api/organization/profile`).
+
+---
+
+## [v2.4.0] — 23 September 2026 (Tahap 2 — Kejujuran Data & Audit Perhitungan Finansial/Operasional)
+
+### ✅ Diperbaiki & Diaudit
+- **Pembersihan Konstanta Fiktif**: Menghapus angka rekaan (kas bank Rp25jt, aset tetap Rp15jt, valuasi persediaan Rp20rb/unit) di `/api/finance/summary`. Pos yang belum dibukukan kini berstatus jujur *"Belum Terhubung"* atau *"Belum Dinilai"*.
+- **Penanganan Galat Fail-Fast**: Endpoint `/api/finance/summary` dan `/api/dashboard/executive` memvalidasi hasil kueri database Supabase dan mengembalikan HTTP 500 jika terjadi galat, tanpa menyamarkannya menjadi angka Rp 0.
+- **Integritas Nilai Nol & Laba Negatif**: Nilai setoran kas (`cash_in_hand`) bernilai Rp 0 dipertahankan (menghilangkan bug operator `||`), dan kalkulasi laba/selisih operasional mendukung nilai negatif jika terjadi kerugian/defisit.
+- **Zona Waktu Bisnis Asia/Jakarta (WIB)**: Menambahkan modul utilitas `getTodayWIB()`, `getCurrentYearMonthWIB()`, dan `getDaysAgoWIB()`. Filter tanggal dan grafik 7 hari sinkron dengan waktu operasional WIB.
+- **Evaluasi Kepatuhan Lapor Gerai**: Kepatuhan pelaporan harian hanya mewajibkan gerai dengan status `aktif`. Gerai dalam tahap `rencana` atau `persiapan` tidak dianggap terlambat.
+- **Pembersihan Kueri Warisan**: Memperbarui `/api/dashboard/summary` agar tidak merujuk tabel `purchase_orders` yang sudah dihapus, melainkan tabel `tasks` pada 7 tabel inti.
+- **Transparansi Visual Halaman Keuangan & Laporan**: Memperbarui antarmuka `/keuangan` dan `/laporan` dengan badge neraca sementara (Mode Persiapan 2027), label *"Selisih Omset & Pengeluaran Tercatat"*, serta banner edukatif simulasi SHU yang belum disahkan AD/ART.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: 110/110 lulus 100% (11 berkas uji termasuk `tests/phase11-finance-audit.test.ts`).
+- **TypeScript Typecheck**: 0 galat (exit code 0).
+- **Next.js Production Build**: 31 rute sukses terkompilasi optimal.
+
+---
+
+## [v2.3.0] — 23 September 2026 (Tahap 1 — Aplikasi Pribadi Manajer Tanpa Login dengan Batas Akses Aman)
+
+### ✅ Ditransformasikan
+- **Aplikasi Pribadi Manajer**: Mengubah aplikasi menjadi aplikasi pribadi untuk Abdul Halim tanpa fitur login dan tanpa akun pengguna.
+- **Rute Langsung**: Halaman root (`/`) dan seluruh tautan autentikasi lama (`/login`, `/lupa-password`, `/reset-password`, `/forbidden`, `/auth/*`) langsung mengarah ke `/dashboard`.
+- **Pembersihan Antarmuka**: Tombol Masuk/Keluar dihapus dari Header dan Sidebar. Sidebar menampilkan profil tetap: **Abdul Halim** (*Manajer Koperasi*, inisial AH) dengan lencana "Pribadi". Header menampilkan status "Aplikasi Pribadi".
+- **Batas Akses Privat & Anti-CSRF**: Menambahkan modul `src/lib/security/private-access.ts` yang mengizinkan akses lokal (loopback komputer pribadi dan jaringan LAN privat Wi-Fi nagari), menolak mutasi lintas-domain (CSRF), serta menolak akses publik jika kunci privat `KOPDES_PRIVATE_ACCESS_KEY` belum dikonfigurasi.
+- **Perbaikan Database `created_by`**: Nilai `created_by` pada pencatatan rekapitulasi harian gerai kini diset `null` sesuai skema PostgreSQL nullable, menghilangkan potensi galat sintaks UUID.
+- **Keutuhan Data Anggota**: Seluruh data anggota koperasi (`members`) dan gerai (`business_units`) tetap utuh 100%.
+
+### 🔍 Diverifikasi
+- **Vitest Unit Test**: 100/100 lulus 100% (10 berkas uji).
+- **TypeScript Typecheck**: 0 galat (exit code 0).
+- **Next.js Production Build**: 31 rute sukses terkompilasi optimal.
+
+---
+
+## [v2.2.1] — 23 September 2026 (Akses Lokal Tanpa Login)
+
+### ✅ Ditambahkan
+- Sakelar `NEXT_PUBLIC_KOPDES_LOCAL_AUTH_BYPASS` khusus mode development.
+- Identitas lokal Abdul Halim dengan peran Manajer/Admin untuk pemeriksaan halaman internal.
+- Banner yang menjelaskan bahwa login sedang dinonaktifkan pada pengembangan lokal.
+
+### 🔐 Pengaman
+- Sakelar selalu tidak aktif bila `NODE_ENV` bukan `development`; build dan deployment produksi tetap mewajibkan Supabase Auth.
+- Service Role tetap server-only dan hanya dipakai pada mode lokal bila sudah tersedia.
+- Ditambahkan tes yang memastikan mode bypass tidak aktif di lingkungan test/production.
+
+### 🔍 Diverifikasi
+- `/dashboard` dan `/api/dashboard/executive` merespons 200 tanpa sesi login pada mode development.
+- 96/96 unit test lulus, TypeScript tanpa galat, dan build produksi berhasil.
 
 ## [v2.2.0] — 23 September 2026 (Penyempurnaan Pengalaman Manajer)
 

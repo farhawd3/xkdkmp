@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
+import { getTodayWIB, getCurrentYearMonthWIB, getDaysAgoWIB } from "@/lib/utils";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const supabase = await createClient();
-    const now = new Date();
-    const today = now.toISOString().split("T")[0];
-    const currentYearMonth = today.substring(0, 7);
 
-    // Hitung tanggal 7 hari ke belakang untuk tren harian
-    const sevenDaysAgo = new Date(now);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
+    // Gunakan zona waktu bisnis Asia/Jakarta (WIB) untuk semua parameter tanggal
+    const today = getTodayWIB();
+    const currentYearMonth = getCurrentYearMonthWIB();
+    const sevenDaysAgoStr = getDaysAgoWIB(6);
 
     const [
       unitsRes,
@@ -30,9 +30,11 @@ export async function GET() {
       weeklyReportsRes,
       orgProfileRes,
       reportedUnitsRes,
+      productsRes,
+      overdueTasksRes,
     ] = await Promise.all([
       supabase.from("business_units").select("id", { count: "exact", head: true }),
-      supabase.from("business_units").select("id, name"),
+      supabase.from("business_units").select("id, name, status"),
       supabase.from("business_units").select("id", { count: "exact", head: true }).eq("status", "aktif"),
       supabase.from("members").select("id", { count: "exact", head: true }).eq("is_archived", false),
       supabase.from("tasks").select("id", { count: "exact", head: true }).neq("status", "selesai"),
@@ -45,8 +47,8 @@ export async function GET() {
         .order("due_date", { ascending: true, nullsFirst: false })
         .limit(5),
       supabase.from("unit_daily_reports").select("id", { count: "exact", head: true }).eq("report_date", today),
-      supabase.from("unit_daily_reports").select("gross_revenue, operational_expenses, net_profit").gte("report_date", `${currentYearMonth}-01`),
-      // Data tren 7 hari: omset per hari
+      supabase.from("unit_daily_reports").select("gross_revenue, operational_expenses, net_profit").gte("report_date", `${currentYearMonth}-01`).lte("report_date", today),
+      // Data tren 7 hari WIB: omset per hari
       supabase.from("unit_daily_reports")
         .select("report_date, gross_revenue, operational_expenses, net_profit")
         .gte("report_date", sevenDaysAgoStr)
@@ -55,7 +57,40 @@ export async function GET() {
       supabase.from("organization_profile").select("business_status").limit(1).maybeSingle(),
       // Gerai yang sudah lapor hari ini
       supabase.from("unit_daily_reports").select("unit_id").eq("report_date", today),
+      // Komoditas barang untuk deteksi stok menipis/habis
+      supabase.from("products").select("id, sku, name, current_stock, min_stock, base_unit").eq("is_archived", false),
+      // Tugas aktif dengan tenggat <= hari ini (terlambat / jatuh tempo hari ini)
+      supabase.from("tasks")
+        .select("id, title, priority, status, due_date, pic_name, business_units(name)")
+        .neq("status", "selesai")
+        .not("due_date", "is", null)
+        .lte("due_date", today)
+        .order("due_date", { ascending: true }),
     ]);
+
+    // Pemeriksaan galat database secara fail-fast
+    const queryError =
+      unitsRes.error ||
+      allUnitsRes.error ||
+      activeUnitsRes.error ||
+      membersRes.error ||
+      tasksRes.error ||
+      urgentTasksRes.error ||
+      urgentTaskListRes.error ||
+      todayReportsRes.error ||
+      monthReportsRes.error ||
+      weeklyReportsRes.error ||
+      orgProfileRes.error ||
+      reportedUnitsRes.error ||
+      productsRes.error ||
+      overdueTasksRes.error;
+
+    if (queryError) {
+      return NextResponse.json(
+        { error: "Gagal memuat ringkasan eksekutif dari database: " + queryError.message },
+        { status: 500 }
+      );
+    }
 
     let monthRevenue = 0;
     let monthExpenses = 0;
@@ -69,10 +104,8 @@ export async function GET() {
       }
     }
 
-    // Bangun data tren 7 hari (agregasi per tanggal)
-    const dailyTrend: { date: string; revenue: number; expenses: number; profit: number }[] = [];
+    // Bangun data tren 7 hari (agregasi per tanggal WIB)
     const trendMap = new Map<string, { revenue: number; expenses: number; profit: number }>();
-    
     if (weeklyReportsRes.data && Array.isArray(weeklyReportsRes.data)) {
       for (const row of weeklyReportsRes.data) {
         const d = row.report_date;
@@ -83,26 +116,64 @@ export async function GET() {
         trendMap.set(d, existing);
       }
     }
-    
-    // Isi 7 hari terakhir (termasuk hari tanpa data = 0)
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(sevenDaysAgo);
-      d.setDate(d.getDate() + i);
-      const dateStr = d.toISOString().split("T")[0];
+
+    // Susun array 7 hari terakhir secara kronologis
+    const dailyTrend: { date: string; revenue: number; expenses: number; profit: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const dateStr = getDaysAgoWIB(i);
       const entry = trendMap.get(dateStr) || { revenue: 0, expenses: 0, profit: 0 };
       dailyTrend.push({ date: dateStr, ...entry });
     }
 
-    // Hitung gerai yang BELUM lapor hari ini
+    // Hitung gerai wajib lapor yang BELUM lapor hari ini
     const reportedUnitIds = new Set(
       (reportedUnitsRes.data || []).map((r: { unit_id: string }) => r.unit_id)
     );
     const allUnits = allUnitsRes.data || [];
-    const unreportedUnits = allUnits
-      .filter((u: { id: string; name: string }) => !reportedUnitIds.has(u.id))
+    const activeUnits = allUnits.filter((u: { status?: string }) => u.status === "aktif");
+
+    const unreportedUnits = activeUnits
+      .filter((u: { id: string }) => !reportedUnitIds.has(u.id))
       .map((u: { id: string; name: string }) => ({ id: u.id, name: u.name }));
 
+    // Analisis Stok Menipis / Habis (Fokus Hari Ini)
+    const allProducts = (productsRes.data || []) as Array<{
+      id: string;
+      sku: string;
+      name: string;
+      current_stock: number;
+      min_stock: number;
+      base_unit: string;
+    }>;
+    const lowStockItems = allProducts.filter(
+      (p) => Number(p.current_stock) <= Number(p.min_stock)
+    );
+    const lowStockCount = lowStockItems.length;
+
+    // Analisis Tugas Terlambat & Jatuh Tempo Hari Ini (Fokus Hari Ini)
+    type TaskItemType = {
+      id: string;
+      title: string;
+      priority: string;
+      status: string;
+      due_date: string | null;
+      pic_name: string;
+      business_units?: { name: string } | null;
+    };
+    const overdueTaskList: TaskItemType[] = [];
+    const todayDueTaskList: TaskItemType[] = [];
+
+    for (const task of ((overdueTasksRes.data || []) as unknown as TaskItemType[])) {
+      if (task.due_date && task.due_date < today) {
+        overdueTaskList.push(task);
+      } else if (task.due_date && task.due_date === today) {
+        todayDueTaskList.push(task);
+      }
+    }
+
     return NextResponse.json({
+      generatedAt: new Date().toISOString(),
+      businessDate: today,
       totalUnits: unitsRes.count ?? 0,
       activeUnits: activeUnitsRes.count ?? 0,
       totalMembers: membersRes.count ?? 0,
@@ -110,12 +181,20 @@ export async function GET() {
       urgentTasks: urgentTasksRes.count ?? 0,
       urgentTaskList: urgentTaskListRes.data ?? [],
       todayReports: todayReportsRes.count ?? 0,
+      activeReportedUnits: activeUnits.length - unreportedUnits.length,
       monthRevenue,
       monthExpenses,
       monthProfit,
       dailyTrend,
       unreportedUnits,
       businessStatus: orgProfileRes.data?.business_status ?? "persiapan",
+      // Fitur Fokus Hari Ini
+      lowStockCount,
+      lowStockItems: lowStockItems.slice(0, 5),
+      overdueTaskCount: overdueTaskList.length,
+      todayDueTaskCount: todayDueTaskList.length,
+      overdueTaskList: overdueTaskList.slice(0, 5),
+      todayDueTaskList: todayDueTaskList.slice(0, 5),
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Terjadi kesalahan sistem.";

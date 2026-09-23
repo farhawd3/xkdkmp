@@ -25,24 +25,11 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { formatRupiah } from "@/lib/utils";
 import { BusinessUnitStatus } from "@/lib/validations/simple-schemas";
-
-interface BusinessUnit {
-  id: string;
-  code: string;
-  name: string;
-  unit_type: string;
-  status: BusinessUnitStatus;
-  pic_name: string;
-  phone: string | null;
-  location: string | null;
-  monthly_target: string | number;
-  readiness_percentage: number;
-  operational_start_date: string | null;
-  notes: string | null;
-  created_at: string;
-}
+import { BusinessUnit } from "@/types/models";
+import { useOrganizationProfile } from "@/lib/OrganizationContext";
 
 export default function UnitUsahaPage() {
+  const { profile } = useOrganizationProfile();
   const [units, setUnits] = useState<BusinessUnit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,9 +46,9 @@ export default function UnitUsahaPage() {
   const [formPicName, setFormPicName] = useState("Abdul Halim");
   const [formPhone, setFormPhone] = useState("");
   const [formLocation, setFormLocation] = useState("Ladang Laweh");
-  const [formMonthlyTarget, setFormMonthlyTarget] = useState("25000000");
+  const [formMonthlyTarget, setFormMonthlyTarget] = useState("0");
   const [formStatus, setFormStatus] = useState<BusinessUnitStatus>("persiapan");
-  const [formReadiness, setFormReadiness] = useState("45");
+  const [formReadiness, setFormReadiness] = useState("0");
   const [formStartDate, setFormStartDate] = useState("");
   const [formNotes, setFormNotes] = useState("");
 
@@ -92,10 +79,10 @@ export default function UnitUsahaPage() {
     setFormCode(`GERAI-${String(units.length + 1).padStart(2, "0")}`);
     setFormName("");
     setFormUnitType("Sembako & Kebutuhan Pokok");
-    setFormPicName("Abdul Halim");
+    setFormPicName(profile.manager_name);
     setFormPhone("");
-    setFormLocation("Ladang Laweh");
-    setFormMonthlyTarget("20000000");
+    setFormLocation(profile.region);
+    setFormMonthlyTarget("0");
     setFormStatus("rencana");
     setFormReadiness("0");
     setFormStartDate("");
@@ -310,10 +297,10 @@ export default function UnitUsahaPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => openEditModal(unit)}
-                  className="min-h-9 flex items-center gap-1.5 text-xs font-semibold"
+                  className="min-h-11 px-4 flex items-center gap-1.5 text-xs font-semibold"
                 >
                   <Edit2 className="h-3.5 w-3.5" />
-                  <span>Edit & Sesuaikan Gerai</span>
+                  <span>Edit &amp; Sesuaikan Gerai</span>
                 </Button>
               </div>
             </div>

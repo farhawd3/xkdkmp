@@ -1,54 +1,48 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { createAdminClient } from "./admin";
 
 /**
- * Membuat Supabase Client untuk lingkungan Server (Server Components, Server Actions, Route Handlers).
- * Menghubungkan sesi autentikasi dengan cookie peramban secara asinkron (kompatibel Next.js 15).
+ * Membuat Supabase Client untuk lingkungan Server (Server Components, Route Handlers).
+ * Dalam aplikasi pribadi manajer, operasi server menggunakan koneksi server privat
+ * terproteksi dengan Service Role Key tanpa mengekspos kunci ke browser.
  */
 export async function createClient() {
-  const cookieStore = await cookies();
-
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return createServerClient(
-      supabaseUrl || "https://placeholder-kopdes.supabase.co",
-      supabaseAnonKey || "placeholder-key",
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Abaikan jika dipanggil dari Server Component murni
-            }
-          },
-        },
-      }
-    );
+  // Jika kredensial server lengkap, gunakan klien server privat
+  if (supabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return createAdminClient();
   }
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
+  let cookieStore;
+  try {
+    cookieStore = await cookies();
+  } catch {
+    // Fallback jika dipanggil di luar konteks request Next.js (misal dalam unit test)
+    cookieStore = null;
+  }
+
+  return createServerClient(
+    supabaseUrl || "https://placeholder-kopdes.supabase.co",
+    supabaseAnonKey || "placeholder-key",
+    {
+      cookies: {
+        getAll() {
+          return cookieStore ? cookieStore.getAll() : [];
+        },
+        setAll(cookiesToSet) {
+          if (!cookieStore) return;
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Abaikan jika dipanggil dari Server Component murni
+          }
+        },
       },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          );
-        } catch {
-          // The `setAll` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing user sessions.
-        }
-      },
-    },
-  });
+    }
+  );
 }

@@ -24,7 +24,8 @@ import { formatRupiah } from "@/lib/utils";
 interface FinanceData {
   bukuBesar: {
     kasOperasional: number;
-    kasBank: number;
+    kasBank: number | null;
+    kasBankStatus?: string;
     totalPenerimaan: number;
     totalPengeluaran: number;
     saldoKasTersedia: number;
@@ -108,8 +109,12 @@ export default function KeuanganPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase text-sky-700 dark:text-sky-400">Kas di Bank (Operasional)</p>
-                <h3 className="text-2xl font-bold text-sky-950 dark:text-sky-100 mt-1">{formatRupiah(bukuBesar.kasBank)}</h3>
-                <p className="text-xs text-sky-700/80 mt-1">Rekening resmi bank koperasi</p>
+                <h3 className="text-2xl font-bold text-sky-950 dark:text-sky-100 mt-1">
+                  {bukuBesar.kasBank !== null ? formatRupiah(bukuBesar.kasBank) : "Belum Terhubung"}
+                </h3>
+                <p className="text-xs text-sky-700/80 mt-1">
+                  {bukuBesar.kasBank !== null ? "Rekening resmi bank koperasi" : "Mode persiapan — belum ada rekening bank"}
+                </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-300">
                 <Building2 className="h-6 w-6" />
@@ -137,9 +142,9 @@ export default function KeuanganPage() {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase text-rose-700 dark:text-rose-400">Total Kas Likuid</p>
+                <p className="text-xs font-semibold uppercase text-rose-700 dark:text-rose-400">Total Kas Tunai Tercatat</p>
                 <h3 className="text-2xl font-bold text-rose-950 dark:text-rose-100 mt-1">{formatRupiah(bukuBesar.saldoKasTersedia)}</h3>
-                <p className="text-xs text-rose-700/80 mt-1">Total dana siap pakai</p>
+                <p className="text-xs text-rose-700/80 mt-1">Uang tunai nyata hasil operasional</p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-300">
                 <ArrowRightLeft className="h-6 w-6" />
@@ -218,9 +223,19 @@ export default function KeuanganPage() {
                     <td className="p-3 font-mono text-xs">1101</td>
                     <td className="p-3 font-semibold text-slate-900 dark:text-slate-100">Kas di Rekening Bank Operasional</td>
                     <td className="p-3 text-xs">Aset Lancar</td>
-                    <td className="p-3 text-right">{formatRupiah(bukuBesar.kasBank)}</td>
+                    <td className="p-3 text-right">
+                      {bukuBesar.kasBank !== null ? formatRupiah(bukuBesar.kasBank) : <span className="text-slate-400 italic">Belum terhubung</span>}
+                    </td>
                     <td className="p-3 text-right">Rp 0</td>
-                    <td className="p-3 text-right font-bold text-sky-700 dark:text-sky-300">{formatRupiah(bukuBesar.kasBank)}</td>
+                    <td className="p-3 text-right font-bold text-sky-700 dark:text-sky-300">
+                      {bukuBesar.kasBank !== null ? (
+                        formatRupiah(bukuBesar.kasBank)
+                      ) : (
+                        <span className="inline-block text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-900/50 dark:bg-amber-950/60 dark:text-amber-400">
+                          Menunggu Rekening Resmi
+                        </span>
+                      )}
+                    </td>
                   </tr>
                   <tr className="border-b border-slate-100 dark:border-slate-800">
                     <td className="p-3 font-mono text-xs">1102</td>

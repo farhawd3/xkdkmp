@@ -1,6 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
 import { UserRole } from "@/types";
-import { redirect } from "next/navigation";
 
 export interface AuthenticatedUser {
   id: string;
@@ -12,104 +10,43 @@ export interface AuthenticatedUser {
 }
 
 /**
- * Mengambil data sesi pengguna aktif langsung dari server Supabase dan basis data roles.
- * TIDAK mempercayai user_metadata klien untuk penentuan hak akses.
+ * Profil manajer aplikasi pribadi — Abdul Halim.
+ */
+export const PERSONAL_MANAGER_USER: AuthenticatedUser = {
+  id: "manager-abdul-halim",
+  email: "manajer@kopdes-ladanglaweh.id",
+  fullName: "Abdul Halim",
+  roles: ["admin", "manajer"],
+  primaryRole: "manajer",
+  unitId: null,
+};
+
+/**
+ * Mengembalikan profil manajer aktif untuk penggunaan aplikasi pribadi.
  */
 export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return null;
-  }
-
-  // Ambil peran aktif dan cakupan unit langsung dari basis data user_roles
-  let dbRoles: { role: string; unit_id: string | null }[] = [];
-  try {
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    const adminSupabase = createAdminClient();
-    const { data } = await adminSupabase
-      .from("user_roles")
-      .select("role, unit_id")
-      .eq("user_id", user.id)
-      .eq("is_active", true);
-    if (data) dbRoles = data;
-  } catch {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role, unit_id")
-      .eq("user_id", user.id)
-      .eq("is_active", true);
-    if (data) dbRoles = data;
-  }
-
-  const roles = (dbRoles ?? []).map((row) => row.role as UserRole);
-  // Bila belum ada peran khusus, tetapkan peran default manajer atau anggota
-  if (roles.length === 0) {
-    roles.push("manajer");
-  }
-  const primaryRole = roles[0] ?? "manajer";
-  const assignedUnitRow = (dbRoles ?? []).find((row) => row.unit_id);
-  const unitId = assignedUnitRow?.unit_id ?? null;
-
-  return {
-    id: user.id,
-    email: user.email || "",
-    fullName:
-      user.user_metadata?.full_name ||
-      user.email?.split("@")[0] ||
-      "Pengguna Terdaftar",
-    roles,
-    primaryRole,
-    unitId,
-  };
+  return { ...PERSONAL_MANAGER_USER, roles: [...PERSONAL_MANAGER_USER.roles] };
 }
 
 /**
- * Guard server: Wajib login. Mengalihkan ke login jika belum terautentikasi.
+ * Guard server warisan: dalam aplikasi pribadi, selalu mengembalikan manajer aktif.
  */
 export async function requireUser(): Promise<AuthenticatedUser> {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect("/login");
-  }
-  return user;
+  return { ...PERSONAL_MANAGER_USER, roles: [...PERSONAL_MANAGER_USER.roles] };
 }
 
 /**
- * Guard server: Memvalidasi apakah pengguna memiliki setidaknya satu peran yang diizinkan.
+ * Guard peran warisan: manajer pribadi memiliki akses penuh ke seluruh modul.
  */
-export async function requireRole(allowedRoles: UserRole[]): Promise<AuthenticatedUser> {
-  const user = await requireUser();
-  const hasAllowedRole = user.roles.some((r) => allowedRoles.includes(r));
-  if (!hasAllowedRole) {
-    redirect("/forbidden");
-  }
-  return user;
+export async function requireRole(_allowedRoles: UserRole[]): Promise<AuthenticatedUser> {
+  return { ...PERSONAL_MANAGER_USER, roles: [...PERSONAL_MANAGER_USER.roles] };
 }
 
 /**
- * Guard server: Memvalidasi cakupan unit untuk operator.
- * Mencegah operator Unit A mengakses atau memodifikasi data Unit B.
+ * Guard cakupan unit warisan: manajer pribadi memiliki hak wewenang lintas gerai.
  */
-export async function requireUnitScope(targetUnitId: string): Promise<AuthenticatedUser> {
-  const user = await requireUser();
-  // Admin dan manajer memiliki hak wewenang lintas unit (global)
-  if (user.roles.includes("admin") || user.roles.includes("manajer")) {
-    return user;
-  }
-
-  // Operator unit/kasir wajib ditugaskan ke unit target yang sesuai
-  if (!user.unitId || user.unitId !== targetUnitId) {
-    throw new Error("Akses ditolak: Anda tidak memiliki wewenang untuk unit usaha ini.");
-  }
-
-  return user;
+export async function requireUnitScope(_targetUnitId: string): Promise<AuthenticatedUser> {
+  return { ...PERSONAL_MANAGER_USER, roles: [...PERSONAL_MANAGER_USER.roles] };
 }
 
 export { sanitizeAuthError } from "./utils";
-

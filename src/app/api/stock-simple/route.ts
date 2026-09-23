@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
 import { SimpleStockUpdateSchema } from "@/lib/validations/simple-schemas";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
-
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    let supabase;
-    try {
-      supabase = createAdminClient();
-    } catch {
-      supabase = await createClient();
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
     }
+
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("products")
@@ -35,8 +31,10 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const body = await request.json();
     const parsed = SimpleStockUpdateSchema.safeParse(body);
@@ -52,13 +50,7 @@ export async function PATCH(request: Request) {
     if (min_stock !== undefined) updates.min_stock = min_stock;
     if (notes !== undefined) updates.notes = notes;
 
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    let supabase;
-    try {
-      supabase = createAdminClient();
-    } catch {
-      supabase = await createClient();
-    }
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("products")

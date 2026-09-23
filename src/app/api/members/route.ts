@@ -1,23 +1,37 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth/session";
+import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
-import { SimpleMemberSchema } from "@/lib/validations/simple-schemas";
+import { SimpleMemberSchema, SimpleMemberUpdateSchema } from "@/lib/validations/simple-schemas";
+import { getTodayWIB } from "@/lib/utils";
 
 export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
     const query = searchParams.get("q") || "";
     const status = searchParams.get("status");
 
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    let supabase;
-    try {
-      supabase = createAdminClient();
-    } catch {
-      supabase = await createClient();
+    const supabase = await createClient();
+
+    if (id) {
+      const { data, error } = await supabase
+        .from("members")
+        .select("id, member_number, full_name, phone, status, join_date, notes, created_at, is_archived")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) {
+        return NextResponse.json({ error: "Gagal memuat rincian anggota dari Supabase: " + error.message }, { status: 500 });
+      }
+      if (!data) {
+        return NextResponse.json({ error: "Anggota tidak ditemukan." }, { status: 404 });
+      }
+      return NextResponse.json({ member: data }, { headers: { "Cache-Control": "no-store" } });
     }
 
     let membersQuery = supabase
@@ -40,8 +54,9 @@ export async function GET(request: Request) {
       supabase.from("members").select("id", { count: "exact", head: true }).eq("is_archived", false).eq("status", "calon"),
     ]);
 
-    if (membersRes.error) {
-      return NextResponse.json({ error: "Data anggota belum dapat dibaca dari Supabase: " + membersRes.error.message }, { status: 500 });
+    const queryError = membersRes.error || totalRes.error || activeRes.error || calonRes.error;
+    if (queryError) {
+      return NextResponse.json({ error: "Data anggota belum dapat dibaca dari Supabase: " + queryError.message }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -60,8 +75,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
+    }
 
     const body = await request.json();
     const parsed = SimpleMemberSchema.safeParse(body);
@@ -70,13 +87,7 @@ export async function POST(request: Request) {
     }
 
     const member = parsed.data;
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    let supabase;
-    try {
-      supabase = createAdminClient();
-    } catch {
-      supabase = await createClient();
-    }
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("members")
@@ -85,7 +96,7 @@ export async function POST(request: Request) {
         full_name: member.full_name,
         phone: member.phone || null,
         status: member.status,
-        join_date: member.join_date || new Date().toISOString().split("T")[0],
+        join_date: member.join_date || getTodayWIB(),
         notes: member.notes || null,
       })
       .select()
@@ -104,27 +115,27 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Sesi masuk diperlukan." }, { status: 401 });
-
-    const body = await request.json();
-    if (!body.id) {
-      return NextResponse.json({ error: "ID anggota diperlukan untuk pembaruan." }, { status: 400 });
+    const access = verifyPrivateApiAccess(request);
+    if (!access.allowed) {
+      return NextResponse.json({ error: access.error || "Akses ditolak." }, { status: access.status || 403 });
     }
 
+    const body = await request.json();
+    const parsed = SimpleMemberUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Pembaruan anggota tidak valid." }, { status: 400 });
+    }
+    const { id, ...fields } = parsed.data;
     const updates: Record<string, unknown> = {
+      ...fields,
       updated_at: new Date().toISOString(),
     };
-    if (body.full_name !== undefined) updates.full_name = body.full_name;
-    if (body.phone !== undefined) updates.phone = body.phone;
-    if (body.status !== undefined) updates.status = body.status;
-    if (body.notes !== undefined) updates.notes = body.notes;
 
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("members")
       .update(updates)
-      .eq("id", body.id)
+      .eq("id", id)
       .select()
       .single();
 
