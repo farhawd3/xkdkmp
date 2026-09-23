@@ -1,0 +1,728 @@
+<!DOCTYPE html><html lang="id" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kalender &amp; Jadwal Operasional - Koperasi Merah Putih</title>
+<!-- Google Fonts: Plus Jakarta Sans & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
+            },
+            surface: {
+              sidebar: '#ffffff',
+              card: '#ffffff',
+              base: '#f8fafc',
+              subtle: '#f1f5f9',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for Scrollbars and Material Symbols -->
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Thin custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex text-slate-800 antialiased selection:bg-rose-100 selection:text-rose-900">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-[260px] bg-white border-r border-slate-200 fixed inset-y-0 left-0 flex flex-col justify-between z-30 select-none">
+<div class="flex flex-col flex-1 overflow-y-auto">
+<!-- Brand Header -->
+<div class="h-16 px-5 flex items-center gap-3 border-b border-slate-100">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 to-rose-800 flex items-center justify-center text-white shadow-md shadow-rose-200">
+<span class="material-symbols-outlined fill text-2xl">account_balance</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="text-base font-bold text-slate-900 leading-tight">Merah Putih</h1>
+<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 tracking-wide">SOL</span>
+</div>
+<p class="text-[11px] text-slate-400 font-medium">Koperasi Nasional Terpadu</p>
+</div>
+</div>
+<!-- Navigation Menus -->
+<div class="p-3 space-y-6">
+<!-- Section: Menu Utama -->
+<div>
+<span class="px-3 text-[11px] font-bold text-slate-400 tracking-wider uppercase">Menu Utama</span>
+<nav class="mt-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">space_dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-slate-400">storefront</span>
+<span class="">Gerai</span>
+</div>
+<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">7 Unit</span>
+</a>
+</nav>
+</div>
+<!-- Section: Kelola Data -->
+<div>
+<span class="px-3 text-[11px] font-bold text-slate-400 tracking-wider uppercase">Kelola Data</span>
+<nav class="mt-2 space-y-1">
+<a class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-slate-400">groups</span>
+<span class="">Anggota</span>
+</div>
+<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">1.247</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-slate-400">account_balance_wallet</span>
+<span class="">Simpan Pinjam</span>
+</div>
+<span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">3 Pengajuan</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-slate-400">inventory_2</span>
+<span class="">Inventaris</span>
+</div>
+<span class="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">34 Kritis</span>
+</a>
+</nav>
+</div>
+<!-- Section: Operasional -->
+<div>
+<span class="px-3 text-[11px] font-bold text-slate-400 tracking-wider uppercase">Operasional</span>
+<nav class="mt-2 space-y-1">
+<a class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-slate-400">check_circle</span>
+<span class="">Tugas</span>
+</div>
+<span class="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">1 Prioritas</span>
+</a>
+<!-- Active Kalender Item -->
+<a class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-brand-700 rounded-xl shadow-sm shadow-rose-200 transition-all" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined fill text-[20px]">calendar_month</span>
+<span class="">Kalender</span>
+</div>
+<span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full font-bold">5 Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">monitoring</span>
+<span class="">Laporan &amp; SHU</span>
+</a>
+</nav>
+</div>
+<!-- Section: Sistem -->
+<div>
+<span class="px-3 text-[11px] font-bold text-slate-400 tracking-wider uppercase">Sistem</span>
+<nav class="mt-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px] text-slate-400">settings</span>
+<span class="">Pengaturan</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="p-3 border-t border-slate-100 dark:border-slate-800/80">
+  <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between">
+    <div class="flex items-center gap-2.5 overflow-hidden">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&amp;auto=format&amp;fit=crop&amp;q=80" alt="Ibu Siti Rahmawati" class="w-9 h-9 rounded-full object-cover ring-2 ring-rose-500/30 shrink-0" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&amp;auto=format&amp;fit=crop&amp;q=80'">
+      <div class="truncate">
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">Ibu Siti Rahmawati</h4>
+        <p class="text-[11px] text-slate-400 truncate">Manajer Eksekutif</p>
+      </div>
+    </div>
+    <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+      <span class="material-symbols-outlined text-base">unfold_more</span>
+    </button>
+  </div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContentArea -->
+<div class="ml-[260px] flex-1 flex flex-col min-w-0">
+<!-- BEGIN: TopBar -->
+<header class="fixed top-0 left-[260px] right-0 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 z-40 px-8 flex items-center justify-between transition-colors duration-200">
+<!-- Breadcrumb Navigation -->
+<div class="flex items-center gap-2 text-xs font-semibold">
+<a href="#" class="text-slate-500 hover:text-primary transition-colors text-xs font-medium">Beranda</a>
+<span class="text-slate-300">/</span>
+<a href="#" class="text-slate-500 hover:text-primary transition-colors text-xs font-medium">Operasional</a>
+<span class="text-slate-300">/</span>
+<span class="font-semibold text-primary text-xs">Kalender &amp; Jadwal Operasional</span>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3">
+<!-- Date Capsule -->
+<div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200/60 text-xs font-medium text-slate-600 shrink-0"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span><span class="">Rabu, 05 Maret 2025 • WIB</span></div>
+<!-- Universal Search Input -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+<input class="w-full bg-slate-100 border border-transparent focus:border-primary text-xs text-slate-800 rounded-xl pl-9 pr-3 py-1.5 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Cari agenda, rapat, inspeksi..." type="text">
+</div>
+<!-- Light/Dark Mode Toggle -->
+<button class="w-9 h-9 rounded-xl border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Mode Tampilan" type="button">
+<span class="material-symbols-outlined text-[19px]">light_mode</span>
+</button>
+<!-- Notification Bell -->
+<button class="w-9 h-9 relative rounded-xl border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Notifikasi" type="button">
+<span class="material-symbols-outlined text-[19px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></span>
+</button>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: MainBodyContainer -->
+<main class="p-8 space-y-6 pt-24">
+<!-- BEGIN: PageHeader -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-2xl font-bold text-slate-900 tracking-tight">Kalender &amp; Jadwal Operasional</h1>
+<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 tracking-wide uppercase">KONSOLIDASI 7 GERAI</span>
+</div>
+<p class="text-xs text-slate-500 font-medium mt-1">Pusat sinkronisasi jadwal rapat pengurus, inspeksi kepatuhan SOP 7 unit usaha, sidang RAT, dan alokasi beban kerja manajer.</p>
+</div>
+<!-- View Controls & Action Button -->
+<div class="flex items-center gap-3 shrink-0">
+<div class="flex items-center bg-white p-1 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 shadow-2xs">
+<button class="px-3 py-1.5 bg-brand-700 text-white rounded-lg shadow-sm">Bulan</button>
+<button class="px-3 py-1.5 hover:text-slate-900 transition-colors">Minggu</button>
+<button class="px-3 py-1.5 hover:text-slate-900 transition-colors">Hari</button>
+<button class="px-3 py-1.5 hover:text-slate-900 transition-colors">Daftar</button>
+</div>
+<button class="flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+<span class="material-symbols-outlined text-[18px] text-slate-500">tune</span>
+<span class="">Filter Unit</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white rounded-xl text-xs font-bold shadow-md shadow-rose-200 transition-all">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="">+ Buat Agenda Baru</span>
+</button>
+</div>
+</div>
+<!-- END: PageHeader -->
+<!-- BEGIN: KpiMetricRow -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-4" data-purpose="kpi-metrics"><!-- KPI 1: Agenda Maret 2025 -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:border-slate-300 transition-all">
+  <div>
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">AGENDA MARET 2025</span>
+      <span class="material-symbols-outlined text-brand-700 text-lg">calendar_today</span>
+    </div>
+    <div class="mt-3">
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-slate-900 tracking-tight">18</span>
+        <span class="text-xs font-semibold text-slate-600">Kegiatan Terjadwal</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-700"></span>
+        <span class="">6 Rapat • 8 Inspeksi • 4 Sidang RAT</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI 2: Agenda Hari Ini (05 Mar) -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:border-slate-300 transition-all">
+  <div>
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">AGENDA HARI INI (05 MAR)</span>
+      <span class="material-symbols-outlined text-amber-600 text-lg">calendar_month</span>
+    </div>
+    <div class="mt-3">
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-slate-900 tracking-tight">4</span>
+        <span class="text-xs font-semibold text-slate-600">Kegiatan</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-[11px] text-amber-600 mt-1 font-medium">
+        <span class="material-symbols-outlined text-xs">schedule</span>
+        <span class="text-slate-500 font-medium"><span class="text-amber-600 font-bold">1 Selesai</span> • <span class="text-brand-700 font-bold">1 Berlangsung</span> • 2 Mendatang</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI 3: Sidang Pleno RAT 2025 -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:border-slate-300 transition-all">
+  <div>
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">SIDANG PLENO RAT 2025</span>
+      <span class="material-symbols-outlined text-blue-600 text-lg">event_note</span>
+    </div>
+    <div class="mt-3">
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-slate-900 tracking-tight">12 Mar</span>
+        <span class="text-xs font-bold text-rose-600">H-7 Sidang</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-[11px] text-blue-600 mt-1 font-medium">
+        <span class="material-symbols-outlined text-xs">verified</span>
+        <span class="">Draf Laporan SHU Bab I-IV Siap</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI 4: Alokasi Waktu Terjadwal -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:border-slate-300 transition-all">
+  <div>
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">ALOKASI WAKTU TERJADWAL</span>
+      <span class="material-symbols-outlined text-emerald-600 text-lg">schedule</span>
+    </div>
+    <div class="mt-3">
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-slate-900 tracking-tight">18,5</span>
+        <span class="text-xs font-semibold text-slate-500">/ 24 Jam Minggu Ini</span>
+      </div>
+      <div class="flex items-center gap-1 text-[11px] text-emerald-600 mt-1 font-semibold">
+        <span class="material-symbols-outlined text-xs">check_circle</span>
+        <span class="">Kapasitas Kerja Terkendali 77%</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+<!-- END: KpiMetricRow -->
+<!-- BEGIN: ContentTwoColumnGrid -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- BEGIN: LeftCalendarAndAgendaColumn (8 cols) -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Calendar Matrix Card -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-2xs" data-purpose="calendar-widget">
+<!-- Calendar Navigation Header -->
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<h2 class="text-lg font-bold text-slate-900">Maret 2025</h2>
+<span class="text-xs font-medium text-slate-400">Tahun Buku 2024/2025</span>
+</div>
+<div class="flex items-center gap-1.5"><button class="px-3 py-1 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-2xs">Hari Ini</button>
+<button class="w-7 h-7 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors shadow-2xs">
+  <span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors shadow-2xs">
+  <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button></div>
+</div>
+<!-- Calendar Days Header -->
+<div class="grid grid-cols-7 text-center font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">
+<span class="text-rose-500">MIN</span>
+<span class="">SEN</span>
+<span class="">SEL</span>
+<span class="">RAB</span>
+<span class="">KAM</span>
+<span class="">JUM</span>
+<span class="">SAB</span>
+</div>
+<!-- Calendar Days Cells (7x5 Matrix) -->
+<div class="grid grid-cols-7 gap-2 text-xs">
+<!-- Week 1 -->
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">23</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">24</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">25</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">26</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">27</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">28</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">1</span>
+<span class="text-[9px] bg-slate-100 text-slate-600 rounded px-1 py-0.5 truncate">Tutup Bu...</span>
+</div>
+<!-- Week 2 -->
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 text-rose-500 font-bold">2</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">3</span>
+<span class="text-[9px] bg-blue-50 text-blue-700 rounded px-1 py-0.5 truncate font-medium">Briefing ..</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">4</span>
+<span class="text-[9px] bg-amber-50 text-amber-700 rounded px-1 py-0.5 truncate font-medium">Audit Fisi...</span>
+</div>
+<!-- Day 5: Active Current Day -->
+<div class="min-h-[76px] p-2 rounded-xl border-2 border-brand-700 bg-rose-50/20 flex flex-col justify-between shadow-xs"><div class="flex items-center justify-between">
+  <span class="w-5 h-5 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-[10px]">5</span>
+  <span class="text-[9px] font-bold text-rose-700">HARI INI</span>
+</div>
+<div class="space-y-1">
+  <div class="text-[9px] bg-brand-700 text-white rounded px-1.5 py-0.5 truncate font-medium text-center">10:00 Ra...</div>
+  <div class="text-[9px] bg-rose-100 text-rose-800 rounded px-1.5 py-0.5 truncate font-medium text-center">14:30 Co...</div>
+</div></div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">6</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">7</span>
+<span class="text-[9px] bg-emerald-50 text-emerald-700 rounded px-1 py-0.5 truncate font-medium">Stok Op...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">8</div>
+<!-- Week 3 -->
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 text-rose-500 font-bold">9</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">10</span>
+<span class="text-[9px] bg-purple-50 text-purple-700 rounded px-1 py-0.5 truncate font-medium">Finalisasi ..</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">11</div>
+<!-- Day 12: Sidang RAT -->
+<div class="min-h-[76px] p-2 rounded-xl border border-blue-200 bg-blue-50/30 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-bold text-blue-700">12</span>
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+</div>
+<span class="text-[9px] bg-blue-600 text-white rounded px-1 py-0.5 truncate font-semibold">Sidang P...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">13</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">14</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">15</span>
+<span class="text-[9px] bg-emerald-600 text-white rounded px-1 py-0.5 truncate font-medium">Distribusi ...</span>
+</div>
+<!-- Week 4 -->
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 text-rose-500 font-bold">16</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">17</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">18</span>
+<span class="text-[9px] bg-slate-100 text-slate-700 rounded px-1 py-0.5 truncate">Evaluasi ...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">19</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">20</span>
+<span class="text-[9px] bg-amber-50 text-amber-700 rounded px-1 py-0.5 truncate">Audit Ob...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">21</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">22</div>
+<!-- Week 5 -->
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 text-rose-500 font-bold">23</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">24</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">25</span>
+<span class="text-[9px] bg-rose-50 text-rose-700 rounded px-1 py-0.5 truncate">Rapat Dir...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">26</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">27</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">28</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 font-bold text-slate-700">29</div>
+<!-- Week 6 -->
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 text-rose-500 font-bold">30</div>
+<div class="min-h-[76px] p-2 rounded-xl border border-slate-100 flex flex-col justify-between">
+<span class="font-bold text-slate-700">31</span>
+<span class="text-[9px] bg-slate-100 text-slate-600 rounded px-1 py-0.5 truncate">Tutup Bu...</span>
+</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">1 Apr</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">2</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">3</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">4</div>
+<div class="min-h-[76px] p-2 rounded-xl bg-slate-50/50 text-slate-300 font-medium">5</div>
+</div>
+</div>
+<!-- Detailed Today's Schedule Card -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-2xs" data-purpose="todays-schedule">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div>
+<h3 class="text-base font-bold text-slate-900">Rangkaian Agenda Operasional (05 Maret 2025)</h3>
+<p class="text-xs text-slate-500 mt-0.5">Sinkronisasi waktu nyata antara agenda manajerial dan kepatuhan unit usaha</p>
+</div>
+<span class="text-xs font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">4 Agenda Hari Ini</span>
+</div>
+<!-- List of Daily Agendas -->
+<div class="mt-4 space-y-3">
+<!-- Item 1: Selesai -->
+<div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="text-xs font-bold text-slate-900">Briefing Pagi &amp; Kesiapan POS 7 Gerai</h4>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Selesai (08:05 WIB)</span>
+</div>
+<p class="text-[11px] text-slate-500 mt-1">Pukul 07:30 – 08:00 WIB • Ruang Rapat Manajer &amp; Daring • PIC: Semua Kepala Unit</p>
+<div class="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-emerald-600">verified</span> Kepatuhan SOP 100%</span>
+<span class="text-slate-300">•</span>
+<span class="">Notulen terlampir (PDF)</span>
+</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors">Lihat Notulen</button>
+</div>
+<!-- Item 2: Active / Sedang Berlangsung -->
+<div class="p-4 rounded-xl border-2 border-brand-700 bg-rose-50/10 transition-colors flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-brand-700 text-white flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg">videocam</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="text-xs font-bold text-slate-900">Rapat Koordinasi Pengawas &amp; Rekonsiliasi Kas Shift 1</h4>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Sedang Berlangsung</span>
+</div>
+<p class="text-[11px] text-slate-500 mt-1">Pukul 10:00 – 11:30 WIB • Zoom Meeting (ID: 883–401–9283) • Manajer &amp; Pengawas</p>
+<div class="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
+<span class="flex items-center gap-1 text-slate-600 font-medium"><span class="material-symbols-outlined text-xs text-rose-600">pin</span> Passcode: KMP2025</span>
+<span class="text-slate-300">•</span>
+<span class="text-rose-700 font-medium">Tersambung ke Modul Setoran Gerai</span>
+</div>
+</div>
+</div>
+<a class="px-4 py-2 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 rounded-xl shadow-sm flex items-center gap-1.5 transition-all" href="#">
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+<span class="">Buka Link Zoom</span>
+</a>
+</div>
+<!-- Item 3: Mendatang 1 -->
+<div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg">ac_unit</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="text-xs font-bold text-slate-900">Inspeksi Lapangan: Kalibrasi Suhu Chiller (–20°C)</h4>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Mendatang (14:30 WIB)</span>
+</div>
+<p class="text-[11px] text-slate-500 mt-1">Pukul 14:30 – 16:00 WIB • Unit Cold Storage Palur • PIC: Danang K.</p>
+<div class="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
+<span class="">Persiapan kedatangan 1.5 ton ikan kembung TPI Cilacap</span>
+<span class="text-slate-300">•</span>
+<span class="text-blue-600 font-medium">Tugas Terkait #T-082</span>
+</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors">Detail Rute</button>
+</div>
+<!-- Item 4: Mendatang 2 -->
+<div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg">lock</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="text-xs font-bold text-slate-900">Tutup Kasir Shift 2 &amp; Otorisasi Brankas Pusat</h4>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Mendatang (16:30 WIB)</span>
+</div>
+<p class="text-[11px] text-slate-500 mt-1">Pukul 16:30 – 17:30 WIB • Ruang Kas &amp; Brankas Pusat • Tim Teller &amp; Manajer</p>
+<div class="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
+<span class="">Rekonsiliasi akhir hari 7 unit usaha</span>
+</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors">Buka Brankas</button>
+</div>
+</div>
+</div>
+</div>
+<!-- END: LeftCalendarAndAgendaColumn -->
+<!-- BEGIN: RightPanelColumn (4 cols) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Card 1: Fast Input Form -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs" data-purpose="quick-add-form">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4"><div>
+  <h3 class="text-sm font-bold text-slate-900">Input Agenda Baru Cepat</h3>
+  <p class="text-[11px] text-slate-500">Jadwalkan rapat atau inspeksi unit usaha</p>
+</div>
+<span class="material-symbols-outlined text-brand-700 text-xl">event</span></div>
+<form class="space-y-3">
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Nama / Judul Kegiatan</label>
+<input class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-rose-500" placeholder="misal: Sidang Pra-RAT Pembagian SHU" type="text">
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Kategori</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500">
+<option>Rapat Pengurus</option>
+<option>Inspeksi Lapangan</option>
+<option>Sidang RAT</option>
+<option>Audit Kasir</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Moda</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500">
+<option>Tatap Muka (Luring)</option>
+<option>Daring (Online)</option>
+<option>Hibrida</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500" type="text" value="03/05/2025">
+<span class="material-symbols-outlined absolute right-2.5 top-2 text-slate-400 text-sm">calendar_month</span>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Jam Mulai</label>
+<div class="relative">
+<input class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500" type="text" value="01:00 PM">
+<span class="material-symbols-outlined absolute right-2.5 top-2 text-slate-400 text-sm">schedule</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Unit Usaha Terkait</label>
+<select class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500">
+<option>Semua Unit Usaha (Konsolidasi)</option>
+<option>Unit Toko Sembako (Palur)</option>
+<option>Unit Simpan Pinjam</option>
+<option>Unit Apotek &amp; Klinik</option>
+<option>Unit Cold Storage</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-700 mb-1">Tautan Rapat / Ruang (Opsional)</label>
+<input class="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-rose-500" placeholder="https://zoom.us/j/... atau R. Rapat Utama" type="text">
+</div>
+<button class="w-full py-2.5 px-4 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-md shadow-rose-200 mt-2 transition-all" type="button">
+                Simpan &amp; Jadwalkan Agenda
+              </button>
+</form>
+</div>
+<!-- Card 2: Workload Distribution -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs" data-purpose="workload-stats">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-xs font-bold text-slate-900">Distribusi Jam Kerja Mingguan</h3>
+<p class="text-[11px] text-slate-500">Realisasi vs Target Waktu 03–08 Maret</p>
+</div>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Sehat (77%)</span>
+</div>
+<div class="space-y-3">
+<div>
+<div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+<span class="text-slate-700">Rapat &amp; Pengambilan Kebijakan</span>
+<span class="text-slate-900 font-bold">6,5 Jam <span class="text-slate-400 font-normal">(35%)</span></span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-rose-500 h-full rounded-full" style="width: 35%;"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+<span class="text-slate-700">Inspeksi Lapangan &amp; Audit SOP Gerai</span>
+<span class="text-slate-900 font-bold">7,0 Jam <span class="text-slate-400 font-normal">(38%)</span></span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-500 h-full rounded-full" style="width: 38%;"></div>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between text-[11px] font-semibold mb-1">
+<span class="text-slate-700">Validasi Kasir &amp; Rekonsiliasi Harian</span>
+<span class="text-slate-900 font-bold">5,0 Jam <span class="text-slate-400 font-normal">(27%)</span></span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full rounded-full" style="width: 27%;"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
+<span class="text-slate-500">Total Waktu Terisi:</span>
+<span class="text-slate-900 font-bold">18,5 dari 24,0 Jam</span>
+</div>
+</div>
+<!-- Card 3: RAT Milestones Check -->
+<div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-2xs" data-purpose="rat-milestones">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-bold text-slate-900">Tonggak Sidang RAT (12 Maret)</h3>
+<span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Prioritas Koperasi</span>
+</div>
+<div class="space-y-2.5">
+<label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
+<input checked="" class="mt-0.5 rounded border-slate-300 text-brand-700 focus:ring-rose-500" type="checkbox">
+<div>
+<h4 class="text-xs font-bold text-slate-800 line-through">Rekonsiliasi Laba Rugi 7 Gerai</h4>
+<p class="text-[10px] text-slate-400">Surplus Rp 148,85 Jt telah diaudit internal</p>
+</div>
+</label>
+<label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
+<input checked="" class="mt-0.5 rounded border-slate-300 text-brand-700 focus:ring-rose-500" type="checkbox">
+<div>
+<h4 class="text-xs font-bold text-slate-800 line-through">Distribusi SHU Anggota 40%</h4>
+<p class="text-[10px] text-slate-400">Jasa modal &amp; jasa usaha selesai dihitung</p>
+</div>
+</label>
+<label class="flex items-start gap-2.5 p-2 rounded-xl bg-white border border-slate-200 cursor-pointer">
+<input class="mt-0.5 rounded border-slate-300 text-brand-700 focus:ring-rose-500" type="checkbox">
+<div>
+<h4 class="text-xs font-bold text-rose-700">Tanda Tangan Pengurus &amp; Pengawas</h4>
+<p class="text-[10px] text-slate-500">Jadwal sidang pengesahan 10 Maret 2025</p>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- END: RightPanelColumn -->
+</div>
+<!-- END: ContentTwoColumnGrid -->
+</main>
+<!-- END: MainBodyContainer -->
+<!-- BEGIN: Footer -->
+<footer class="mt-auto px-8 py-4 border-t border-slate-200 bg-white text-xs font-medium text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="">Sistem Terintegrasi Koperasi: 7 Unit Usaha Sinkronisasi Real-Time</span>
+</div>
+<p class="">© 2025 Koperasi Merah Putih Indonesia. Hak Cipta Dilindungi.</p>
+</footer>
+<!-- END: Footer -->
+</div>
+<!-- END: MainContentArea -->
+
+
+
+
+
+
+
+
+
+
+</body></html>

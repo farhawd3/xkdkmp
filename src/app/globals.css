@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --background: #F7F8FC;
+    --surface-card: #FFFFFF;
+    --primary: #9B4564;
+    --primary-container: #A64768;
+    --crimson-hover: #8D3A58;
+    --crimson-light: #FFE4E6;
+    --text-main: #252F40;
+    --text-muted: #637189;
+    --border-subtle: #F1F5F9;
+    --border-muted: #E2E8F0;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: #1D2533; /* Slate 950 elegan */
+    --surface-card: #252F40; /* Slate 900 */
+    --primary: #E9ACC0; /* Rose 600 kontras */
+    --primary-container: #A64768; /* Crimson */
+    --crimson-hover: #F0BED0;
+    --crimson-light: #881337;
+    --text-main: #F7F8FC; /* Slate 50 */
+    --text-muted: #AAB7CB; /* Slate 400 */
+    --border-subtle: #303C50; /* Slate 800 */
+    --border-muted: #3B4960; /* Slate 700 */
+  }
+
+  * {
+    border-color: #E2E8F0;
+    box-sizing: border-box;
+  }
+
+  .dark * {
+    border-color: #303C50;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: var(--background);
+    color: var(--text-main);
+  }
+
+  body {
+    min-height: 100vh;
+    font-size: 0.9375rem; /* 15px - terbaca sangat nyaman pada desktop & tablet */
+    line-height: 1.6;
+    background-color: var(--background);
+    color: var(--text-main);
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  /* Utilitas tabular numerals untuk angka mata uang dan ID */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Touch target minimal 44px untuk aksesibilitas tablet/ponsel */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Safe area scroll container untuk modal */
+  .safe-viewport-modal {
+    max-height: calc(100dvh - 2rem);
+  }
+
+  /* Stabilisasi gutter scrollbar agar tidak memotong isi menu */
+  .scrollbar-gutter-stable {
+    scrollbar-gutter: stable;
+  }
+
+  /* Scrollbar ramping khusus navigasi */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #AAB7CB;
+  }
+
+  .dark .scrollbar-thin {
+    scrollbar-color: #3B4960 transparent;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #3B4960;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+/* Kustomisasi scrollbar halus global */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #AAB7CB;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3B4960;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+@layer base {
+  :focus-visible { outline: 2px solid #A64768; outline-offset: 3px; }
+  .dark :focus-visible { outline-color: #E9ACC0; }
+  ::selection { background: #F3D7E2; color: #54263C; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer utilities {
+  .dark .text-primary, .dark .text-primary-container { color: #E9ACC0; }
+}

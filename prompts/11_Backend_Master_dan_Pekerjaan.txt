@@ -1,0 +1,15 @@
+Laksanakan tahap 11: ganti adapter mock dengan backend nyata untuk profil, unit, anggota, produk/pemasok master, checklist, tugas, agenda, rencana kerja/anggaran, risiko, dokumen dan rapat. Jangan mengaktifkan transaksi uang/stok yang belum dibangun.
+
+Implementasikan CRUD dan archive dengan Zod server, izin, scope, optimistic concurrency/version conflict untuk edit bersama, pencarian/filter/pagination server dan return data minimal. Referensi PIC dan unit harus valid. Pendaftaran anggota tidak membuat jurnal, simpanan lunas, atau pinjaman. Perubahan status anggota disertai riwayat dan alasan.
+
+Dokumen memakai private Storage, validasi ukuran/jenis file di server serta metadata konten yang sesuai, nama/path aman, signed URL singkat setelah cek izin; jangan bucket publik. Putus hubungan upload-gagal dengan record siap-pakai secara benar. Hapus file harus mengikuti retensi/referensi, bukan langsung menghilangkan bukti posted. Link dokumen dapat versi baru, sejarah tersimpan. Data pribadi tidak diambil pada daftar umum. File unduhan tidak boleh lolos hanya dengan menebak path.
+
+Khusus agenda, simpan idempotency key untuk create dan version check untuk edit; validasi server tanggal/jam/URL/PIC/unit. Refresh setelah save membuktikan persistensi; query kalender dan widget 7 hari memakai sumber/timezone yang sama, cancel tidak meninggalkan notifikasi aktif ganda. Implementasikan izin/scope dan state gagal untuk seluruh alur form tahap 01A.
+
+Hubungkan tugas-agenda-checklist-rapat-risiko; notifikasi internal dari kejadian nyata dengan deduplikasi, status dibaca, scope dan link sumber. Reminder yang membutuhkan jadwal memakai job server nyata; bila belum ada scheduler, jangan mengaku sudah otomatis. Tidak mengirim email/WhatsApp eksternal selain alur akun yang telah dikonfigurasi.
+
+Import CSV anggota/master: template, preview, validasi per baris, duplikasi, commit terkontrol dengan hasil jelas; batas ukuran, otorisasi, audit dan retry aman. Import anggota tidak boleh menyelundupkan saldo simpanan. Import massal keuangan belum tersedia. Export escape formula CSV berbahaya dan hanya kolom berizin.
+
+Audit domain dibuat server, append-only bagi pengguna aplikasi; actor/timestamp tidak dipercaya dari client. Hindari menaruh NIK/token/lampiran rahasia di log. Untuk objek yang tidak bisa diakses, jangan bocorkan detail lewat pesan error.
+
+Kriteria selesai: edit di perangkat A terlihat setelah fetch ulang di perangkat B; kegagalan save tidak menghapus input; kondisi data kosong produksi tetap benar; mode mock tidak dipakai di route produksi. Tests akses, konflik edit dan import invalid lulus. Perbarui STATUS dan daftar modul yang belum tersambung.

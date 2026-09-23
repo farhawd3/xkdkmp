@@ -1,0 +1,15 @@
+Laksanakan tahap 12: mesin jurnal dan simpanan anggota. Baca BUSINESS_RULES, DATABASE, permission matrix dan kebijakan terbuka. Tulis docs/ACCOUNTING_POLICY_DRAFT.md; jangan mengeklaim kebijakan itu resmi. Mapping akun, klasifikasi simpanan, pajak dan perlakuan aset/beban memerlukan verifikasi penanggung jawab keuangan sebelum aktif pada produksi.
+
+Implementasikan chart of accounts hierarkis, periode, jurnal/baris jurnal, sumber dokumen, approval bila diperlukan, posting, pembalikan dan penutupan periode. UI template transaksi harus mudah dipakai; jurnal manual hanya keuangan berwenang.
+
+Posting atomik: debit=credit, minimal dua baris, satu sisi positif per baris, akun aktif/postable, periode terbuka, tanggal sah, unit/organisasi konsisten, permission benar, idempotency dan unique source-event. Saldo awal terverifikasi diposting melalui dokumen opening yang seimbang dan punya bukti; bukan mengubah field saldo. Tidak membuat saldo awal Rp0 terverifikasi tanpa tindakan pemeriksa. Kebijakan backdate jelas, tidak mengizinkan periode tertutup secara diam-diam.
+
+Jurnal posted tidak bisa di-update/delete lewat UI, API atau RPC umum. Reversal mengacu sumber dan diposting pada periode yang diizinkan, satu kali dengan alasan; koreksi pengganti memiliki relasi. Reopen periode hanya otoritas terpisah dengan audit. Pembuat tidak boleh menjadi pemeriksa jika policy memerlukan dua orang. Ledger immutable bagi pengguna aplikasi tidak berarti kebal perubahan oleh administrator database; dokumentasikan batas ini.
+
+Simpanan: jenis, nominal/aturan efektif dari keputusan nyata, tagihan bila relevan, pembayaran sebagian, alokasi pembayaran, bukti penerimaan, saldo subledger per anggota, penarikan hanya untuk jenis/policy yang mengizinkan, pembalikan. Pokok/wajib tidak mensyaratkan USP aktif. Tidak otomatis menganggap simpanan tertentu modal atau kewajiban tanpa mapping yang disahkan; akun sumber bukan Pendapatan Penjualan. Status lunas berasal dari pembayaran posted, bukan status anggota.
+
+Membuat kebijakan/tagihan/draft tidak memindahkan uang. Perubahan nominal berlaku efektif dan tidak menulis ulang sejarah. Simpanan sukarela nonaktif sampai kebijakan ditetapkan. Pembayaran/penarikan hanya bisa diposting bila rekening kas, akun mapping dan permission siap.
+
+Tes wajib: jurnal tidak seimbang gagal tanpa sisa data; request ulang tidak dobel; payload berbeda/key sama ditolak; sumber sama tak terposting dua kali; periode tertutup menolak; nominal desimal/pembulatan; reversal mengembalikan dampak; dua request pembayaran serentak tak mengalokasikan melebihi tagihan; subledger simpanan cocok dengan akun kontrol.
+
+Kriteria selesai: hasil aktual semua tes dan contoh jurnal dapat ditelusuri di staging. Kebijakan belum disahkan memblokir transaksi terkait di produksi dengan pesan jelas, bukan mengisi default karangan. Tidak melanjutkan penjualan sebelum fondasi ini stabil.

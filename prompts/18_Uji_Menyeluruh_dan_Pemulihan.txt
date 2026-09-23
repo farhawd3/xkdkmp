@@ -1,0 +1,20 @@
+Laksanakan tahap 18: uji penerimaan dan perbaikan menyeluruh. Jangan menambah fitur baru. Pakai lingkungan uji terisolasi; jangan tes destruktif atau fixture pada data produksi. Buat docs/RELEASE_REPORT.md dengan bukti hasil aktual, bukan checklist dicentang tanpa menjalankan.
+
+Tuntaskan SECURITY_CHECKS dengan bukti dan petakan semua interaksi rilis ke hasil frontend/backend-tested dalam INTERACTION_MAP. Rancangan tanpa endpoint nyata belum selesai. Hitung coverage dari daftar aktual, daftar belum diuji harus terlihat. Bandingkan tampilan halaman DAN form/modal/drawer baru terhadap Stitch; jangan menganggap lint/build lulus membuktikan fidelity atau keamanan.
+
+Gerbang minimal:
+1. lint, typecheck, build dan unit tests perhitungan/status lulus.
+2. Integration database/RLS: anon, role salah, unit salah, anggota/identitas terlarang, export/private Storage dan RPC langsung ditolak. Server tidak percaya actor/scope client. Nonaktifkan staf -> operasi baru ditolak. Role metadata palsu tidak memberi akses.
+3. Posting: debit=credit; periode tertutup; posted immutable; reversal; request ganda; idempotency conflict; timeout sesudah commit; rollback lintas sale/payment/stok/jurnal.
+4. Concurrency: dua kasir stok terakhir, sale vs shift close, dua receipt parsial, dua pembayaran invoice, double SHU payment. Tidak ada stok minus, overpayment, atau journal dobel.
+5. Rekonsiliasi: persediaan/simpanan/utang dengan GL, transfer kas tanpa omzet baru, return HPP asal, angka laporan/filter/ekspor konsisten.
+6. End-to-end: organisasi kosong -> persiapan -> anggota -> kebijakan -> supplier/product -> pembelian -> penerimaan -> invoice/payment -> sale -> return -> shift/reconcile -> laporan. Aktivasi unit membutuhkan prasyarat.
+7. Tablet/desktop: Chromium dan WebKit yang tersedia, viewport 1366x768,1280x800,1024x768,768x1024,390x844; keyboard dan touch; scan keyboard, print, zoom, modal dengan keyboard virtual, error/loading/offline. Minta saya mencoba perangkat nyata dan catat hasilnya terpisah.
+8. Security/performance: secrets tidak masuk bundle/log, private responses tidak public-cache, upload/path aman, API rate limit server nyata, CSV injection, dependency issues ditinjau, query berindeks dan paginated. Uji CSRF lintas origin pada endpoint relevan, stored/reflected XSS pada field/lampiran, mass assignment, IDOR, SSRF pada fitur fetch, open redirect reset/login, CSP/frame policies, revocation role dan akses dengan token lama. Periksa log/audit tidak mengandung secret atau identitas berlebihan. Ukur angka nyata; jangan mengarang skor Lighthouse atau keamanan.
+9. Pemulihan: backup database dan file Storage ke lokasi terpisah; restore ke lingkungan disposable, verifikasi record, auth/config yang diperlukan, object dokumen, link, jurnal dan saldo. Dokumentasikan data yang tidak tercakup backup dan prosedur recovery akun/secret. Jangan restore menimpa produksi untuk latihan.
+
+Offline MVP: tidak ada transaksi final/queue pembayaran offline. Tampilkan koneksi terputus dan cara memeriksa status request; jangan cache data pribadi atau respons finansial di service worker. Bila manifest/installable PWA dibuat, jangan menyebut bisa bertransaksi offline.
+
+Tentukan target RPO/RTO usulan dan jadwal backup menurut kemampuan layanan, bukan janji tanpa pengukuran. Tetapkan log, alert, pemilik insiden dan tes restore berkala. Catat bahwa backup harian masih berpotensi kehilangan data sejak backup terakhir; pilih frekuensi berdasar kebutuhan koperasi.
+
+Kriteria selesai: P0/P1 yang memengaruhi uang, akses, data atau alur utama nol. Blocker terbuka menghalangi rilis modul terkait. Berikan bukti, batas pengujian, 10 langkah UAT bahasa sederhana, dan checkpoint rilis. Jangan menyatakan bebas bug atau 100% aman.

@@ -1,0 +1,10 @@
+MULAI DI SINI — KOPDES LADANG LAWEH
+
+1. Buka folder ini di editor atau AI pilihan Anda.
+2. Baca README.md untuk menjalankan aplikasi.
+3. Untuk AI: baca AGENTS.md, docs/STATUS.md, lalu docs/DECISIONS.md.
+4. Jalankan npm.cmd ci jika dependensi belum tersedia, lalu npm.cmd run dev.
+5. Buka http://localhost:3000.
+
+Aplikasi masih prototipe dengan data contoh di memori sesi, belum untuk data operasional nyata.
+Tema pastel mengikuti permintaan 22 September 2026. Tidak wajib memakai Antigravity, model tertentu, atau MCP Stitch.

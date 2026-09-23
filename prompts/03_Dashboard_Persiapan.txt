@@ -1,0 +1,13 @@
+Laksanakan tahap 03: UI dashboard dan persiapan pembukaan dengan adapter mock tahap 02. Baca kontrak kondisi awal. Jangan memakai angka Stitch sebagai data organisasi.
+
+Buat /dashboard dengan sapaan Abdul Halim pada profil demo yang jelas, nama tampilan Ladang Laweh, badge Persiapan, dan target Awal 2027 — tanggal belum ditetapkan. Data profil nyata kelak berasal dari sesi backend.
+
+Isi utama: langkah berikutnya, progres checklist yang benar-benar dihitung, tugas prioritas, agenda terdekat, dokumen belum lengkap, dan kesiapan unit rencana. Pertahankan susunan kartu/grid/header/sidebar Stitch terpilih; gunakan slot yang ada untuk kondisi persiapan dan tempatkan rincian baru lewat drill-down/tab dengan pola sama. Jangan mengubah seluruh dashboard menjadi desain onboarding baru. Empty state menjelaskan tindakan pertama, bukan grafik palsu.
+
+Buat /persiapan sebagai workspace checklist: kategori, item, wajib/opsional, PIC opsional, tenggat opsional, status, alasan, catatan, bukti, dan tautan sumber. Sediakan template saran legalitas/profil, pendataan anggota, rencana kerja/anggaran, tempat/peralatan, pemasok/produk, SOP, akun petugas, keuangan awal, uji sistem, dan keputusan pembukaan. Template bukan pengakuan persyaratan hukum lengkap atau sudah dipenuhi. Tanpa item relevan, progres adalah belum diatur; jangan bagi dengan nol.
+
+Unit memiliki Rencana -> Persiapan -> Siap Dibuka -> Aktif dengan prasyarat dan riwayat. Tidak aktif otomatis karena tanggal komputer sudah 2027. Ubah status pada demo hanya simulasi. Buat panel pemeriksaan kesiapan dan CTA yang mengarah ke data yang kurang. Tindakan membuka unit memerlukan hak dan keputusan pengurus yang nanti disimpan backend.
+
+Dashboard operasional cukup kerangka state yang menunggu data: penjualan, kas tercatat, stok, tugas. Bedakan belum dimasukkan, nol transaksi tercatat, dan data gagal dimuat. Saat database error kelak, tampilkan error; jangan menggantinya dengan nol.
+
+Kriteria selesai: checklist dan tugas saling menavigasi; progres berubah karena status, bukan angka tetap; tanggal runtime Asia/Jakarta; unit nonaktif tidak dapat melakukan simulasi penjualan di luar mode latihan eksplisit. Uji desktop/tablet dan keadaan kosong/error.

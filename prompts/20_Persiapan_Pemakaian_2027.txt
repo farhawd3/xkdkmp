@@ -1,0 +1,15 @@
+Laksanakan tahap 20: siapkan penggunaan Abdul Halim menjelang awal 2027. Ini pemeriksaan kesiapan dan serah terima, bukan otomatis membuka gerai. Jangan mengubah tanggal atau menciptakan transaksi hanya untuk mengisi dashboard.
+
+Tinjau kesesuaian hosting untuk operasional organisasi: prototipe di Hobby tidak otomatis siap dipakai bekerja. Jangan mengaktifkan paket berbayar tanpa keputusan saya; sediakan konfigurasi dan hasil uji lokal terlebih dahulu.
+
+Tinjau data produksi: nama legal koperasi, wilayah/alamat, dokumen, staf dan kewenangan, tahun buku, kebijakan simpanan, akun/mapping, rekening, saldo awal, anggota, master produk/satuan/harga, supplier, persediaan awal, lokasi/peralatan, SOP kasir/retur/approval, backup dan akses pemulihan. Tandai setiap butir sudah diverifikasi/belum diisi/tidak relevan dengan bukti dan pemilik.
+
+Saldo dan stok awal hanya diinput dari pemeriksaan nyata dan dokumen opening yang disahkan. Bila memang nol, simpan verifikasi nol sebagai keputusan eksplisit, bukan asumsi. Jangan mengimpor data demo atau mengosongkan produksi yang sudah berisi data nyata. Data persiapan nyata tetap dipertahankan.
+
+Tanggal mulai tepat belum ditetapkan; tampilkan target Awal 2027 sampai dipilih pihak berwenang. Aktivasi per unit melalui readiness gate server: PIC, lokasi, produk/harga bila relevan, kebijakan/akun, stok atau keadaan nol terverifikasi, shift, izin peran, SOP dan keputusan yang diperlukan. Unit lain tetap rencana/persiapan. Checklist template bukan bukti bahwa seluruh persyaratan hukum otomatis terpenuhi.
+
+Laksanakan latihan pengguna pada staging: Abdul Halim memeriksa dashboard/tugas/laporan; kasir menjalankan transaksi/retur/tutup shift; bendahara memeriksa jurnal/rekonsiliasi; pengawas menelusuri bukti. Catat hasil dan perbaiki blocker. Tidak membebani saya dengan istilah IT tanpa penjelasan.
+
+Buat checklist hari pembukaan, penutupan harian, evaluasi mingguan dan tutup bulanan; PIC untuk bantuan teknis dan keuangan; jadwal review keamanan/dependency serta pemulihan. Tunjukkan pekerjaan yang masih perlu keputusan nyata, terutama AD/ART, mapping akun, pajak, SHU dan unit opsional.
+
+Kriteria selesai: aplikasi siap digunakan sebatas modul yang telah lolos; status aktif hanya diubah setelah keputusan nyata dan prasyarat terpenuhi. Beri ringkasan siap/belum siap per modul, bukti, langkah aktivasi dan batas penggunaan. Jangan mengklaim kepatuhan hukum atau kebenaran seluruh kebijakan dari hasil pengujian kode saja.

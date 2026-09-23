@@ -1,0 +1,15 @@
+Laksanakan tahap 13: backend pembelian dan persediaan, memakai mesin jurnal tahap 12. Definisikan dampak tiap status dalam docs/INVENTORY_RULES.md sebelum coding dan implementasikan hingga selesai.
+
+Default usulan costing gerai: moving weighted average per produk/gudang, disahkan keuangan sebelum produksi. Pemilihan batch fisik mendahulukan kedaluwarsa dekat (FEFO) jika relevan; FEFO bukan metode perhitungan HPP. Biaya satuan memakai presisi cukup dan pergerakan nilai direkonsiliasi. Kebijakan perubahan harga/biaya, ongkir, diskon dan pajak tidak boleh diputuskan diam-diam.
+
+PO draft/approval tidak menambah stok atau jurnal. Penerimaan parsial mengacu PO dan menambah stok melalui mutasi posted. Untuk pembelian kredit, gunakan alur barang diterima belum ditagih (GRNI/akun perantara) yang dipetakan: penerimaan mengakui persediaan/perantara, invoice memindahkan perantara ke utang tanpa menambah stok lagi, pembayaran mengurangi utang/kas. Sediakan shortcut pembelian tunai dengan dokumen terkait dan dampak yang sama tanpa penggandaan. Tangani selisih qty/harga secara eksplisit; jangan menyembunyikan di total.
+
+Model stock ledger per unit/gudang/produk/batch dengan jenis opening, receive, sale, sales_return, purchase_return, transfer_out/in, adjustment dan write_off. Stok awal memakai dokumen opening/inventory yang terkait jurnal dan bukti; penambahan master produk tidak membuat stock movement. Barang rusak/kedaluwarsa dipisahkan dari available-to-sell. Retur pemasok mengacu penerimaan dan status invoice/payment; posting koreksi utang/piutang klaim sesuai mapping, tidak otomatis menjadi kas kembali.
+
+Opname: sesi, snapshot/version/cut-off yang jelas, hitungan fisik, selisih, alasan, review dan adjustment; tidak overwrite saldo. Transfer: keluar/di perjalanan/diterima sesuai model yang disepakati, tidak menciptakan barang atau laba. Jika transfer tertunda, stok in-transit tetap dapat ditelusuri. Lock row relevan dengan urutan konsisten; blok saldo negatif dan tangani deadlock/retry terbatas.
+
+Semua finalisasi memakai RPC atomik dengan idempotency, cek permission/unit/status periode dan audit. UI harga/HPP bukan sumber kebenaran. Larang penerimaan berlebih, receipt ganda, retur melebihi jumlah bersih diterima, dan unit conversion nol/negatif. Perbaiki stok minimum dan SKU unik dari audit.
+
+Tes fixture TERISOLASI: terima 10 unit @Rp10.000 lalu 10 @Rp12.000, tanpa biaya/pajak/diskon; total 20 unit, nilai Rp220.000 dan biaya rata-rata Rp11.000. Buat juga kasus partial receive/invoice/payment, retur, transfer dan opname saat ada transaksi bersamaan. Uji rollback jika jurnal gagal.
+
+Kriteria selesai: quantity ledger cocok dengan saldo stok, nilai persediaan cocok dengan akun kontrol, invoice tidak menambah stok lagi. Laporkan hasil dengan angka aktual dan tidak memasukkan fixture ke produksi.

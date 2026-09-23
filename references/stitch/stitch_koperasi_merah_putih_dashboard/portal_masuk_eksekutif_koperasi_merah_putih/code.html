@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Eksekutif &amp; Tata Kelola Terpadu - Koperasi Merah Putih</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Google Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fdf2f4',
+              100: '#fce7ea',
+              200: '#fad2d8',
+              500: '#dc2626',
+              600: '#be123c',
+              700: '#9f1239',
+              800: '#881337',
+              900: '#4c0519',
+              crimson: '#9e1432',
+              hover: '#870e28',
+            }
+          },
+          boxShadow: {
+            'card': '0 25px 60px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.03)',
+            'subtle': '0 1px 3px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for Typography & Fine Adjustments -->
+<style data-purpose="custom-typography">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+    }
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-[#eef2f6] min-h-screen flex items-center justify-center p-4 md:p-8 selection:bg-rose-100 selection:text-brand-900">
+<!-- BEGIN: ExecutivePortalWrapper -->
+<main class="w-full max-w-[1140px] bg-white rounded-[28px] shadow-card border border-slate-200/70 overflow-hidden flex flex-col lg:flex-row transition-all duration-300">
+<!-- BEGIN: LeftInfoColumn -->
+<section class="lg:w-[42%] bg-[#f4f6f8] p-8 md:p-11 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200/80 relative" data-purpose="executive-branding-column">
+<!-- Top Branding Block -->
+<div>
+<div class="flex items-center justify-between gap-3 mb-12">
+<!-- Logo & Brand Name -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-brand-crimson flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[24px]">account_balance</span>
+</div>
+<div>
+<div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-800 leading-tight">Koperasi</div>
+<div class="text-sm font-bold text-brand-crimson leading-tight">Merah Putih</div>
+</div>
+</div>
+<!-- Official Portal Badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fde8eb] text-brand-crimson text-[11px] font-bold tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-crimson animate-pulse"></span>
+            PORTAL RESMI
+          </div>
+</div>
+<!-- Headline & Description -->
+<div class="space-y-4 pr-2">
+<h1 class="text-2xl md:text-[27px] font-extrabold text-slate-900 tracking-tight leading-[1.28]">
+            Portal Eksekutif &amp; Tata Kelola Terpadu
+          </h1>
+<p class="text-[13.5px] leading-relaxed text-slate-500 font-normal">
+            Akses terenkripsi satu pintu untuk jajaran Manajer Eksekutif, Pengurus, dan Dewan Pengawas 7 Unit Usaha.
+          </p>
+</div>
+</div>
+<!-- Bottom Testimonial / Credential Info -->
+<div class="mt-14 pt-8 border-t border-slate-200/80">
+<!-- Quote Text -->
+<blockquote class="text-[13px] italic text-slate-500 font-normal leading-relaxed mb-6">
+          “Transparansi dan gotong royong digital mewujudkan kesejahteraan seluruh anggota koperasi.”
+        </blockquote>
+<!-- Signatory & Legal ID -->
+<div class="flex items-center justify-between text-[11px] font-semibold">
+<span class="text-brand-crimson uppercase tracking-wide">Hj. Siti Rahmawati, M.M.</span>
+<span class="text-slate-400 font-mono tracking-tight">AHU-0002194.AH.01.26</span>
+</div>
+</div>
+</section>
+<!-- END: LeftInfoColumn -->
+<!-- BEGIN: RightAuthColumn -->
+<section class="lg:w-[58%] p-8 md:p-12 bg-white flex flex-col justify-between" data-purpose="executive-login-form">
+<div>
+<!-- Header Form & Security Tag -->
+<div class="flex items-start justify-between gap-4 mb-2">
+<h2 class="text-2xl font-bold text-slate-900 tracking-tight">Masuk ke Akun Anda</h2>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#e6f8ee] text-[#0d944e] text-[11px] font-semibold shrink-0">
+<span class="material-symbols-outlined text-[15px] font-medium">verified_user</span>
+<span>SSL 256-Bit</span>
+</div>
+</div>
+<p class="text-slate-500 text-[13px] mb-6">
+          Masukkan Nomor Induk Manajer atau email kedinasan terdaftar untuk melanjutkan.
+        </p>
+<!-- Role Segmented Control Tabs -->
+<div class="bg-[#f0f3f6] p-1 rounded-xl flex items-center gap-1 mb-6" data-purpose="role-selector" role="tablist">
+<!-- Role 1: Manajer Eksekutif -->
+<button aria-selected="true" class="flex-1 py-2 px-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-2 transition-all bg-white text-brand-crimson shadow-sm" id="tab-manajer" onclick="selectRole('manajer')" role="tab" type="button">
+<span class="material-symbols-outlined text-[16px] text-brand-crimson">person</span>
+<span>Manajer Eksekutif</span>
+</button>
+<!-- Role 2: Pengurus & Pengawas -->
+<button aria-selected="false" class="flex-1 py-2 px-2 rounded-lg text-[12px] font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all" id="tab-pengurus" onclick="selectRole('pengurus')" role="tab" type="button">
+<span class="material-symbols-outlined text-[17px]">groups</span>
+<span>Pengurus &amp; Pengawas</span>
+</button>
+<!-- Role 3: Staf Supervisor -->
+<button aria-selected="false" class="flex-1 py-2 px-2 rounded-lg text-[12px] font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all" id="tab-supervisor" onclick="selectRole('supervisor')" role="tab" type="button">
+<span class="material-symbols-outlined text-[16px]">badge</span>
+<span>Staf Supervisor</span>
+</button>
+</div>
+<!-- Login Interactive Form -->
+<form class="space-y-4" id="login-form" onsubmit="handleFormSubmit(event)">
+<!-- Identity Input Field -->
+<div>
+<label class="block text-[12.5px] font-medium text-slate-700 mb-1.5" for="user-identity" id="identity-label">
+              Nomor Induk Manajer (NIM) / Email Kedinasan
+            </label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[18px]">account_circle</span>
+</span>
+<input class="w-full pl-10 pr-4 py-2.5 text-[13.5px] bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-crimson/20 focus:border-brand-crimson transition-colors text-slate-800 placeholder:text-slate-400" id="user-identity" name="identity" placeholder="nama@koperasi.id atau NIM" required="" type="text" value="siti.rahmawati@koperasi.id"/>
+</div>
+</div>
+<!-- Password Input Field -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-[12.5px] font-medium text-slate-700" for="user-password">Kata Sandi</label>
+<a class="text-[12px] font-medium text-brand-crimson hover:text-brand-hover hover:underline transition-all" href="#forgot-password">Lupa kata sandi?</a>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</span>
+<input class="w-full pl-10 pr-10 py-2.5 text-[13.5px] tracking-wider bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-crimson/20 focus:border-brand-crimson transition-colors text-slate-800" id="user-password" name="password" placeholder="••••••••••••" required="" type="password" value="S3cur3P@ssw0rd!"/>
+<!-- Password Eye Visibility Toggle -->
+<button aria-label="Tampilkan atau sembunyikan kata sandi" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors" onclick="togglePasswordVisibility()" type="button">
+<span class="material-symbols-outlined text-[19px]" id="eye-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Session & Connection Status Row -->
+<div class="flex flex-wrap items-center justify-between text-[12px] pt-0.5 pb-1 gap-2">
+<label class="flex items-center gap-2 cursor-pointer select-none text-slate-600">
+<input checked="" class="w-4 h-4 rounded border-slate-300 text-brand-crimson focus:ring-brand-crimson/30" type="checkbox"/>
+<span>Ingat sesi login saya selama 30 hari</span>
+</label>
+<div class="inline-flex items-center gap-1.5 text-slate-600 font-medium text-[11.5px]">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Koneksi Aman Terverifikasi</span>
+</div>
+</div>
+<!-- Primary Submit Button -->
+<button class="w-full py-3 px-5 bg-brand-crimson hover:bg-brand-hover active:scale-[0.99] text-white rounded-xl font-semibold text-[13.5px] transition-all flex items-center justify-center gap-2 shadow-sm shadow-rose-900/10" id="submit-btn" type="submit">
+<span id="btn-text">Masuk ke Portal Eksekutif</span>
+<span class="material-symbols-outlined text-[17px]">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="relative my-5 text-center">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200"></div>
+</div>
+<span class="relative bg-white px-3 text-[10.5px] font-semibold tracking-wider text-slate-400 uppercase">
+            Atau Akses Cepat
+          </span>
+</div>
+<!-- Biometric Secondary Action -->
+<button class="w-full py-2.5 px-4 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/70 active:scale-[0.995] rounded-xl text-[12.5px] font-medium text-slate-700 transition-all flex items-center justify-center gap-2.5 shadow-sm" onclick="triggerPasskeyPrompt()" type="button">
+<span class="material-symbols-outlined text-rose-500 text-[19px]">fingerprint</span>
+<span>Masuk dengan Kunci Keamanan Perangkat (Biometrik / Passkey)</span>
+</button>
+<!-- Security Notice Box -->
+<div class="mt-4 p-3 rounded-xl bg-[#f8fafc] border border-slate-100 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-slate-400 text-[18px] shrink-0 mt-0.5">shield</span>
+<p class="text-[11.5px] text-slate-500 leading-relaxed">
+            Sistem ini khusus diperuntukkan bagi Manajer, Pengurus, dan Pengawas Koperasi Merah Putih terdaftar. Seluruh aktivitas akses tercatat dan diaudit secara berkala.
+          </p>
+</div>
+</div>
+<!-- Footer Metadata & Navigation -->
+<footer class="mt-8 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11.5px] text-slate-400 gap-y-2">
+<div>
+          © 2025 Koperasi Merah Putih Indonesia.
+        </div>
+<div class="flex items-center gap-3">
+<a class="hover:text-slate-600 transition-colors" href="#help">Bantuan Teknis</a>
+<span>•</span>
+<a class="hover:text-slate-600 transition-colors" href="#privacy">Kebijakan Privasi</a>
+<span>•</span>
+<a class="hover:text-slate-600 transition-colors" href="#sop">Standar SOP</a>
+</div>
+</footer>
+</section>
+<!-- END: RightAuthColumn -->
+</main>
+<!-- END: ExecutivePortalWrapper -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="login-interactions">
+    // Role Switcher Implementation
+    const roleConfig = {
+      manajer: {
+        label: "Nomor Induk Manajer (NIM) / Email Kedinasan",
+        placeholder: "nama@koperasi.id atau NIM",
+        btnText: "Masuk ke Portal Eksekutif",
+        sampleEmail: "siti.rahmawati@koperasi.id"
+      },
+      pengurus: {
+        label: "Nomor Registrasi Pengurus / Email Resmi",
+        placeholder: "pengurus@koperasi.id atau NRP",
+        btnText: "Masuk ke Portal Pengurus & Pengawas",
+        sampleEmail: "dewan.pengawas@koperasi.id"
+      },
+      supervisor: {
+        label: "Nomor Induk Pegawai (NIP) / ID Supervisor",
+        placeholder: "nip.supervisor@koperasi.id",
+        btnText: "Masuk ke Portal Staf Supervisor",
+        sampleEmail: "supervisor.unit1@koperasi.id"
+      }
+    };
+
+    function selectRole(roleKey) {
+      const tabs = ['manajer', 'pengurus', 'supervisor'];
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}`);
+        const icon = btn.querySelector('.material-symbols-outlined');
+        
+        if (tab === roleKey) {
+          btn.className = "flex-1 py-2 px-2 rounded-lg text-[12px] font-semibold flex items-center justify-center gap-2 transition-all bg-white text-brand-crimson shadow-sm";
+          btn.setAttribute('aria-selected', 'true');
+          if (icon) icon.classList.add('text-brand-crimson');
+        } else {
+          btn.className = "flex-1 py-2 px-2 rounded-lg text-[12px] font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all";
+          btn.setAttribute('aria-selected', 'false');
+          if (icon) icon.classList.remove('text-brand-crimson');
+        }
+      });
+
+      // Update Form Content Dynamically
+      const targetConfig = roleConfig[roleKey];
+      document.getElementById('identity-label').textContent = targetConfig.label;
+      const inputEl = document.getElementById('user-identity');
+      inputEl.placeholder = targetConfig.placeholder;
+      inputEl.value = targetConfig.sampleEmail;
+      document.getElementById('btn-text').textContent = targetConfig.btnText;
+    }
+
+    // Toggle Password Visibility
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('user-password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.textContent = 'visibility_off';
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.textContent = 'visibility';
+      }
+    }
+
+    // Form Submit Handler
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const originalText = btnText.textContent;
+
+      btn.disabled = true;
+      btn.classList.add('opacity-90', 'cursor-wait');
+      btnText.textContent = "Memverifikasi Akses...";
+
+      setTimeout(() => {
+        btnText.textContent = "Mengalihkan ke Dashboard...";
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-90', 'cursor-wait');
+          btnText.textContent = originalText;
+          alert("Akses diverifikasi: Selamat datang di Portal Eksekutif Koperasi Merah Putih.");
+        }, 600);
+      }, 900);
+    }
+
+    // Passkey biometric prompt trigger
+    function triggerPasskeyPrompt() {
+      alert("Menghubungkan ke WebAuthn Kunci Keamanan Perangkat (TouchID / Windows Hello)...");
+    }
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

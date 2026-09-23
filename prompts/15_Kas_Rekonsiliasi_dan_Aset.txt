@@ -1,0 +1,15 @@
+Laksanakan tahap 15: kas/bank, biaya, tutup shift, rekonsiliasi dan aset. Gunakan ledger posted sebagai sumber dan jangan menambah omzet lewat pemindahan uang.
+
+Kas/bank: rekening yang benar-benar diinput, transfer antar-kas/bank dengan pasangan debit/kredit, bukti dan status. Transfer internal tidak menjadi penjualan/pendapatan maupun cashflow eksternal konsolidasi. Pengeluaran/beban persiapan tetap boleh saat Persiapan apabila kebijakan, periode dan izin siap. Pembelian aset dipisah dari beban rutin/persediaan dagangan; mapping disahkan keuangan.
+
+Tutup shift menghitung expected cash dari opening/transfer, sale tunai netto, refund, kas masuk/keluar yang relevan; QRIS/transfer tidak dianggap uang laci. Petugas mengisi fisik cash, sistem menghitung selisih, alasan, bukti dan review. Selisih tidak otomatis dihapus atau disembunyikan. Selisih yang disetujui memakai jurnal akun yang ditetapkan.
+
+Atasi race sale vs close shift dengan lock/status database: setelah close efektif, sale baru ditolak; transaksi yang sedang finalisasi memiliki hasil konsisten. Setoran kasir-brankas-bank adalah perpindahan saldo. Pengesahan setoran bukan pendapatan ulang. Tidak ada Otorisasi Semua yang melewati pemeriksaan tiap item; batch harus menampilkan daftar, total, konflik dan hasil setiap item.
+
+Rekonsiliasi bank manual/CSV: import staging, identifikasi duplikasi, match referensi/nominal/tanggal, unmatched, selisih, biaya bank dan bukti. Import mutasi bank tidak otomatis menjadi penjualan atau jurnal kedua. Tidak mengaku koneksi live bank. Export dan laporan dibatasi permission.
+
+Aset: register, biaya perolehan, sumber jurnal pembelian, tanggal siap digunakan, lokasi/PIC, kondisi, kategori dan masa manfaat berdasarkan kebijakan. Jadwal penyusutan usulan, preview, persetujuan dan posting unik per aset/periode; tidak hardcode masa manfaat atau tarif pajak sebagai aturan resmi. Penjualan/penghapusan aset perlu alur otorisasi dan jurnal terpisah.
+
+Tes: penjualan Rp30.000 lalu setoran Rp30.000 menghasilkan pendapatan tetap Rp30.000; transfer kas-banks seimbang; selisih fisik terdeteksi; transaksi setelah shift tutup ditolak; invoice/payment/statement tidak terhitung dua kali; posting penyusutan diulang tetap satu per periode. Uji akses unit dan periode tertutup.
+
+Kriteria selesai: saldo cash yang diharapkan bisa dijelaskan baris per baris, rekonsiliasi menyimpan bukti, dan jejak audit tersedia. Bedakan saldo tercatat dengan saldo telah direkonsiliasi.
