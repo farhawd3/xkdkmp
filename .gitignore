@@ -15,6 +15,14 @@ node_modules/
 # Production
 /build
 
+# Vercel & Turborepo
+.vercel/
+.turbo/
+
+# TypeScript build cache
+*.tsbuildinfo
+next-env.d.ts.bak
+
 # Environment variables
 .env
 .env*.local
@@ -25,9 +33,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
 
 # System Files
 .DS_Store
+Thumbs.db
 *.pem
 
 # IDE & Editor files
@@ -35,3 +45,5 @@ yarn-error.log*
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea/
+*.sublime-workspace
+
