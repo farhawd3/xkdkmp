@@ -14,6 +14,7 @@ import { useResource } from "@/lib/useResource";
 import { formatTanggal } from "@/lib/utils";
 import { isProductionDatabaseConfigured } from "@/lib/repository";
 import { ProductionDashboard } from "./ProductionDashboard";
+import { getWibGreeting } from "@/lib/dashboard-greeting";
 
 async function loadDashboard() {
   const [checklist, units, agendas, tasks, members] = await Promise.all([
@@ -46,7 +47,7 @@ function PreparationDashboard() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Selamat datang, Pak Halim" badgeText="Ruang kerja persiapan"
+      <PageHeader title={`Selamat ${getWibGreeting(new Date())}!`} badgeText="Ruang kerja persiapan"
         description="Lihat kesiapan koperasi, tentukan prioritas, dan lanjutkan pekerjaan dari sini."
         actions={<Link href="/persiapan" className={buttonVariants({ className: "gap-2" })}>Buka checklist <ArrowRight className="h-4 w-4" /></Link>} />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

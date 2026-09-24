@@ -77,7 +77,7 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
     groupName: "Keuangan & Laporan",
     items: [
       {
-        title: "Kas & Buku Besar",
+        title: "Pemantauan Keuangan",
         href: "/keuangan",
         iconName: "Wallet",
       },

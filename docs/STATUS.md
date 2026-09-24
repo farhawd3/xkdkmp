@@ -1,5 +1,84 @@
 # Status Proyek — Kopdes Merah Putih Ladang Laweh
 
+## Checkpoint 24 September 2026 — audit detail desain meja kerja
+
+- Browser terintegrasi dipakai untuk spot-check tablet 884 px pada Meja Kerja, Pemantauan Gerai, Tugas & Agenda, Pemantauan Keuangan, Neraca & SHU, dan Pengaturan. Tidak terlihat halaman melebar atau kartu bertumpuk pada layar yang diperiksa; ini bukan klaim seluruh kondisi data dan dialog telah diuji.
+- Temuan Meja Kerja: filter sumber terlalu sempit sehingga pilihan terpotong. Tata letak kini dua kolom pada tablet, dengan pencarian di baris penuh; ukuran teks pencarian 14 px dan tinggi input 48 px. Keadaan kosong tidak lagi menyimpulkan “semua aman” dari daftar tanpa item, melainkan menjelaskan batas data serta memberi pintasan memeriksa rekap gerai.
+- Form pencarian Tugas & Agenda mendapat nama yang dapat dibaca pembaca layar; tombol ekspor tetap setinggi sedikitnya 44 px pada tablet. Tidak ada perubahan SQL, API, atau data Supabase. Verifikasi akhir: **208/208 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Spot-check browser Meja Kerja pada 884 px menunjukkan opsi filter terbaca penuh dan keadaan kosong jelas dalam mode terang/gelap; tema dikembalikan ke terang. Server lokal versi terbaru aktif di `http://127.0.0.1:3000`.
+
+## Checkpoint 24 September 2026 — sapaan dashboard mengikuti WIB
+
+- Header Dashboard Manajer kini menampilkan **Selamat pagi/siang/sore/malam!** menurut jam `Asia/Jakarta`, tanpa nama pribadi. Tampilan memakai ikon sesuai waktu, gradasi pastel lembut, dan tombol aksi yang tetap mudah disentuh pada tablet. Dashboard persiapan juga tidak lagi menyebut nama pada judulnya.
+- Batas jam diuji otomatis: pagi 04.00–10.59, siang 11.00–14.59, sore 15.00–17.59, malam 18.00–03.59 WIB. Tidak ada perubahan data, API, atau Supabase. Verifikasi: **208/208 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Browser terintegrasi pada lebar tablet memperlihatkan “Selamat malam!” tanpa nama; mode terang dan gelap terbaca baik, lalu tema dikembalikan ke terang. Server lokal versi baru aktif di `http://127.0.0.1:3000`.
+
+## Checkpoint 24 September 2026 — sembilan anotasi browser
+
+- `/kinerja-gerai`: pemilih bulan dan tombol tindakan dipisah dari judul agar tidak berdesakan; filter pada tablet memakai dua kolom lalu pencarian selebar baris; kartu per gerai mempunyai ruang vertikal lebih lapang, panel angka, dan teks minimal 14 px. Angka tetap bersumber dari Supabase tanpa data contoh.
+- `/unit-usaha`: dialog tambah/edit gerai diperlebar, identitas dikelompokkan, target dan kesiapan sejajar, status mendapat baris penuh, pilihan status disingkat dengan keterangan terpisah. `/persiapan`: dialog tambah checklist juga diperlebar, kelompok kebutuhan diperjelas, pilihan wajib/opsional tidak lagi terpotong. Form dokumen/risiko di Tata Kelola dan tambah barang Persiapan Stok ikut diberi lebar memadai; tiga pilihan risiko disusun menjadi satu baris kategori dan dua pilihan tingkat. Istilah lama “kasir” pada keterangan Kesiapan diganti menjadi layanan gerai.
+- `/tata-kelola`: tab dokumen, notula, dan risiko sekarang mempunyai keadaan kosong dengan ikon, pesan jelas, serta tombol tambah, bukan tabel kosong. `/bantuan`: menambah panduan koperasi, pembukaan gerai, pengendalian kas, dan ritme pemeriksaan mingguan; kartu topik dapat dibuka lewat keyboard serta dilengkapi rujukan JDIH resmi.
+- Tidak ada perubahan SQL, API, skema, atau data Supabase. Browser terintegrasi memeriksa Kinerja pada 884 px, dialog gerai/checklist, tata kelola kosong dalam mode terang/gelap, serta halaman Bantuan. Penyimpanan formulir tidak dicoba agar data koperasi tidak berubah. Verifikasi: **202/202 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Server lokal hasil build terbaru aktif di `http://127.0.0.1:3000`.
+
+## Checkpoint 24 September 2026 — audit tampilan dan dropdown lintas menu
+
+- Browser terintegrasi dipakai untuk menelusuri **15 menu aktif** pada lebar desktop dan tablet (884 px). Audit akhir pada 884 px tidak menemukan halaman melebar horizontal, judul utama terpotong, atau dropdown tanpa label. Formulir tugas, rekap gerai, Kesiapan, Kinerja Gerai, Anggota, dan Pengaturan diperiksa lebih rinci; filter Kinerja serta Kesiapan juga dilihat pada mode gelap. Pemeriksaan ini mencakup layar utama dan popup yang relevan, bukan klaim bahwa setiap kemungkinan isi data/semua popup sudah dicoba.
+- Nama koperasi pada bagian atas sidebar kini boleh turun dua baris, sehingga **Ladang Laweh** tidak lagi terpotong. Deskripsi judul halaman memakai teks 15 px, jarak baris 24 px, dan panjang baris dibatasi agar lebih mudah dibaca.
+- Dropdown filter lama di Meja Kerja, Kinerja Gerai, Stok, Anggota, dan Kesiapan memakai komponen `Select` bersama: tinggi 48 px, teks 14 px, ikon panah konsisten, fokus dan daftar opsi terang/gelap. Filter Kesiapan kini punya label serta kolom yang cukup lebar; pilihan awal disingkat menjadi **Semua sifat**. Versi Stok Persiapan juga diseragamkan.
+- Pilihan gerai pada rekap harian sekarang menampilkan **nama gerai** di dalam dropdown dan **kode gerai** pada baris bantuan, sehingga nama tidak tertimpa ikon. Teks pilar Kesiapan yang menyebut POS diganti dengan istilah layanan gerai. Pencarian Anggota diberi label aksesibilitas dan teks lebih besar.
+- Tidak mengubah data, API, atau skema Supabase. Verifikasi akhir: **202/202 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses; server lokal `http://127.0.0.1:3000` aktif kembali.
+
+## Checkpoint 24 September 2026 — teks dropdown formulir
+
+- Audit visual pada popup **Tambah Tugas Baru** menemukan nama gerai terpotong karena pilihan dipusatkan dengan ruang kiri-kanan besar, sementara ikon panah memakai ruang di kanan. `Select` bersama sekarang memakai perataan kiri, padding kiri 16 px/kanan 48 px, dan daftar opsinya juga rata kiri. Dropdown HTML biasa mengikuti perataan kiri yang konsisten. Target sentuh dan gaya terang/gelap tetap dipertahankan.
+- Popup tugas baru dan tugas dari kendala diperlebar sedikit agar pilihan nama gerai serta kolom PIC lebih lega. Tidak ada perubahan isi pilihan, alur simpan, API, atau database.
+- Saat spot-check, nama "Gerai Sembako Nagari" kini terlihat penuh dan opsi dropdown rata kiri. Audit juga menemukan Escape pada daftar pilihan ikut menutup modal induk; pengelolaan fokus diperbaiki untuk menangani fokus pada baris `option`. Uji browser akhir menunjukkan Escape menutup daftar pilihan, sedangkan formulir tugas tetap terbuka. Pemeriksaan menggunakan browser langsung sesuai panduan computer-use; tidak ada data yang disimpan.
+- Verifikasi akhir: **202/202 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Server utama `http://127.0.0.1:3000` aktif kembali. Tidak ada SQL, migrasi, atau perubahan Supabase.
+
+## Checkpoint 24 September 2026 — pemilih bulan dan popup panduan
+
+- Dua pemilih bulan yang sebelumnya masih native, yaitu buku rekap pada `/laporan` dan filter `/kinerja-gerai`, diganti dengan komponen `MonthPicker` bersama. Popup menampilkan 12 bulan sebagai tombol besar, navigasi tahun, penanda bulan aktif/bulan ini, batas minimum–maksimum, dan warna terang/gelap. Nilai yang dikirim ke API tetap format `YYYY-MM`; pergantian bulan pada buku rekap tetap mengembalikan halaman ke 1.
+- Popup **Panduan cepat manajer** di header kini berupa empat kartu pintasan ke Pemantauan Gerai, Tugas & Agenda, Anggota, dan Keuangan. Status organisasi dan batasan angka akuntansi tetap dijelaskan singkat, sedangkan Panduan Lengkap masih tersedia. Tidak ada data yang diubah oleh popup ini.
+- Tidak ada SQL, migrasi, atau perubahan Supabase. Spot-check browser memastikan popup 12 bulan terbuka utuh pada mode terang dan gelap di `/laporan`, pilihan Agustus mengubah periode yang dimuat, serta kontrol yang sama muncul di `/kinerja-gerai`. Popup Panduan cepat diperiksa setelah dibuat lebih ringkas sehingga empat pintasan dan catatan penting terlihat dalam satu tampilan; tema pengguna dikembalikan ke terang.
+- Verifikasi akhir: **200/200 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Server utama `http://127.0.0.1:3000` aktif kembali.
+
+## Checkpoint 24 September 2026 — kalender, popup, dan briefing manajer
+
+- Dropdown bersama kini memberi ruang kiri-kanan seimbang untuk judul pilihan; daftar opsi pada browser yang mendukung `base-select` disejajarkan tengah. Fallback browser lama tetap mengikuti kemampuan sistem operasi.
+- `DateInput` tidak lagi mengandalkan popup kalender bawaan browser. Kalender baru memakai bahasa Indonesia, navigasi bulan, penanda hari ini/tanggal aktif, tombol kosongkan, batas min/maks, Escape, klik luar, serta warna terang/gelap. Dipakai pada form tugas, tugas dari kendala, persiapan/tata kelola, rekap gerai, dan tanggal jurnal simulasi. Input HTML asli tetap ada untuk form dan validasi.
+- Popup `Dialog` bersama diberi garis aksen dan tombol tutup yang lebih jelas. Dashboard mendapat briefing prioritas harian dari **data nyata** (tugas terlambat → gerai belum melapor → stok rendah), lengkap dengan jalan pintas tindakan. Ini aturan sederhana, **bukan analisis AI**.
+- Tidak ada SQL, migrasi, atau perubahan Supabase. Pemilih **bulan** pada Kinerja Gerai dan buku rekap masih native; popup-nya dapat berbeda menurut browser. Pengecekan seluruh halaman satu per satu belum diklaim selesai.
+- Spot-check browser pada server berakses Supabase nyata: popup tugas, kalender bertingkat, dan dashboard terlihat utuh pada mode gelap; dashboard juga diperiksa pada mode terang. Pilihan tanggal terbukti kembali ke form. Server utama `http://127.0.0.1:3000` dijalankan ulang dan briefing tampil di sana. Pengujian visual tidak menyentuh data koperasi.
+- Verifikasi akhir: **198/198 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Tes tambahan memeriksa pemilihan tanggal serta Escape pada kalender tidak menutup form induk.
+
+## Checkpoint 24 September 2026 — pilihan API gerai & buku rekap
+
+- Pengaturan: saat **API · lihat persiapan** dipilih, panel nama sistem dan API key gerai muncul. Kunci hanya sementara di memori server lokal, tidak dikirim kembali ke browser; belum ada penarikan data karena penyedia/format endpoint belum diketahui. OpenAI key tetap tersedia terpisah. **Sumber aktif tetap manual.**
+- Form rekap manual sekarang ditolak server bila mencoba memakai `source_type: "api"`; tidak ada label API palsu. Form manual **belum dinonaktifkan** karena belum ada konektor valid atau data API untuk dipratinjau. Alur yang disepakati: API → antrean → pratinjau → persetujuan manajer → database, dan baru setelah konektor aktif input manual dikunci pada cakupan yang sama.
+- `/laporan` menampilkan buku rekap operasional per gerai/bulan dari Supabase dengan pagination 25 baris, bukan buku besar akuntansi. Status organisasi kini mengalir dari Pengaturan ke banner/sidebar; tahun buku ke laporan; rekening bank tampil bertopeng sebagai referensi di Keuangan, bukan saldo. Bantuan header lama yang menyebut login/POS/jurnal aktif dibersihkan.
+- Rancangan pembukuan lengkap, opsi tambah akun, tahapan API gerai, dan panduan SQL ada di [RENCANA_PEMBUKUAN_DAN_API_GERAI.md](RENCANA_PEMBUKUAN_DAN_API_GERAI.md). Draf SQL **6 tabel baru** ada di `supabase/drafts/20260924000010_accounting_and_unit_import.sql`. **Belum dijalankan di Supabase**, belum diuji pada salinan DB, dan belum menjadi fitur pembukuan aktif. Minta persetujuan eksplisit sebelum migrasi. Standar akuntansi spesifik dan saldo awal masih perlu keputusan pengurus/akuntan.
+- Verifikasi akhir: **196/196 tes lulus**, TypeScript 0 galat, build Next.js **41 rute** sukses. Endpoint kunci gerai dan buku rekap lokal HTTP 200; September saat pemeriksaan berisi 0 rekap. Spot-check browser Pengaturan dan Neraca pada mode gelap menunjukkan panel kondisional dan keadaan kosong terbaca. Setelah restart, banner benar-benar menampilkan status tersimpan **Siap Buka Fisik** alih-alih teks lama Mode Persiapan. Server lokal aktif di `http://127.0.0.1:3000`. Halaman `/keuangan/jurnal` lama diberi penanda **Simulasi Lokal**, bukan buku besar resmi.
+
+## Checkpoint 24 September 2026 — tombol API key dan daftar dropdown
+
+- Tombol tampil/sembunyikan API key kini berada **di dalam kolom input**, sejajar tengah dengan target sentuh 44 px; label bantuan tetap berada di bawah kolom.
+- Gaya daftar pilihan `select` diterapkan juga ke dropdown HTML biasa di berbagai halaman, bukan hanya komponen `Select`: panel rounded, warna teks/latar konsisten, opsi minimal 44 px, pilihan aktif rose, dan warna gelap yang terbaca. Pada browser yang belum mendukung `appearance: base-select`, warna opsi tetap punya fallback native; bentuk popup tetap mengikuti sistem operasi.
+- Spot-check browser: input API key di Pengaturan serta dropdown Status Bisnis dan filter Meja Kerja dibuka dan diperiksa; filter juga diperiksa pada mode gelap, lalu tema dikembalikan ke terang. Tidak ada perubahan data Supabase.
+- Verifikasi: **190/190 tes lulus**, TypeScript 0 galat, build Next.js **39 rute** sukses. Server produksi lokal dijalankan ulang di `http://127.0.0.1:3000`.
+
+## Checkpoint 24 September 2026 — input API key OpenAI di Pengaturan
+
+- `/pengaturan` kini memiliki kolom API key OpenAI bertipe sandi, tombol tampil/sembunyikan, simpan sementara, uji koneksi, dan hapus. Status hanya menyatakan terpasang/belum; nilai kunci tidak dikirim kembali ke browser.
+- Kunci dari form hidup **hanya di memori proses server lokal**, hilang ketika server dimulai ulang, dan tidak masuk Supabase, Git, atau penyimpanan browser oleh aplikasi. Alternatif yang lebih menetap adalah `OPENAI_API_KEY` di environment server. Form dan uji koneksi dibatasi untuk akses loopback lokal, bukan Vercel/LAN tanpa TLS dan pengelolaan rahasia yang tepat.
+- Tombol uji koneksi memeriksa penerimaan kunci melalui endpoint model OpenAI tanpa mengirim data koperasi. **Analisis AI atas tugas belum diaktifkan**; sambungan API keuangan juga belum aktif.
+- Tidak ada SQL/migrasi atau perubahan data Supabase. Pengujian akhir: **189/189 tes lulus**, TypeScript 0 galat, build Next.js **39 rute** sukses. Halaman Pengaturan telah diperiksa secara visual di browser; uji koneksi dengan kunci asli belum dilakukan.
+
+## Checkpoint 24 September 2026 — keuangan jujur & grafik operasional
+
+- `/keuangan` diperbarui menjadi pemantauan operasional dengan grafik omset tujuh hari, angka rinci, dan pemisahan setoran dilaporkan dari saldo kas. Mode manual tetap aktif melalui `/monitoring`; kartu sumber API abu-abu/belum aktif karena penyedia belum ditentukan.
+- `/laporan` kini halaman kesiapan Neraca/SHU. Angka utang nol tanpa bukti, klaim kas fisik bendahara, dan simulasi pembagian SHU tanpa keputusan RAT dihapus dari respons keuangan/UI. Neraca dan SHU resmi **belum tersedia** sampai jurnal, saldo awal, HPP, kewajiban, pajak, dan keputusan RAT tercatat.
+- Pada checkpoint ini, `/pengaturan` baru menampilkan status integrasi tanpa kolom kunci; kolom OpenAI sementara ditambahkan pada checkpoint berikutnya di atas. Pilihan penyedia API keuangan tetap menunggu Bapak. Alur dan keputusan migrasi berikutnya ada di [RENCANA_INTEGRASI_DAN_AKUNTANSI.md](RENCANA_INTEGRASI_DAN_AKUNTANSI.md).
+- API keuangan memakai hitungan sen integer dan menolak ringkasan bila jumlah rekap lebih besar dari baris yang diambil. **Tidak ada SQL atau perubahan Supabase** pada checkpoint ini. Tahap API persetujuan impor dan akuntansi resmi akan memerlukan migrasi baru yang harus dijelaskan dan disetujui sebelum dijalankan.
+- Verifikasi akhir: **186/186 tes lulus (22 berkas)**, TypeScript 0 galat, build Next.js **37 rute** sukses setelah penyelarasan nama menu. GET `/api/finance/summary` pada Supabase nyata HTTP 200 dengan tujuh hari tren dan status laporan resmi `false` (saat cek, 0 rekap). Spot-check `/laporan` dan `/keuangan` pada browser menunjukkan teks/kartu tidak bertumpuk; `/keuangan` juga diperiksa pada mode gelap. Grafik **berisi data** belum dapat diuji karena rekap nyata saat ini kosong. Server build final kembali aktif di `http://127.0.0.1:3000` dengan izin jaringan.
+
 ## Pemeriksaan runtime 24 September 2026 — gagal memuat massal teratasi
 
 - Saat server produksi lokal dijalankan dalam sandbox tanpa izin jaringan keluar, 10 API inti mengembalikan HTTP 500 dengan `TypeError: fetch failed`. Host Supabase dapat diakses dari luar sandbox (uji HTTPS tanpa kredensial menghasilkan HTTP 401 yang wajar), sehingga kegagalan massal bukan bukti kerusakan tabel.

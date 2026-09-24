@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
+import { DateInput } from "@/components/ui/DateInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { formatRupiah, getTodayWIB } from "@/lib/utils";
@@ -34,6 +35,7 @@ export const MonitoringReportForm: React.FC<MonitoringReportFormProps> = ({
   const revenueNum = parseFloat(grossRevenue) || 0;
   const expenseNum = parseFloat(operationalExpenses) || 0;
   const estimatedProfit = revenueNum - expenseNum;
+  const selectedUnit = units.find((unit) => unit.id === (selectedUnitId || units[0]?.id));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,22 +109,19 @@ export const MonitoringReportForm: React.FC<MonitoringReportFormProps> = ({
                   label="Pilih Gerai / Unit Usaha"
                   value={selectedUnitId || (units[0]?.id || "")}
                   onChange={(e) => setSelectedUnitId(e.target.value)}
+                  helperText={selectedUnit?.code ? `Kode gerai: ${selectedUnit.code}` : undefined}
                   options={units.map((u) => ({
                     value: u.id,
-                    label: u.code ? `${u.name} (${u.code})` : u.name,
+                    label: u.name,
                   }))}
                 />
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Tanggal Laporan <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="date"
+                  <DateInput
+                    label="Tanggal Laporan"
                     required
                     value={reportDate}
                     onChange={(e) => setReportDate(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
                   />
                 </div>
               </div>

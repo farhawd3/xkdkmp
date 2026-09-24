@@ -124,7 +124,7 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
           ? "Perbarui rincian instruksi kerja, PIC, atau tenggat waktu."
           : "Delegasikan pekerjaan baru kepada staf gerai atau jadwalkan aksi manajerial."
       }
-      maxWidth="lg"
+      maxWidth="xl"
       footer={<div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onClose} disabled={submitting}>Batal</Button>
         <Button type="submit" form={formId} isLoading={submitting}>{submitting ? "Menyimpan..." : task ? "Perbarui Tugas" : "Simpan Tugas"}</Button>

@@ -22,6 +22,8 @@ import {
   DownloadCloud,
   UploadCloud,
   FileJson,
+  Link2Off,
+  FilePenLine,
 } from "lucide-react";
 import {
   Card,
@@ -44,9 +46,12 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { useTheme, type ThemePreference } from "@/lib/ThemeContext";
 import { useOrganizationProfile, OrganizationProfileData } from "@/lib/OrganizationContext";
 import { getTodayWIB, formatTanggal } from "@/lib/utils";
+import { OpenAiKeySettings } from "@/components/pengaturan/OpenAiKeySettings";
+import { UnitApiKeySettings } from "@/components/pengaturan/UnitApiKeySettings";
+import { businessStatusLabel } from "@/lib/organization-status";
 
 export default function PengaturanPage() {
-  const { profile: globalProfile, setProfileData, reloadProfile: reloadGlobalProfile } = useOrganizationProfile();
+  const { setProfileData, reloadProfile: reloadGlobalProfile } = useOrganizationProfile();
 
   const [profile, setProfile] = useState<OrganizationProfileData | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -62,6 +67,7 @@ export default function PengaturanPage() {
   const [bankName, setBankName] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankAccountHolder, setBankAccountHolder] = useState("");
+  const [financeSourceView, setFinanceSourceView] = useState<"manual" | "api">("manual");
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -314,7 +320,7 @@ export default function PengaturanPage() {
           { label: "Pengaturan Profil & Tata Kelola", active: true },
         ]}
         title="Profil & Pengaturan Organisasi"
-        badgeText={businessStatus === "aktif" ? "Operasional Aktif" : "Mode Persiapan"}
+        badgeText={businessStatusLabel(profile.business_status)}
         badgeVariant="crimson"
         description="Pengelolaan identitas lembaga koperasi, nama pengelola/manajer, wilayah kerja nagari, dan data rekening resmi yang tersimpan permanen di database Supabase."
         actions={
@@ -375,8 +381,8 @@ export default function PengaturanPage() {
         <div className="leading-relaxed">
           <p className="font-semibold text-amber-900 dark:text-amber-200 mb-1">Fleksibilitas Identitas &amp; Wilayah Kerja</p>
           <p className="text-amber-800 dark:text-amber-300/90">
-            Seluruh data identitas koperasi, nama manajer, dan wilayah penempatan dapat disesuaikan kapan saja melalui formulir ini.
-            Perubahan yang disimpan langsung berlaku di seluruh tampilan aplikasi (Header, Sidebar, Laporan) dan tersimpan aman di database Supabase.
+            Nama dan status koperasi tampil di navigasi serta banner; tahun buku tampil di halaman laporan. Kontak dan rekening disimpan sebagai referensi, bukan bukti saldo atau transaksi bank.
+            Perubahan profil yang disimpan masuk ke Supabase.
           </p>
         </div>
       </div>
@@ -428,6 +434,29 @@ export default function PengaturanPage() {
           <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
             Tampilan aktif saat ini: <strong className="text-slate-700 dark:text-slate-200">{theme === "dark" ? "gelap" : "terang"}</strong>.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Integrasi &amp; sumber data</CardTitle>
+          <CardDescription>Sumber aktif saat ini tetap input manual. Pilih API untuk melihat persiapan integrasinya; pilihan ini belum mengubah data atau cara penyimpanan.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Lihat sumber data keuangan">
+            <button type="button" aria-pressed={financeSourceView === "manual"} onClick={() => setFinanceSourceView("manual")} className={`min-h-12 rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors ${financeSourceView === "manual" ? "border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-700 dark:bg-rose-950/30 dark:text-rose-200" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300"}`}>Input manual · aktif</button>
+            <button type="button" aria-pressed={financeSourceView === "api"} onClick={() => setFinanceSourceView("api")} className={`min-h-12 rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors ${financeSourceView === "api" ? "border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-700 dark:bg-rose-950/30 dark:text-rose-200" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300"}`}>API · lihat persiapan</button>
+          </div>
+          {financeSourceView === "manual" ? <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-4 dark:border-rose-900/50 dark:bg-rose-950/20">
+            <div className="flex items-center gap-2 font-semibold"><FilePenLine className="h-5 w-5 text-primary" />Rekap manual terhubung ke Supabase</div>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Bapak mengisi rekap di Pemantauan Gerai. Server menandai sumbernya sebagai manual; angka kemudian muncul di dashboard dan ringkasan keuangan.</p>
+          </div> : <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
+            <div className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-200"><Link2Off className="h-5 w-5" />Sambungan API gerai belum tersedia</div>
+            <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">Bagian ini muncul saat API dipilih, tetapi sumber aktif tetap manual. Agar dapat dihubungkan dengan aman, Bapak perlu menentukan nama penyedia, dokumentasi API, contoh data, dan cara mencocokkan gerai serta tanggal. Jangan tempel API key ke chat.</p>
+            <p className="mt-2 text-xs text-amber-800 dark:text-amber-300">Kolom kunci sementara tersedia di bawah. Tombol aktivasi dan pratinjau nilai API baru dapat dibuat setelah format penyedia jelas; data nantinya perlu ditinjau dan disetujui manajer sebelum masuk database.</p>
+            <UnitApiKeySettings />
+          </div>}
+          <OpenAiKeySettings />
         </CardContent>
       </Card>
 
@@ -484,7 +513,7 @@ export default function PengaturanPage() {
                     setIsDirty(true);
                   }}
                   options={[
-                    { value: "persiapan", label: "Mode Persiapan (Awal 2027)" },
+                    { value: "persiapan", label: "Mode Persiapan" },
                     { value: "siap_buka", label: "Siap Buka Fisik" },
                     { value: "aktif", label: "Operasional Aktif Penuh" },
                     { value: "ditutup_sementara", label: "Ditutup Sementara" },

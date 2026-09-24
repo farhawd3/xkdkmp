@@ -26,6 +26,11 @@ export function useModalFocus(isOpen: boolean, container: RefObject<HTMLDivEleme
     const handleKey = (event: KeyboardEvent) => {
       if (openModals[openModals.length - 1] !== token) return;
       if (event.key === "Escape") {
+        // Pada popup select bergaya, fokus berada pada <option>, bukan <select>.
+        // Escape harus menutup daftar pilihan saja, tanpa menutup formulir induk.
+        const focused = document.activeElement;
+        if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLOptionElement ||
+            focused instanceof HTMLSelectElement || focused instanceof HTMLOptionElement) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         closeRef.current();

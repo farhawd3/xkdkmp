@@ -9,8 +9,11 @@ import {
   HelpCircle,
   Search,
   CheckCircle2,
-  AlertTriangle,
-  FileText,
+  ArrowUpRight,
+  ClipboardList,
+  Store,
+  Users,
+  Wallet,
   X,
   ExternalLink,
   BookOpen,
@@ -25,6 +28,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useTheme } from "@/lib/ThemeContext";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { useOrganizationProfile } from "@/lib/OrganizationContext";
+import { businessStatusLabel } from "@/lib/organization-status";
 
 export interface HeaderProps {
   onMenuToggle: () => void;
@@ -49,6 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, toggleTheme } = useTheme();
+  const { profile } = useOrganizationProfile();
 
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -227,52 +233,50 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       <Dialog
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
-        title="Panduan Operasional Persiapan Koperasi"
-        description="Petunjuk teknis sistem bagi pengelola dan pengurus menuju target Awal 2027."
+        title="Panduan cepat manajer"
+        description="Pilih pekerjaan yang ingin Bapak lanjutkan. Setiap pintasan membuka data sebenarnya."
+        icon={<BookOpen className="h-5 w-5" />}
+        maxWidth="xl"
         footer={
-          <div className="flex items-center justify-between w-full gap-2">
-            <ButtonLink href="/bantuan" onClick={() => setIsHelpOpen(false)} variant="outline" size="sm" className="gap-2">
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <ButtonLink href="/bantuan" onClick={() => setIsHelpOpen(false)} variant="outline" className="w-full gap-2 sm:w-auto">
                 <BookOpen className="h-4 w-4 text-primary-container dark:text-rose-400" />
                 Buka Panduan Lengkap
               </ButtonLink>
-            <Button variant="primary" size="sm" onClick={() => setIsHelpOpen(false)}>
+            <Button variant="primary" onClick={() => setIsHelpOpen(false)} className="w-full sm:w-auto">
               Tutup
             </Button>
           </div>
         }
       >
-        <div className="space-y-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-          <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/20 p-3.5">
-            <h5 className="font-bold text-emerald-900 dark:text-emerald-200 text-sm flex items-center gap-1.5">
+        <div className="space-y-3 text-sm leading-relaxed">
+          <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 dark:border-emerald-900/60 dark:bg-emerald-950/20">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-emerald-900 dark:text-emerald-200">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              Status Sistem Saat Ini: Mode Persiapan
-            </h5>
-            <p className="mt-1 text-emerald-800 dark:text-emerald-300/90">
+              Status organisasi: {businessStatusLabel(profile.business_status)}
+            </h3>
+            <p className="mt-1 text-xs text-emerald-800 dark:text-emerald-200/85">
               {isSupabaseConfigured()
-                ? "Login dan pembacaan data Supabase sudah tersedia pada modul yang terhubung. Transaksi operasional masih ditahan sampai izin dan validasi server selesai diuji."
-                : "Supabase belum dikonfigurasi. Data yang Anda isi di mode persiapan hanya tersimpan selama sesi aplikasi ini dan dapat hilang saat halaman dimuat ulang."}
+                ? "Status berasal dari profil koperasi. Ini bukan penilaian otomatis bahwa seluruh gerai sudah siap."
+                : "Supabase belum dikonfigurasi. Jangan menganggap data tersimpan permanen sebelum koneksi server tersedia."}
             </p>
           </div>
-
-          <div className="space-y-2">
-            <h5 className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider text-xs">
-              Alur Kerja Utama di Lapangan:
-            </h5>
-            <ul className="list-disc pl-4 space-y-1.5 text-slate-600 dark:text-slate-300">
-              <li>
-                <strong>Verifikasi Anggota</strong>: Pastikan dokumen calon anggota terinput valid tanpa menampilkan NIK secara terbuka di layar publik.
-              </li>
-              <li>
-                <strong>Siklus PO Sembako</strong>: Pembuatan pesanan ke grosir (PO) tidak otomatis menambah stok fisik sebelum barang diperiksa di gudang kios.
-              </li>
-              <li>
-                <strong>Disiplin Kasir</strong>: Kasir wajib melakukan hitung fisik murni (*blind count*) saat tutup shift tanpa melihat saldo kalkulasi sistem.
-              </li>
-              <li>
-                <strong>Integritas Jurnal</strong>: Seluruh transaksi berstatus posted bersifat permanen; perbaikan wajib menggunakan Jurnal Pembalikan (*reversal entry*).
-              </li>
-            </ul>
+          <div>
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Langkah kerja sehari-hari</h3>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {[
+                { href: "/monitoring", title: "Pantau laporan gerai", detail: "Rekap & gerai belum lapor", icon: Store },
+                { href: "/pekerjaan", title: "Atur tugas & agenda", detail: "PIC, prioritas & tenggat", icon: ClipboardList },
+                { href: "/anggota", title: "Periksa anggota", detail: "Daftar & status anggota", icon: Users },
+                { href: "/keuangan", title: "Tinjau keuangan", detail: "Angka operasional tercatat", icon: Wallet },
+              ].map((item) => <Link key={item.href} href={item.href} onClick={() => setIsHelpOpen(false)} className="group flex min-h-[78px] items-start gap-2.5 rounded-2xl border border-slate-200 bg-white p-3 transition-colors hover:border-rose-200 hover:bg-rose-50/50 focus-visible:outline-2 focus-visible:outline-primary-container dark:border-slate-700 dark:bg-slate-800/40 dark:hover:border-rose-800 dark:hover:bg-rose-950/20">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-primary-container dark:bg-rose-950/50 dark:text-rose-300"><item.icon className="h-4 w-4" /></span>
+                <span className="min-w-0 flex-1"><strong className="block text-sm text-slate-900 dark:text-slate-100">{item.title}</strong><span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-300">{item.detail}</span></span>
+                <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-primary-container" />
+              </Link>)}
+            </div>
           </div>
+          <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Rekap gerai belum sama dengan saldo bank, buku besar, Neraca, atau SHU resmi.</p>
         </div>
       </Dialog>
 
@@ -292,7 +296,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
               type="text"
               aria-label="Cari menu"
               data-autofocus
-              placeholder="Ketik kata kunci (misal: Kas, PO, Anggota, Laporan)..."
+              placeholder="Ketik kata kunci (misal: Gerai, Tugas, Anggota, Laporan)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-10 pr-3 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"

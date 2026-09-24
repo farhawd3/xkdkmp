@@ -51,6 +51,9 @@ export async function POST(request: Request) {
     }
 
     const report = parsed.data;
+    if (report.source_type !== "manual") {
+      return NextResponse.json({ error: "Sumber API belum aktif. Rekap dari formulir hanya boleh berlabel manual." }, { status: 400 });
+    }
     const grossNum = parseFloat(report.gross_revenue as string);
     const expNum = parseFloat(report.operational_expenses as string);
     const netProfit = (grossNum - expNum).toFixed(2);
@@ -68,7 +71,7 @@ export async function POST(request: Request) {
           transaction_count: report.transaction_count,
           cash_in_hand: report.cash_in_hand,
           operational_notes: report.operational_notes || null,
-          source_type: report.source_type,
+          source_type: "manual",
           // Aplikasi pribadi: set null sesuai skema nullable (mencegah error invalid UUID)
           created_by: null,
         },

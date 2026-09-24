@@ -84,7 +84,7 @@ export const Dialog: React.FC<DialogProps> = ({
         ref={panelRef}
         tabIndex={-1}
         className={cn(
-          "flex max-h-[92dvh] w-full flex-col overflow-hidden bg-white shadow-[0_24px_80px_rgba(30,41,59,0.22)] dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)]",
+          "flex max-h-[92dvh] w-full flex-col overflow-hidden border-t-[3px] border-t-primary-container bg-white shadow-[0_28px_90px_rgba(30,41,59,0.24)] dark:border-t-rose-400 dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)]",
           panelPositionClass,
           maxWidthClasses
         )}
@@ -108,9 +108,10 @@ export const Dialog: React.FC<DialogProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Tutup dialog"
-            className="flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-xl border border-transparent text-slate-500 transition-colors hover:border-slate-200 hover:bg-white hover:text-slate-700 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            className="flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white/80 text-slate-500 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-primary-container focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-container dark:border-slate-600 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-rose-700 dark:hover:bg-rose-950/40 dark:hover:text-rose-200"
           >
             <X className="h-5 w-5" />
           </button>

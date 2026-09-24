@@ -126,7 +126,7 @@ export const MonitoringTaskModal: React.FC<MonitoringTaskModalProps> = ({
       onClose={() => { if (!savingTask) onClose(); }}
       title="Buat Tugas dari Kendala Lapangan"
       description="Alihkan catatan kendala gerai menjadi penugasan operasional yang terukur dan memiliki PIC."
-      maxWidth="lg"
+      maxWidth="xl"
       footer={<div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onClose} disabled={savingTask}>Batal</Button>
         <Button type="submit" form={formId} isLoading={savingTask}>{savingTask ? "Menyimpan Tugas..." : "Simpan Penugasan"}</Button>

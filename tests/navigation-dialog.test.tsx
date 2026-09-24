@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { getActiveNavigationHref, SEARCH_MODULES } from "@/lib/navigation";
 import { Dialog } from "@/components/ui/Dialog";
@@ -41,6 +41,23 @@ describe("Dialog keyboard", () => {
   it("dialog tertutup tidak membuka scroll yang dikunci dialog lain", () => {
     render(<><Dialog isOpen onClose={() => {}} title="Aktif">Isi</Dialog><Dialog isOpen={false} onClose={() => {}} title="Tertutup">Isi</Dialog></>);
     expect(document.body.style.overflow).toBe("hidden");
+  });
+  it("Escape saat fokus pada select tidak menutup formulir induk", () => {
+    const onClose = vi.fn();
+    render(<Dialog isOpen onClose={onClose} title="Form tugas"><select aria-label="Gerai"><option>Gerai A</option></select></Dialog>);
+    const select = screen.getByLabelText("Gerai") as HTMLSelectElement;
+    select.focus();
+    fireEvent.keyDown(select, { key: "Escape" });
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog", { name: "Form tugas" })).toBeDefined();
+  });
+  it("Escape saat fokus pada option popup juga tidak menutup formulir induk", () => {
+    const onClose = vi.fn();
+    render(<Dialog isOpen onClose={onClose} title="Form tugas"><select aria-label="Gerai"><option>Gerai A</option></select></Dialog>);
+    const option = screen.getByRole("option", { name: "Gerai A" });
+    fireEvent.keyDown(option, { key: "Escape" });
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog", { name: "Form tugas" })).toBeDefined();
   });
 });
 

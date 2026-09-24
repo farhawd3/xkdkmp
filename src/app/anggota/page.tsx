@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardMetric } from "@/components/ui/Card";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/layout";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -200,24 +201,27 @@ export default function AnggotaPage() {
               <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
               <input
                 type="text"
+                aria-label="Cari anggota"
                 placeholder="Cari nama anggota, nomor anggota, atau telepon..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 pl-10 pr-3 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-container"
+                className="h-12 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 pl-10 pr-3 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-container"
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <select
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <div className="min-w-44 flex-1 sm:flex-none">
+              <Select
+                aria-label="Filter status anggota"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-container w-full sm:w-auto"
               >
                 <option value="all">Semua Status</option>
                 <option value="aktif">Aktif</option>
                 <option value="calon">Calon Anggota</option>
                 <option value="nonaktif">Nonaktif</option>
-              </select>
+              </Select>
+              </div>
 
               <Button type="submit" variant="primary" size="sm" className="min-h-11 px-4 text-xs font-bold">
                 Cari

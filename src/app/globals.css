@@ -183,41 +183,48 @@
   .dark .text-primary, .dark .text-primary-container { color: #E9ACC0; }
 }
 
-/* Native fallback preserves keyboard, touch, forms and screen-reader behavior. */
-.kopdes-select { cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kopdes-select:disabled { cursor: not-allowed; }
+/* Seluruh select tetap native agar formulir, keyboard, dan pembaca layar berfungsi. */
+select:not([multiple]) { min-height: 44px; cursor: pointer; text-align: left; text-align-last: left; }
+select:not([multiple]):disabled { cursor: not-allowed; }
+select:not([multiple]) option,
+select:not([multiple]) optgroup { background-color: var(--surface-card); color: var(--text-main); text-align: left; }
+.kopdes-select:not([multiple]) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; text-align-last: left; }
+.kopdes-select option { text-align: left; }
 .kopdes-select:focus-visible { outline-offset: 3px; }
 @supports (appearance: base-select) {
-  .kopdes-select,
-  .kopdes-select::picker(select) { appearance: base-select; }
+  select:not([multiple]),
+  select:not([multiple])::picker(select) { appearance: base-select; }
   .kopdes-select::picker-icon { display: none; }
-  .kopdes-select::picker(select) {
+  select:not([multiple])::picker(select) {
     margin-block: 6px;
-    padding: 6px;
+    padding: 7px;
     border: 1px solid var(--border-muted);
     border-radius: 16px;
     background: var(--surface-card);
     color: var(--text-main);
-    box-shadow: 0 16px 40px rgb(15 23 42 / 16%);
-    max-height: min(360px, 55dvh);
+    box-shadow: 0 18px 44px rgb(15 23 42 / 17%);
+    max-height: min(380px, 55dvh);
     overflow-y: auto;
   }
-  .kopdes-select option {
+  select:not([multiple]) option {
     min-height: 44px;
-    padding: 10px 14px;
+    padding: 11px 14px;
     border-radius: 10px;
     background: var(--surface-card);
     color: var(--text-main);
     white-space: normal;
+    text-align: left;
   }
-  .kopdes-select option:hover,
-  .kopdes-select option:focus-visible { background: var(--border-subtle); }
-  .kopdes-select option:checked {
+  select:not([multiple]) option:hover,
+  select:not([multiple]) option:focus-visible { background: var(--surface-soft); }
+  select:not([multiple]) option:checked {
     background: #fff1f2;
     color: #8d3a58;
     font-weight: 600;
   }
-  .dark .kopdes-select option:checked { background: #3c2b3c; color: #f0bed0; }
-  .kopdes-select option:disabled { opacity: 0.5; }
-  .kopdes-select:open { border-color: var(--primary); }
+  .dark select:not([multiple]) option:checked { background: #3c2b3c; color: #f0bed0; }
+  select:not([multiple]) option:disabled { opacity: 0.5; }
+  select:not([multiple]):open { border-color: var(--primary); }
+  .kopdes-select:not([multiple]) option { text-align: left; }
+  .kopdes-select:not([multiple]) option::checkmark { margin-right: 8px; }
 }

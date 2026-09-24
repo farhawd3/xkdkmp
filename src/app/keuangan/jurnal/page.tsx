@@ -30,6 +30,7 @@ import { PageHeader } from "@/components/layout";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { DateInput } from "@/components/ui/DateInput";
 import { Select } from "@/components/ui/Select";
 import { formatRupiah } from "@/lib/utils";
 import { preparationRepository } from "@/lib/repository";
@@ -230,9 +231,9 @@ export default function JurnalPage() {
           { label: "Buku Jurnal Umum", active: true },
         ]}
         title="Buku jurnal"
-        badgeText="Mode Persiapan"
+        badgeText="Simulasi Lokal"
         badgeVariant="crimson"
-        description="Tinjau catatan debit dan kredit, buat jurnal, atau catat pembalikan pada sesi ini."
+        description="Latihan jurnal dalam sesi aplikasi; belum tersimpan sebagai pembukuan resmi di Supabase."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <ButtonLink href="/keuangan" variant="outline" className="gap-2 min-h-[44px]">
@@ -255,7 +256,7 @@ export default function JurnalPage() {
       <div className="rounded-2xl border border-amber-200/80 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/30 p-4 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3 shadow-sm">
         <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <strong className="text-amber-950 dark:text-amber-100">Modul Simulasi Pembukuan Akuntansi (Double-Entry):</strong> Modul ini disediakan untuk instrumen pembelajaran tata kelola akuntansi berstandar SAK EP kelak. Untuk pemantauan operasional gerai harian saat ini, seluruh arus kas nyata dipantau melalui menu <strong className="underline">/keuangan</strong> dan <strong className="underline">/monitoring</strong>.
+          <strong className="text-amber-950 dark:text-amber-100">Simulasi, bukan buku besar resmi:</strong> Entri di sini hanya latihan dalam sesi dan tidak masuk Supabase. Standar akuntansi koperasi sektor riil, saldo awal, serta tabel jurnal permanen belum ditetapkan/diterapkan. Untuk angka rekap gerai yang benar-benar tersimpan, buka <strong>/keuangan</strong> atau <strong>/laporan</strong>; angka itu pun bukan saldo bank terverifikasi.
         </div>
       </div>
 
@@ -481,12 +482,10 @@ export default function JurnalPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Tanggal Transaksi</label>
-              <Input
-                type="date"
+              <DateInput
+                label="Tanggal Transaksi"
                 value={journalDate}
                 onChange={(e) => setJournalDate(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>

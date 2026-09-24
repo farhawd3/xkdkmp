@@ -50,7 +50,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
         from: (table: string) => ({
           select: () => {
             if (table === "unit_daily_reports") {
-              return Promise.resolve({ data: null, error: { message: "Database connection failed" } });
+              return { order: async () => ({ data: null, error: { message: "Database connection failed" } }) };
             }
             return {
               eq: async () => ({ count: 0, data: [], error: null }),
@@ -62,7 +62,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
       const res = await getFinanceSummary(req);
       expect(res.status).toBe(500);
       const json = await res.json();
-      expect(json.error).toContain("Gagal membaca data keuangan");
+      expect(json.error).toContain("Gagal membaca rekap operasional");
     });
 
     it("tidak memuat konstanta palsu (kas bank Rp25jt, aset Rp15jt, atau valuasi stok Rp20rb)", async () => {
@@ -74,7 +74,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
         from: (table: string) => ({
           select: () => {
             if (table === "unit_daily_reports") {
-              return Promise.resolve({
+              return { order: async () => ({
                 data: [
                   {
                     gross_revenue: "1000000.00",
@@ -85,7 +85,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
                   },
                 ],
                 error: null,
-              });
+              }) };
             }
             if (table === "products") {
               return {
@@ -112,20 +112,11 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
       const body = await res.json();
 
       // Tidak ada angka fiktif Rp 25.000.000 atau Rp 15.000.000
-      expect(body.bukuBesar.kasBank).toBeNull();
-      expect(body.neraca.aset.kasBank).toBeNull();
-      expect(body.neraca.aset.asetTetap).toBeNull();
-
-      // Persediaan barang dilaporkan kuantitas fisiknya, bukan nilai moneter rekaan Rp20.000 * 50
-      expect(body.neraca.aset.persediaanBarang).toBeNull();
-      expect(body.neraca.aset.persediaanQty).toBe(50);
-
-      // Neraca tidak diklaim seimbang sempurna (isBalanced = false)
-      expect(body.neraca.isBalanced).toBe(false);
-
-      // Simulasi SHU ditandai jelas sebagai simulasi belum disahkan
-      expect(body.alokasiShu.isSimulated).toBe(true);
-      expect(body.alokasiShu.status).toBe("belum_ditetapkan");
+      expect(body.bukuBesar).toBeUndefined();
+      expect(body.neraca).toBeUndefined();
+      expect(body.alokasiShu).toBeUndefined();
+      expect(body.accountingReadiness.officialStatementsAvailable).toBe(false);
+      expect(body.summary.netOperationalMargin).toBe(800000);
     });
 
     it("mempertahankan nilai setoran kas = 0 tanpa tertimpa oleh omset minus pengeluaran", async () => {
@@ -137,7 +128,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
         from: (table: string) => ({
           select: () => {
             if (table === "unit_daily_reports") {
-              return Promise.resolve({
+              return { order: async () => ({
                 data: [
                   {
                     gross_revenue: "500000.00",
@@ -148,7 +139,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
                   },
                 ],
                 error: null,
-              });
+              }) };
             }
             return {
               eq: async () => ({ data: [], count: 0, error: null }),
@@ -160,7 +151,8 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
       const res = await getFinanceSummary(req);
       const body = await res.json();
       // Setoran kas operasional yang diterima harus tepat 0, bukan 400.000 (omset - beban)
-      expect(body.bukuBesar.kasOperasional).toBe(0);
+      expect(body.summary.reportedCashTotal).toBe(0);
+      expect(body.summary.cashReportsCount).toBe(1);
     });
 
     it("mendukung selisih operasional negatif (kerugian/defisit) tanpa dipaksa menjadi nol", async () => {
@@ -172,7 +164,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
         from: (table: string) => ({
           select: () => {
             if (table === "unit_daily_reports") {
-              return Promise.resolve({
+              return { order: async () => ({
                 data: [
                   {
                     gross_revenue: "200000.00",
@@ -183,7 +175,7 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
                   },
                 ],
                 error: null,
-              });
+              }) };
             }
             return {
               eq: async () => ({ data: [], count: 0, error: null }),
@@ -194,8 +186,8 @@ describe("Tahap 2 — Audit Kejujuran Data & Perhitungan Finansial/Operasional",
 
       const res = await getFinanceSummary(req);
       const body = await res.json();
-      expect(body.summary.currentShu).toBe(-150000);
       expect(body.summary.netOperationalMargin).toBe(-150000);
+      expect(body.accountingReadiness.officialStatementsAvailable).toBe(false);
     });
   });
 

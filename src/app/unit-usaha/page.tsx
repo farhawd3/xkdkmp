@@ -314,10 +314,12 @@ export default function UnitUsahaPage() {
         onClose={() => setIsModalOpen(false)}
         title={editingUnit ? `Edit Data: ${editingUnit.name}` : "Daftarkan Gerai / Unit Usaha Baru"}
         description="Sesuaikan nama gerai, penanggung jawab, target omset bulanan, dan status operasional."
-        maxWidth="lg"
+        maxWidth="2xl"
       >
-        <form onSubmit={handleSaveUnit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <form onSubmit={handleSaveUnit} className="space-y-6">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-700 dark:bg-slate-800/30">
+            <p className="mb-4 text-sm font-bold text-slate-800 dark:text-slate-100">Identitas gerai</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Kode Unit <span className="text-rose-500">*</span>
@@ -346,8 +348,9 @@ export default function UnitUsahaPage() {
               />
             </div>
           </div>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Jenis Usaha
@@ -376,7 +379,7 @@ export default function UnitUsahaPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Nomor Kontak / WhatsApp
@@ -404,7 +407,7 @@ export default function UnitUsahaPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Target Omset Bulanan (Rp)
@@ -420,19 +423,6 @@ export default function UnitUsahaPage() {
               />
             </div>
 
-            <Select
-              label="Status Siklus Gerai"
-              value={formStatus}
-              onChange={(e) => setFormStatus(e.target.value as BusinessUnitStatus)}
-              options={[
-                { value: "rencana", label: "Rencana (Kajian Awal)" },
-                { value: "persiapan", label: "Persiapan (Pengadaan)" },
-                { value: "siap_buka", label: "Siap Dibuka" },
-                { value: "aktif", label: "Aktif (Operasional Penuh)" },
-                { value: "nonaktif", label: "Nonaktif (Ditutup)" },
-              ]}
-            />
-
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Kesiapan Operasional (%)
@@ -447,6 +437,19 @@ export default function UnitUsahaPage() {
               />
             </div>
           </div>
+          <Select
+            label="Status Siklus Gerai"
+            value={formStatus}
+            onChange={(e) => setFormStatus(e.target.value as BusinessUnitStatus)}
+            options={[
+              { value: "rencana", label: "Rencana" },
+              { value: "persiapan", label: "Persiapan" },
+              { value: "siap_buka", label: "Siap Dibuka" },
+              { value: "aktif", label: "Aktif" },
+              { value: "nonaktif", label: "Nonaktif" },
+            ]}
+          />
+          <p className="-mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">Status menggambarkan tahap gerai; kesiapan adalah perkiraan kemajuan persiapan dalam persen.</p>
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">

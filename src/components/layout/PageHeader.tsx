@@ -51,7 +51,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             )}
           </div>
           {description && (
-            <p className="max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            <p className="max-w-[68ch] text-[15px] leading-6 text-slate-600 dark:text-slate-300">
               {description}
             </p>
           )}

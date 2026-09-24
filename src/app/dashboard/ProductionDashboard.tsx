@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Activity, ClipboardList, Download, Package, RefreshCw, Store, Users } from "lucide-react";
+import { ArrowUpRight, Activity, ClipboardList, Download, Package, RefreshCw, Store, Users, Sparkles, Sunrise, Sun, Sunset, MoonStar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardMetric } from "@/components/ui/Card";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -14,6 +14,7 @@ import { useOrganizationProfile } from "@/lib/OrganizationContext";
 import { formatRupiah } from "@/lib/utils";
 import { downloadCsvFile } from "@/lib/csv";
 import { managerActions, managerSnapshotRows, reportingProgress, type DashboardSummary, type FocusCategory } from "@/lib/manager-summary";
+import { getWibGreeting } from "@/lib/dashboard-greeting";
 
 async function loadSummary(): Promise<DashboardSummary> {
   const response = await fetch("/api/dashboard/executive", { cache: "no-store" });
@@ -96,21 +97,38 @@ export function ProductionDashboard() {
   if (loading || !data) return <LoadingState label="Membaca ringkasan manajemen koperasi…" />;
 
   const progress = reportingProgress(data);
-  const actions = managerActions(data).filter((item) => category === "semua" || item.category === category);
+  const allActions = managerActions(data);
+  const actions = allActions.filter((item) => category === "semua" || item.category === category);
+  const briefing = (data.overdueTaskCount ?? 0) > 0
+    ? { title: `${data.overdueTaskCount} tugas melewati tenggat`, detail: "Tinjau penanggung jawab dan tetapkan tindak lanjut terlebih dahulu.", href: "/pekerjaan", action: "Buka tugas" }
+    : data.unreportedUnits.length > 0
+    ? { title: `${data.unreportedUnits.length} gerai belum tercatat melapor`, detail: "Periksa apakah gerai beroperasi hari ini, lalu minta atau catat rekapnya.", href: "/monitoring", action: "Periksa rekap" }
+    : (data.lowStockCount ?? 0) > 0
+    ? { title: `${data.lowStockCount} barang perlu diperiksa`, detail: "Pastikan stok fisik dan kebutuhan pengadaan pada gerai terkait.", href: "/stok", action: "Periksa stok" }
+    : { title: "Tidak ada peringatan utama dari data saat ini", detail: "Lanjutkan pemeriksaan laporan dan agenda rutin. Data yang belum diisi tidak dianggap otomatis aman.", href: "/meja-kerja", action: "Buka meja kerja" };
   const dateLabel = data.businessDate ? new Intl.DateTimeFormat("id-ID", { dateStyle: "full", timeZone: "Asia/Jakarta" }).format(new Date(`${data.businessDate}T00:00:00+07:00`)) : "Ringkasan hari ini";
   const updated = data.generatedAt ? new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }).format(new Date(data.generatedAt)) : null;
+  const greeting = getWibGreeting(new Date());
+  const GreetingIcon = greeting === "pagi" ? Sunrise : greeting === "siang" ? Sun : greeting === "sore" ? Sunset : MoonStar;
 
   return (
     <div className="space-y-5 pb-6">
-      <header className="flex flex-col gap-4 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-5 shadow-sm dark:border-slate-700/70 dark:bg-[#252F40] md:px-6 xl:flex-row xl:items-center xl:justify-between">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">Ruang kerja manajer · {dateLabel}</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">Selamat bekerja, {profile.manager_name}</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{profile.display_name} · {updated ? `Diperbarui ${updated} WIB` : "Berdasarkan rekap tersimpan"}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-          <Button variant="outline" onClick={reload}><RefreshCw className="mr-2 h-4 w-4" />Perbarui</Button>
-          <Button onClick={() => downloadCsvFile(`ringkasan-manajer-${data.businessDate ?? "terbaru"}`, managerSnapshotRows(data, profile.display_name))}><Download className="mr-2 h-4 w-4" />Unduh CSV</Button>
+      <header className="relative overflow-hidden rounded-[24px] border border-rose-200/70 bg-gradient-to-br from-white via-rose-50/65 to-sky-50/70 p-5 shadow-sm dark:border-slate-700 dark:from-[#252F40] dark:via-[#302C3A] dark:to-[#263642] sm:p-6">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl dark:bg-rose-400/10" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/80 bg-white/90 text-primary-container shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-rose-300"><GreetingIcon className="h-6 w-6" aria-hidden="true" /></span>
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-primary-container dark:text-rose-300">Ruang kerja manajer</p>
+              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">Selamat {greeting}!</h1>
+              <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{dateLabel} · {profile.display_name}</p>
+              <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">{updated ? `Data diperbarui ${updated} WIB` : "Ringkasan berdasarkan rekap tersimpan"}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <Button variant="outline" onClick={reload} className="min-h-12 bg-white/80 dark:bg-slate-800/80"><RefreshCw className="mr-2 h-4 w-4" />Perbarui</Button>
+            <Button onClick={() => downloadCsvFile(`ringkasan-manajer-${data.businessDate ?? "terbaru"}`, managerSnapshotRows(data, profile.display_name))} className="min-h-12"><Download className="mr-2 h-4 w-4" />Unduh CSV</Button>
+          </div>
         </div>
       </header>
       {profileError && <p role="alert" className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">{profileError} Identitas yang ditampilkan mungkin belum terbaru.</p>}
@@ -120,6 +138,11 @@ export function ProductionDashboard() {
         <CardMetric title="Pelaporan hari ini" value={`${progress.reported} / ${progress.total}`} subtitle={progress.total ? "Gerai aktif yang sudah melapor" : "Belum ada gerai aktif"} progress={progress.percent ?? undefined} icon={<Store className="h-5 w-5" />} accent="sky" action={{ href: "/monitoring", label: "Catat laporan" }} />
         <CardMetric title="Tugas belum selesai" value={data.activeTasks} subtitle={`${data.overdueTaskCount ?? 0} lewat tenggat · ${data.todayDueTaskCount ?? 0} jatuh tempo hari ini`} icon={<ClipboardList className="h-5 w-5" />} accent="amber" action={{ href: "/pekerjaan", label: "Kelola tugas" }} />
         <CardMetric title="Stok perlu perhatian" value={data.lowStockCount ?? 0} subtitle="Barang pada atau di bawah batas minimum" icon={<Package className="h-5 w-5" />} accent="emerald" action={{ href: "/stok", label: "Periksa stok" }} />
+      </section>
+
+      <section aria-label="Briefing keputusan manajer" className="flex flex-col gap-4 rounded-[20px] border border-rose-200/70 bg-gradient-to-r from-rose-50/80 via-white to-sky-50/50 p-5 shadow-sm dark:border-rose-900/40 dark:from-[#332B39] dark:via-[#252F40] dark:to-[#263642] sm:flex-row sm:items-center sm:justify-between md:p-6">
+        <div className="flex min-w-0 items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-primary-container shadow-sm dark:bg-rose-950/50 dark:text-rose-300"><Sparkles className="h-5 w-5" /></span><div><p className="text-xs font-bold uppercase tracking-wide text-primary-container dark:text-rose-300">Prioritas manajer hari ini · berdasarkan data tercatat</p><h2 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">{briefing.title}</h2><p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{briefing.detail}</p><p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{allActions.length} tindak lanjut pada daftar fokus · {progress.reported}/{progress.total} gerai aktif tercatat melapor</p></div></div>
+        <ButtonLink href={briefing.href} variant="outline" className="w-full shrink-0 sm:w-auto">{briefing.action}<ArrowUpRight className="ml-2 h-4 w-4" /></ButtonLink>
       </section>
 
       <div className="grid items-start gap-6 xl:grid-cols-3">

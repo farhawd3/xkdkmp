@@ -191,7 +191,7 @@ function PersiapanContent() {
         title="Workspace Kesiapan Pembukaan"
         badgeText="Target: Awal 2027"
         badgeVariant="crimson"
-        description="Pantau pemenuhan persyaratan legalitas, infrastruktur gerai, permodalan simpanan, dan prosedur kasir sebelum tanggal pembukaan resmi ditetapkan."
+        description="Pantau pemenuhan legalitas, kesiapan gerai, permodalan, dan prosedur layanan sebelum tanggal pembukaan ditetapkan."
         actions={
           <>
             <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 text-right shadow-sm">
@@ -338,7 +338,7 @@ function PersiapanContent() {
               </Badge>
             </div>
             <div className="text-base font-bold text-slate-900 dark:text-slate-100">
-              SOP & Kasir POS
+              SOP & Layanan Gerai
             </div>
             <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
               <div
@@ -347,7 +347,7 @@ function PersiapanContent() {
               />
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
-              SOP kasir, akun petugas, rekening Bank Nagari
+              SOP gerai, penugasan petugas, dan pengelolaan kas
             </p>
           </CardContent>
         </Card>
@@ -356,43 +356,37 @@ function PersiapanContent() {
       {/* Toolbar Filter & Pencarian */}
       <Card>
         <CardContent className="p-5 md:p-6 space-y-4">
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(230px,0.65fr)_minmax(170px,0.45fr)]">
             {/* Search Input */}
-            <div className="relative flex-1 flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Cari poin checklist, kata kunci, atau nama PIC..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 pl-10 pr-3 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-container"
-              />
+            <div className="min-w-0 md:col-span-2 xl:col-span-1">
+              <label htmlFor="checklist-search" className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">Cari poin kesiapan</label>
+              <div className="relative flex items-center">
+                <Search className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                <input
+                  id="checklist-search"
+                  type="search"
+                  placeholder="Nama poin atau PIC"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-container dark:border-slate-700 dark:bg-[#202A39] dark:text-slate-100 dark:placeholder:text-slate-500"
+                />
+              </div>
             </div>
 
             {/* Filter Sifat (Wajib vs Opsional) */}
-            <div className="flex items-center gap-2">
-              <select
-                value={requiredFilter}
-                onChange={(e) => setRequiredFilter(e.target.value)}
-                className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-container"
-              >
-                <option value="all">Semua Sifat (Wajib & Opsional)</option>
+            <Select label="Sifat poin" value={requiredFilter} onChange={(e) => setRequiredFilter(e.target.value)}>
+                <option value="all">Semua sifat</option>
                 <option value="wajib">Hanya Wajib</option>
                 <option value="opsional">Hanya Opsional</option>
-              </select>
+            </Select>
 
               {/* Filter Status */}
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-container"
-              >
+            <Select label="Status poin" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
                 <option value="all">Semua Status</option>
                 <option value="belum_selesai">Belum Selesai</option>
                 <option value="dalam_proses">Dalam Proses</option>
                 <option value="selesai">Selesai</option>
-              </select>
-            </div>
+            </Select>
           </div>
 
           {/* Bar Kategori Horisontal (10 Kategori) */}
@@ -528,15 +522,16 @@ function PersiapanContent() {
                   {/* Kolom Aksi Cepat */}
                   <div className="flex flex-wrap md:flex-col items-end gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
                     {/* Ubah Status Dropdown */}
-                    <select
+                    <Select
+                      aria-label={`Ubah status ${item.title}`}
                       value={item.status}
                       onChange={(e) => handleStatusChange(item, e.target.value as ChecklistStatus)}
-                      className="h-9 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-container"
+                      className="min-w-44"
                     >
                       <option value="belum_selesai">Belum Selesai</option>
                       <option value="dalam_proses">Dalam Proses</option>
                       <option value="selesai">Tandai Selesai</option>
-                    </select>
+                    </Select>
 
                     <Button
                       variant="outline"
@@ -640,9 +635,11 @@ function PersiapanContent() {
         onClose={() => setIsAddModalOpen(false)}
         title="Tambah Poin Checklist Persiapan Baru"
         description="Tambahkan kebutuhan fisik atau administrasi tambahan sesuai kondisi Nagari Ladang Laweh."
-        maxWidth="lg"
+        maxWidth="2xl"
       >
-        <form onSubmit={handleAddItem} className="space-y-4">
+        <form onSubmit={handleAddItem} className="space-y-5">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-700 dark:bg-slate-800/30">
+            <p className="mb-3 text-sm font-bold text-slate-800 dark:text-slate-100">Kebutuhan yang ingin dipantau</p>
           <Input
             label="Nama Poin Kebutuhan"
             placeholder="Contoh: Pengadaan Genset Cadangan Listrik Toko"
@@ -650,6 +647,7 @@ function PersiapanContent() {
             onChange={(e) => setNewTitle(e.target.value)}
             required
           />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Select
@@ -667,11 +665,12 @@ function PersiapanContent() {
               value={newRequired ? "true" : "false"}
               onChange={(e) => setNewRequired(e.target.value === "true")}
               options={[
-                { value: "true", label: "Wajib (Prasyarat Pembukaan)" },
-                { value: "false", label: "Opsional (Dapat Menyusul)" },
+                { value: "true", label: "Wajib" },
+                { value: "false", label: "Opsional" },
               ]}
             />
           </div>
+          <p className="-mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">Poin wajib perlu selesai sebelum pembukaan; poin opsional dapat menyusul.</p>
 
           <div className="space-y-1.5 text-left">
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Deskripsi Sasaran</label>

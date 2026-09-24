@@ -34,6 +34,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { DateInput } from "@/components/ui/DateInput";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/layout";
 import { useToast } from "@/components/ui/Toast";
 import { preparationRepository } from "@/lib/repository";
@@ -353,7 +354,9 @@ export default function TataKelolaPage() {
             </div>
           </div>
 
-          <Card>
+          {documents.length === 0 ? (
+            <EmptyState icon={<FileText className="h-7 w-7 text-sky-600" />} title="Belum ada dokumen tersimpan" description="Mulai arsipkan dokumen resmi yang sudah dimiliki. Status pengesahannya dapat dicatat tanpa menganggap draf sebagai dokumen sah." action={<Button variant="primary" onClick={() => setIsDocModalOpen(true)}>Tambah dokumen</Button>} />
+          ) : <Card>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs md:text-sm">
                 <thead className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
@@ -416,7 +419,7 @@ export default function TataKelolaPage() {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </Card>}
         </div>
       )}
 
@@ -437,7 +440,9 @@ export default function TataKelolaPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          {documents.every((d) => d.docType !== "notulen") ? (
+            <EmptyState icon={<Users className="h-7 w-7 text-amber-600" />} title="Belum ada notula rapat" description="Catat tanggal, peserta, dan keputusan rapat persiapan agar mudah ditelusuri kembali." action={<Button variant="primary" onClick={() => setIsDocModalOpen(true)}>Tambah notula</Button>} />
+          ) : <div className="space-y-4">
             {documents
               .filter((d) => d.docType === "notulen")
               .map((notul) => (
@@ -499,7 +504,7 @@ export default function TataKelolaPage() {
                   </CardContent>
                 </Card>
               ))}
-          </div>
+          </div>}
         </div>
       )}
 
@@ -542,7 +547,9 @@ export default function TataKelolaPage() {
           </div>
 
           {/* Tabel Matriks Risiko */}
-          <Card>
+          {filteredRisks.length === 0 ? (
+            <EmptyState icon={<ShieldAlert className="h-7 w-7 text-rose-600" />} title={selectedRiskCategory === "all" ? "Belum ada risiko tercatat" : "Tidak ada risiko di kategori ini"} description={selectedRiskCategory === "all" ? "Catat risiko operasional dan rencana penanganannya agar tindakan manajer lebih terarah." : "Coba pilih kategori lain atau catat risiko baru jika memang ditemukan."} action={<Button variant="primary" onClick={() => setIsRiskModalOpen(true)}>Tambah risiko</Button>} />
+          ) : <Card>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs md:text-sm">
                 <thead className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-semibold">
@@ -618,7 +625,7 @@ export default function TataKelolaPage() {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </Card>}
         </div>
       )}
 
@@ -633,7 +640,7 @@ export default function TataKelolaPage() {
         }}
         title="Daftarkan Dokumen Legalitas / AD-ART"
         description="Pencatatan berkas hukum dan regulasi internal persiapan koperasi."
-        maxWidth="lg"
+        maxWidth="2xl"
       >
         <form onSubmit={handleSubmitDoc(onSubmitDoc)} className="space-y-4">
           <Input
@@ -756,7 +763,7 @@ export default function TataKelolaPage() {
         onClose={() => setIsRiskModalOpen(false)}
         title="Identifikasi Risiko & Rencana Mitigasi"
         description="Analisis kemungkinan hambatan kepatuhan hukum dan operasional."
-        maxWidth="lg"
+        maxWidth="2xl"
       >
         <form onSubmit={handleSubmitRisk(onSubmitRisk)} className="space-y-4">
           <Input
@@ -767,7 +774,8 @@ export default function TataKelolaPage() {
             required
           />
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
             <Select
               label="Kategori"
               {...registerRisk("category")}
@@ -780,6 +788,7 @@ export default function TataKelolaPage() {
               ]}
               error={errorsRisk.category?.message}
             />
+            </div>
 
             <Select
               label="Tingkat Dampak"

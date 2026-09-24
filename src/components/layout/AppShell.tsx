@@ -45,7 +45,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         Lewati ke konten utama
       </a>
       <div className="app-canvas flex h-dvh max-h-dvh flex-col overflow-hidden font-sans text-on-surface antialiased dark:text-slate-100">
-        {/* Banner Mode Persiapan */}
+        {/* Banner status organisasi dari profil tersimpan */}
         <div className="shrink-0 z-40">
           <DemoBanner />
         </div>

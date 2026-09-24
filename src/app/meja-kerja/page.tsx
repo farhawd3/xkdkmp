@@ -20,7 +20,8 @@ import {
   Info,
 } from "lucide-react";
 import { Card, CardContent, CardMetric } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/layout";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -189,7 +190,7 @@ export default function MejaKerjaPage() {
         ]}
         title="Meja Kerja Manajer"
         description="Pusat antrian tindak lanjut prioritas harian terpadu lintas gerai usaha, tugas operasional, kendala lapangan, dan ketersediaan stok fisik."
-        badgeText="Daily Action Hub"
+        badgeText="Prioritas Harian"
         actions={
           <Button
             variant="outline"
@@ -253,59 +254,53 @@ export default function MejaKerjaPage() {
       {/* Bilah Filter & Pencarian Terpadu */}
       <Card>
         <CardContent className="p-4 md:p-6 space-y-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Filter Urgensi */}
-            <div className="space-y-1.5">
-              <label htmlFor="filter-urgency" className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Tingkat Urgensi
-              </label>
-              <select
+            <div className="min-w-0">
+              <Select
                 id="filter-urgency"
+                label="Tingkat Urgensi"
                 value={urgencyFilter}
                 onChange={(e) => setUrgencyFilter(e.target.value)}
-                className="w-full h-11 px-3 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
                 <option value="semua">Semua Urgensi</option>
                 <option value="perlu_sekarang">Perlu Sekarang</option>
                 <option value="hari_ini">Hari Ini</option>
                 <option value="pantau">Pantau</option>
                 <option value="selesai">Selesai</option>
-              </select>
+              </Select>
             </div>
 
             {/* Filter Sumber Data */}
-            <div className="space-y-1.5">
-              <label htmlFor="filter-source" className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Sumber Masalah
-              </label>
-              <select
+            <div className="min-w-0">
+              <Select
                 id="filter-source"
+                label="Sumber Masalah"
                 value={sourceFilter}
                 onChange={(e) => setSourceFilter(e.target.value)}
-                className="w-full h-11 px-3 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
                 <option value="semua">Semua Sumber Data</option>
                 <option value="tugas">Tugas Operasional</option>
                 <option value="rekap_gerai">Rekapitulasi Gerai</option>
                 <option value="kendala">Kendala Lapangan</option>
                 <option value="stok">Barang & Stok</option>
-              </select>
+              </Select>
             </div>
 
             {/* Pencarian Teks */}
-            <div className="space-y-1.5 sm:col-span-2">
-              <label htmlFor="filter-search" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
+              <label htmlFor="filter-search" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Pencarian Isu / Gerai / PIC
               </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3.5 top-4 h-4 w-4 text-slate-400" />
                 <input
                   id="filter-search"
                   type="text"
                   placeholder="Cari judul tugas, nama barang, atau gerai..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 />
               </div>
             </div>
@@ -328,18 +323,20 @@ export default function MejaKerjaPage() {
       {/* Daftar Antrian Tindak Lanjut */}
       {filteredItems.length === 0 ? (
         <EmptyState
-          title={isFilterActive ? "Tidak ada antrian yang cocok" : "Semua Operasional Terkendali"}
+          title={isFilterActive ? "Tidak ada antrian yang cocok" : "Belum ada tindak lanjut tercatat"}
           description={
             isFilterActive
               ? "Coba ubah kriteria pencarian atau pilihan filter di atas."
-              : "Tidak ada tindak lanjut tertunda dari data yang tercatat saat ini. Seluruh gerai, tugas, dan stok terpantau aman."
+              : "Belum ada item prioritas dari data yang tersimpan saat ini. Tetap periksa laporan gerai, tugas, dan stok secara rutin; daftar kosong bukan berarti semua kondisi lapangan sudah aman."
           }
           action={
             isFilterActive ? (
               <Button variant="primary" size="sm" onClick={handleResetFilters}>
                 Reset Filter
               </Button>
-            ) : undefined
+            ) : (
+              <ButtonLink href="/monitoring" variant="outline">Periksa rekap gerai</ButtonLink>
+            )
           }
         />
       ) : (

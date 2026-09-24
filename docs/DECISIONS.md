@@ -1,5 +1,11 @@
 # DECISIONS — KOPDES MERAH PUTIH LADANG LAWEH
 
+## Keputusan 24 September 2026 — API gerai dan pembukuan
+
+- Abdul Halim belum memiliki API bank; rencana integrasi berasal dari sistem gerai. Menyimpan API key gerai **tidak** mengaktifkan konektor. Manual tetap aktif sampai ada penyedia, format, pengujian, antrean impor, dan persetujuan manajer.
+- Data API tidak otomatis menulis rekap. Pratinjau dan persetujuan manajer wajib; saat konektor benar-benar aktif, server dan UI harus sama-sama mengunci input manual untuk gerai/periode yang sama. Konflik dengan rekap yang sudah ada ditahan untuk tinjauan.
+- Pembukuan lengkap diinginkan di website, dengan opsi menambah akun. Standar spesifik koperasi sektor riil, bagan akun awal, dan saldo awal menunggu penetapan pengurus/akuntan. Draf SQL enam tabel baru dibuat untuk tinjauan; **tidak boleh dijalankan tanpa persetujuan eksplisit** dan uji pada salinan database.
+
 ## Keputusan v2.9 — 23 September 2026
 
 - Pertahankan aplikasi pribadi dan fondasi v2.8; penyegaran bertahap pada komponen bersama/dashboard dan perbaikan alur, bukan penulisan ulang sistem.

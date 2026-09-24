@@ -351,11 +351,10 @@ export function PreparationStockPage() {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <label htmlFor="stock-availability" className="text-sm font-medium">Ketersediaan barang</label>
-        <select id="stock-availability" value={stockFilter} onChange={(event) => { setStockFilter(event.target.value); setActiveTab("katalog"); }} className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="w-full sm:w-56"><Select id="stock-availability" label="Ketersediaan barang" value={stockFilter} onChange={(event) => { setStockFilter(event.target.value); setActiveTab("katalog"); }}>
           <option value="all">Semua ketersediaan</option><option value="safe">Stok cukup</option><option value="low">Stok menipis</option><option value="empty">Stok kosong</option>
-        </select>
+        </Select></div>
         {stockFilter !== "all" && <Button variant="ghost" onClick={() => setStockFilter("all")}>Hapus filter stok</Button>}
       </div>
 
@@ -420,10 +419,10 @@ export function PreparationStockPage() {
                   />
                 </div>
 
-                <select
+                <div className="w-full sm:w-56"><Select
+                  aria-label="Filter kategori pangan"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-container w-full sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
                   <option value="all">Semua Kategori Pangan</option>
                   <option value="beras">Beras &amp; Padi</option>
@@ -432,7 +431,7 @@ export function PreparationStockPage() {
                   <option value="telur">Telur</option>
                   <option value="bumbu_dapur">Bumbu Dapur</option>
                   <option value="lainnya">Lainnya</option>
-                </select>
+                </Select></div>
               </div>
             </CardContent>
           </Card>
@@ -540,12 +539,11 @@ export function PreparationStockPage() {
 
           <Card>
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Filter Komoditas:</span>
-                <select
+              <div className="w-full sm:w-60">
+                <Select
+                  label="Filter komoditas"
                   value={mutationProductFilter}
                   onChange={(e) => setMutationProductFilter(e.target.value)}
-                  className="text-xs border border-slate-200 rounded-lg p-1.5 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
                   <option value="all">Semua Komoditas</option>
                   {products.map((p) => (
@@ -553,7 +551,7 @@ export function PreparationStockPage() {
                       {p.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -728,7 +726,7 @@ export function PreparationStockPage() {
         onClose={() => setIsAddModalOpen(false)}
         title={editingProduct ? "Edit barang" : "Tambah barang"}
         description="Pencatatan spesifikasi produk dagang. Kuantitas fisik awal selalu 0."
-        maxWidth="lg"
+        maxWidth="2xl"
       >
         <form onSubmit={handleAddProduct} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

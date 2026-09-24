@@ -2,6 +2,79 @@
 
 Catatan perubahan kronologis proyek untuk pelacakan lintas agen AI dan pengembang.
 
+## [v2.9.15 — audit detail Meja Kerja] — 24 September 2026
+
+- Memeriksa enam halaman utama di browser tablet. Merapikan filter Meja Kerja yang sempit, memperjelas keadaan kosong tanpa klaim kondisi lapangan aman, dan menambah pintasan ke rekap gerai.
+- Memperbaiki label aksesibilitas pencarian tugas serta tinggi sentuh tombol ekspor. Tanpa perubahan data atau Supabase.
+- Verifikasi akhir: 208 tes lulus, typecheck bersih, build 41 rute, dan browser tablet terang/gelap memperlihatkan filter serta keadaan kosong dengan baik. Server lokal aktif kembali.
+
+## [v2.9.14 — sapaan dashboard sesuai waktu] — 24 September 2026
+
+- Mengganti “Selamat bekerja, Abdul Halim” dengan sapaan pagi/siang/sore/malam berdasarkan WIB, tanpa nama; dashboard persiapan mengikuti aturan yang sama.
+- Menyegarkan header dengan ikon waktu, gradasi pastel, serta susunan tombol yang responsif. Menambah enam tes batas waktu. Tanpa perubahan Supabase.
+- Verifikasi: 208 tes lulus, typecheck bersih, build 41 rute, dan spot-check browser tablet pada mode terang/gelap. Server lokal aktif kembali.
+
+## [v2.9.13 — perapian anotasi tablet dan panduan koperasi] — 24 September 2026
+
+- Menuntaskan sembilan anotasi browser: toolbar, filter, dan kartu Kinerja Gerai; dialog tambah/edit gerai; dialog checklist persiapan; keadaan kosong Tata Kelola; serta panduan koperasi yang lebih rinci. Form dokumen/risiko dan tambah barang persiapan ikut dilapangkan.
+- Panduan menaut ke JDIH resmi dan membedakan keputusan organisasi, kegiatan manajer, rekap kas, serta laporan akuntansi. Judul panduan sekarang tombol yang dapat digunakan dengan keyboard.
+- Pemeriksaan browser pada tablet 884 px dan mode terang/gelap; tidak mengirim formulir atau mengubah data. Tanpa migrasi Supabase. Verifikasi: 202 tes lulus, typecheck bersih, build 41 rute.
+
+## [v2.9.12 — audit lintas menu dan perapian dropdown] — 24 September 2026
+
+- Memeriksa 15 menu aktif melalui browser terintegrasi pada desktop/tablet, serta filter dan popup relevan pada mode terang/gelap. Tidak ditemukan overflow horizontal pada audit akhir 884 px.
+- Menyeragamkan dropdown filter Meja Kerja, Kinerja Gerai, Stok, Anggota, dan Kesiapan; memperjelas label, ukuran teks, tinggi sentuh, dan ruang ikon. Pilihan gerai rekap menampilkan nama tanpa kode panjang di kolom, sementara kodenya ditampilkan terpisah.
+- Memperbaiki nama koperasi yang terpotong pada sidebar, keterbacaan deskripsi halaman, pencarian anggota, dan istilah SOP layanan gerai. Tanpa migrasi Supabase.
+- Verifikasi: 202 tes lulus, TypeScript bersih, build 41 rute. Server lokal aktif kembali.
+
+## [v2.9.11 — perataan dropdown formulir] — 24 September 2026
+
+- Merapikan pilihan gerai, prioritas, dan status di popup tugas: teks rata kiri dengan ruang yang cukup untuk ikon panah; daftar opsi mengikuti perataan yang sama.
+- Melebarkan popup Tambah Tugas dan Buat Tugas dari Kendala agar nama gerai tidak cepat terpotong. Dropdown HTML lain ikut konsisten. Tanpa perubahan Supabase.
+- Memperbaiki Escape pada dropdown native di dalam modal agar tidak ikut menutup seluruh formulir tugas, termasuk ketika fokus berpindah ke baris pilihan. Browser memverifikasi perilaku ini dan teks gerai penuh; 202 tes lulus, typecheck bersih, build 41 rute. Server lokal aktif kembali.
+
+## [v2.9.10 — pemilih bulan konsisten dan panduan cepat] — 24 September 2026
+
+- Mengganti input bulan bawaan browser di laporan serta Kinerja Gerai dengan pemilih 12 bulan bertema terang/gelap, termasuk navigasi tahun dan batas pilihan.
+- Merancang ulang popup Panduan Operasional menjadi panduan cepat berisi pintasan kerja yang dapat langsung dibuka.
+- Tidak ada perubahan Supabase atau SQL. Tes baru mencakup pilihan bulan dan batas min/maks.
+- Verifikasi final: 200 tes lulus, typecheck bersih, build 41 rute. Tampilan pemilih bulan dicek terang/gelap dan periode laporan berubah sesuai pilihan; popup Panduan diringkas sampai keempat pintasan terbaca. Server utama port 3000 aktif kembali.
+
+## [v2.9.9 — kalender bergaya dan briefing dashboard] — 24 September 2026
+
+- Merapikan perataan judul dropdown bersama serta opsi pada popup pilihan yang mendukung tema; mengubah kalender tanggal formulir menjadi popup khusus dengan navigasi bulan, pilihan hari, keadaan kosong, dan mode gelap.
+- Memakai kalender baru pada laporan gerai dan tanggal jurnal simulasi; merapikan garis aksen dan tombol tutup modal bersama.
+- Menambah briefing prioritas di dashboard dari tugas terlambat, rekap gerai, serta stok nyata, tanpa angka contoh atau klaim AI.
+- Tidak mengubah Supabase. Popup pemilih bulan native dan audit visual menyeluruh masih menjadi pekerjaan lanjutan.
+- Kalender final memakai dialog bertingkat agar tidak terpotong di dalam popup tugas dan Escape hanya menutup kalender. Verifikasi akhir: 198 tes, typecheck, build 41 rute; spot-check tugas/kalender dan dashboard terang-gelap selesai. Server utama port 3000 dijalankan ulang.
+
+## [v2.9.8 — persiapan API gerai dan rekap keuangan] — 24 September 2026
+
+- Menambah pilihan tampilan Manual/API di Pengaturan; panel kunci API gerai baru muncul saat API dipilih. Kunci hanya sementara dan tidak mengaktifkan sambungan tanpa dokumentasi penyedia. API key OpenAI tetap terpisah.
+- Menambah buku rekap operasional riil per gerai/bulan dengan pagination pada Neraca & SHU, sekaligus penjelasan mengapa ini belum buku besar atau laporan resmi. Form manual dilarang mengaku sebagai sumber API.
+- Menyambungkan status organisasi ke banner/sidebar, tahun buku ke laporan, dan rekening bank bertopeng ke Keuangan sebagai referensi. Panduan cepat lama tentang login/POS dibersihkan.
+- Menulis rencana pembukuan lengkap dan draf SQL enam tabel baru untuk persetujuan nanti. Tidak ada SQL atau perubahan cloud yang dijalankan.
+- Jurnal lama diberi label Simulasi Lokal supaya tidak disalahartikan sebagai pembukuan Supabase. Verifikasi akhir: 196 tes, typecheck, dan build 41 rute lulus; server lokal dijalankan ulang.
+
+## [v2.9.7 — perapian input dan dropdown] — 24 September 2026
+
+- Memindahkan tombol tampil/sembunyikan API key ke ujung dalam input melalui slot aksi komponen `Input`, sehingga tetap sejajar dan mudah disentuh.
+- Menyatukan gaya popup dan opsi untuk seluruh `select` native, termasuk dropdown mentah di halaman lain, dengan fallback warna pada browser lama serta tema terang/gelap.
+- Pengujian 190/190 lulus, typecheck bersih, build 39 rute sukses. Tampilan Pengaturan dan filter Meja Kerja diperiksa langsung pada browser; mode gelap diuji lalu dikembalikan ke terang. Tidak ada migrasi Supabase.
+
+## [v2.9.6 — input API key OpenAI lokal] — 24 September 2026
+
+- Menambah kolom API key di Pengaturan dengan tampilan sandi, simpan sementara di memori server lokal, uji koneksi ke OpenAI, dan hapus kunci. Kunci tidak dikembalikan oleh API atau disimpan di Supabase/browser oleh aplikasi.
+- Form dibatasi untuk komputer server sendiri. Jika `OPENAI_API_KEY` sudah ada di environment server, Pengaturan hanya menampilkan status dan tombol uji; penggantian dilakukan di environment.
+- Analisis AI tugas dan API keuangan belum aktif. Tidak ada migrasi SQL atau perubahan Supabase. Verifikasi: 189 tes lulus, typecheck bersih, build 39 rute sukses; tampilan Pengaturan diperiksa di browser.
+
+## [v2.9.5 — grafik dan batas laporan keuangan] — 24 September 2026
+
+- Menambah grafik omset tujuh hari dan rincian angka pada Pemantauan Keuangan; memisahkan setoran yang dilaporkan dari saldo kas terverifikasi.
+- Mengubah Neraca & SHU menjadi halaman kesiapan data. Simulasi persentase SHU yang belum disahkan dan utang Rp0 tanpa data dihapus agar tidak terlihat sebagai laporan resmi.
+- Menambah status integrasi di Pengaturan; AI dan API keuangan belum aktif sambil menunggu pilihan penyedia/format. Tidak ada kunci rahasia di browser, SQL, atau perubahan cloud.
+- Rencana integrasi dan akuntansi terdokumentasi di `docs/RENCANA_INTEGRASI_DAN_AKUNTANSI.md`. Tes 186/186 lulus, typecheck dan build 37 rute sukses; API keuangan HTTP 200 dan tampilan keuangan/laporan diperiksa pada browser (keuangan terang/gelap). Grafik berisi data belum dapat diuji karena belum ada rekap nyata.
+
 ## [Pemeriksaan runtime — koneksi lokal] — 24 September 2026
 
 - Menelusuri kegagalan memuat massal: server lokal sebelumnya tidak mendapat izin jaringan ke Supabase. Setelah server dijalankan ulang dengan izin yang sesuai, 10 API inti kembali HTTP 200. Tidak ada perubahan kode atau database; status migrasi 00009 Cloud masih perlu verifikasi terpisah.

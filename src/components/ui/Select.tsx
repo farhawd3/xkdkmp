@@ -45,7 +45,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             aria-describedby={error || helperText ? `${selectId}-description` : undefined}
             className={cn(
               fieldControlClass,
-              "kopdes-select h-12 appearance-none px-3.5 py-2.5 pr-11",
+              "kopdes-select h-12 appearance-none pl-4 pr-12 py-2.5 text-left",
               error && fieldErrorClass,
               className
             )}

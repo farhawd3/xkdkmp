@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout";
 import { Card, CardContent, CardMetric } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { Select } from "@/components/ui/Select";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useToast } from "@/components/ui/Toast";
@@ -160,23 +161,22 @@ export function ProductionStockPage() {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Nama, SKU, atau kategori"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
                 />
               </div>
             </div>
             <div className="w-full sm:w-48">
-              <label htmlFor="stock-condition" className="mb-1.5 block text-sm font-semibold">Kondisi stok</label>
-              <select
+              <Select
                 id="stock-condition"
+                label="Kondisi stok"
                 value={condition}
                 onChange={(event) => setCondition(event.target.value)}
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-300 dark:border-slate-600 dark:bg-[#1D2533] dark:text-slate-100"
               >
                 <option value="semua">Semua kondisi</option>
                 <option value="cukup">Cukup</option>
                 <option value="menipis">Menipis</option>
                 <option value="kosong">Kosong</option>
-              </select>
+              </Select>
             </div>
           </div>
 

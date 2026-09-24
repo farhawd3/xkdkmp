@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { DateInput } from "@/components/ui/DateInput";
+import { MonthPicker } from "@/components/ui/MonthPicker";
+import { Dialog } from "@/components/ui/Dialog";
 import { formatRupiah, formatTanggal } from "@/lib/utils";
 import { preparationRepository } from "@/lib/repository";
 
@@ -51,9 +53,55 @@ describe("UI Components", () => {
 
     expect(screen.getByLabelText("Nama gerai").getAttribute("aria-describedby")).toBeTruthy();
     expect(screen.getByLabelText("Status")).toBeDefined();
+    expect(screen.getByLabelText("Status").className).toContain("pl-4 pr-12");
+    expect(screen.getByLabelText("Status").className).toContain("text-left");
     expect(screen.getByLabelText("Tanggal agenda")).toBeDefined();
     expect(screen.getByRole("alert").textContent).toContain("Catatan belum lengkap");
     expect(screen.getByLabelText("Catatan").getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("aksi di ujung input tetap satu baris dan dapat diakses", () => {
+    render(<Input label="API key" type="password" endAction={<button type="button" aria-label="Tampilkan API key">Lihat</button>} />);
+    expect(screen.getByLabelText("API key").className).toContain("pr-14");
+    expect(screen.getByRole("button", { name: "Tampilkan API key" })).toBeDefined();
+  });
+
+  it("kalender tanggal memakai popup bergaya dan meneruskan pilihan ke formulir", () => {
+    const changes: string[] = [];
+    render(<DateInput label="Tanggal laporan" defaultValue="2026-09-24" onChange={(event) => changes.push(event.target.value)} />);
+    fireEvent.click(screen.getByRole("button", { name: /tanggal laporan: 24 september 2026/i }));
+    expect(screen.getByRole("dialog", { name: "Kalender Tanggal laporan" })).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "2026-09-25" }));
+    expect(changes).toEqual(["2026-09-25"]);
+    expect(screen.queryByRole("dialog", { name: "Kalender Tanggal laporan" })).toBeNull();
+  });
+
+  it("Escape menutup kalender tanpa menutup formulir induknya", () => {
+    render(<Dialog isOpen onClose={() => { throw new Error("Form induk tidak boleh tertutup"); }} title="Form tugas"><DateInput label="Tenggat" /></Dialog>);
+    fireEvent.click(screen.getByRole("button", { name: /tenggat: pilih tanggal/i }));
+    expect(screen.getByRole("dialog", { name: "Kalender Tenggat" })).toBeDefined();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Kalender Tenggat" })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "Form tugas" })).toBeDefined();
+  });
+
+  it("pemilih bulan menampilkan 12 bulan bergaya dan mengirim bulan terpilih", () => {
+    const changes: string[] = [];
+    render(<MonthPicker label="Bulan rekap" value="2026-09" onChange={(value) => changes.push(value)} />);
+    fireEvent.click(screen.getByRole("button", { name: "Bulan rekap: September 2026" }));
+    expect(screen.getByRole("dialog", { name: "Pilih bulan laporan" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "September 2026" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Oktober 2026" }));
+    expect(changes).toEqual(["2026-10"]);
+    expect(screen.queryByRole("dialog", { name: "Pilih bulan laporan" })).toBeNull();
+  });
+
+  it("pemilih bulan menghormati batas bulan minimum dan maksimum", () => {
+    render(<MonthPicker value="2026-06" min="2026-05" max="2026-07" onChange={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "Bulan: Juni 2026" }));
+    expect((screen.getByRole("button", { name: "April 2026" }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Juli 2026" }) as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByRole("button", { name: "Agustus 2026" }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
 

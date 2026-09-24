@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/Badge";
 import { getActiveNavigationHref, PRODUCTION_READY_ROUTES } from "@/lib/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { useOrganizationProfile } from "@/lib/OrganizationContext";
+import { businessStatusLabel } from "@/lib/organization-status";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -71,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
   const { profile } = useOrganizationProfile();
 
   const orgName = profile.display_name || APP_CONFIG.shortName;
-  const statusLabel = profile.business_status === "aktif" ? "Operasional Aktif" : "Mode Persiapan";
+  const statusLabel = businessStatusLabel(profile.business_status);
   const managerName = profile.manager_name || "Abdul Halim";
   const managerTitle = profile.manager_title || "Manajer Koperasi";
   const initials = managerName
@@ -100,7 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
             <Building2 className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate leading-tight">
+            <h1 className="line-clamp-2 break-words text-sm font-bold leading-snug text-slate-900 dark:text-slate-100" title={orgName}>
               {orgName}
             </h1>
             <p className="text-xs font-bold text-primary-container dark:text-rose-400 uppercase tracking-wider mt-0.5">

@@ -37,6 +37,34 @@ interface GuideTopic {
 
 const GUIDE_TOPICS: GuideTopic[] = [
   {
+    id: "dasar-koperasi",
+    title: "Memahami peran koperasi dan rapat anggota",
+    category: "Kelembagaan",
+    summary: "Pisahkan keputusan organisasi dari pekerjaan harian manajer.",
+    steps: [
+      "Simpan dokumen pendirian, anggaran dasar, serta perubahan yang sudah disahkan di Tata Kelola; tandai draf sesuai keadaan sebenarnya.",
+      "Catat agenda, daftar hadir, dan risalah setiap rapat. Rapat anggota adalah forum pengambilan keputusan tertinggi dalam koperasi.",
+      "Gunakan keputusan rapat yang sah sebagai dasar kebijakan, lalu turunkan tindak lanjutnya menjadi tugas yang jelas penanggung jawab dan tenggatnya.",
+    ],
+    tips: "Panduan aplikasi bukan pengganti anggaran dasar, penasihat hukum, atau petunjuk dinas koperasi. Periksa aturan terbaru di JDIH Kementerian Koperasi.",
+    actionUrl: "/tata-kelola",
+    actionLabel: "Buka Tata Kelola",
+  },
+  {
+    id: "persiapan-pembukaan",
+    title: "Menyiapkan gerai sebelum dibuka",
+    category: "Operasional",
+    summary: "Gunakan daftar kesiapan untuk memisahkan rencana, pengadaan, dan gerai yang benar-benar aktif.",
+    steps: [
+      "Buka Kesiapan Buka, isi kebutuhan legalitas, lokasi, barang, petugas, dan prosedur kerja yang relevan.",
+      "Tentukan penanggung jawab dan tanggal target untuk setiap poin; unggah atau arsipkan bukti pendukung di tempat yang sesuai.",
+      "Perbarui status gerai berdasarkan keadaan lapangan. Jangan ubah menjadi aktif hanya karena target tanggal tercapai.",
+    ],
+    tips: "Angka persentase kesiapan membantu memantau progres, tetapi keputusan pembukaan tetap memerlukan pemeriksaan nyata.",
+    actionUrl: "/persiapan",
+    actionLabel: "Buka Kesiapan Buka",
+  },
+  {
     id: "pekerjaan",
     title: "Memulai hari dari Meja Kerja",
     category: "Operasional",
@@ -98,13 +126,41 @@ const GUIDE_TOPICS: GuideTopic[] = [
     category: "Keuangan",
     summary: "Bedakan rekap operasional gerai dari buku kas dan laporan resmi.",
     steps: [
-      "Buka Kas & Buku Besar untuk membaca penerimaan yang benar-benar tercatat.",
+      "Buka Pemantauan Keuangan untuk membaca omset, pengeluaran, dan setoran yang dilaporkan gerai.",
       "Bandingkan tanggal dan gerai sumber sebelum menarik kesimpulan.",
-      "Gunakan Neraca & SHU sebagai ringkasan kerja dengan catatan batas data, bukan pengesahan otomatis.",
+      "Buka Kesiapan Neraca & SHU untuk melihat data akuntansi yang masih kurang; laporan resmi belum tersedia.",
     ],
     tips: "Jurnal Simulasi adalah sarana belajar; jangan menyamakannya dengan pembukuan resmi transaksi nyata.",
     actionUrl: "/keuangan",
-    actionLabel: "Buka Kas & Buku Besar",
+    actionLabel: "Buka Pemantauan Keuangan",
+  },
+  {
+    id: "pengendalian-kas",
+    title: "Memeriksa kas dan bukti transaksi",
+    category: "Keuangan",
+    summary: "Pastikan setoran dan pengeluaran bisa dicocokkan dengan bukti, bukan sekadar angka di layar.",
+    steps: [
+      "Cocokkan rekap gerai, bukti pembayaran, dan uang yang benar-benar disetor pada tanggal serta gerai yang sama.",
+      "Jika ada selisih, catat sebab dan tindak lanjutnya sebagai tugas; jangan menutup selisih dengan angka perkiraan.",
+      "Pisahkan ringkasan operasional dari jurnal akuntansi. Neraca dan SHU memerlukan pencatatan akun serta pemeriksaan akhir periode.",
+    ],
+    tips: "Jika sumber API gerai dipakai nanti, angka API tetap perlu diperiksa dan disetujui manajer sebelum disimpan.",
+    actionUrl: "/keuangan",
+    actionLabel: "Buka Keuangan",
+  },
+  {
+    id: "review-mingguan",
+    title: "Ritme pemeriksaan mingguan manajer",
+    category: "Operasional",
+    summary: "Tinjau laporan, kendala, tugas, dan risiko secara berkala agar hal kecil tidak terlupa.",
+    steps: [
+      "Bandingkan keterisian rekap dan capaian target setiap gerai di Kinerja Gerai; tanyakan sebab jika laporan belum masuk.",
+      "Periksa tugas yang lewat tenggat dan kendala lapangan. Tetapkan langkah berikutnya serta siapa yang bertanggung jawab.",
+      "Tinjau risiko dan dokumen yang perlu diperbarui, lalu rangkum keputusan untuk rapat atau koordinasi berikutnya.",
+    ],
+    tips: "Tidak ada data berarti belum ada catatan pada sistem, bukan bukti tidak ada masalah di lapangan.",
+    actionUrl: "/kinerja-gerai",
+    actionLabel: "Buka Kinerja Gerai",
   },
 ];
 
@@ -130,6 +186,16 @@ export default function BantuanPage() {
         badgeVariant="crimson"
         description="Langkah sederhana memakai data gerai, tugas, stok, anggota, dan keuangan untuk keputusan manajer."
       />
+
+      <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-white via-rose-50/60 to-sky-50/60 p-5 dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 sm:p-6">
+        <div className="flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-700 shadow-sm dark:bg-slate-800 dark:text-rose-300"><BookOpen className="h-5 w-5" /></span>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Mulai dari kebutuhan Bapak hari ini</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">Pilih topik di bawah untuk melihat langkah kerja, batasan data, dan tautan langsung ke menu terkait. Data yang belum masuk tidak ditampilkan sebagai angka perkiraan.</p>
+          </div>
+        </div>
+      </div>
 
       {/* 3 Kartu Metrik Ringkasan Atas (Gaya /persiapan) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -214,9 +280,12 @@ export default function BantuanPage() {
                   : "border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700"
               }`}
             >
-              <div
+              <button
+                type="button"
+                aria-expanded={isExpanded}
+                aria-controls={`panduan-${topic.id}`}
                 onClick={() => setActiveAccordion(isExpanded ? null : topic.id)}
-                className="cursor-pointer p-5 md:p-6 flex items-start justify-between gap-4"
+                className="flex w-full items-start justify-between gap-4 p-5 text-left transition-colors hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:hover:bg-slate-800/40 md:p-6"
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -238,10 +307,10 @@ export default function BantuanPage() {
                 >
                   <ChevronRight className="h-4 w-4" />
                 </div>
-              </div>
+              </button>
 
               {isExpanded && (
-                <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-5 md:p-6 space-y-4 animate-in fade-in duration-150">
+                <div id={`panduan-${topic.id}`} className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-5 md:p-6 space-y-4 animate-in fade-in duration-150">
                   <div className="space-y-2">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                       Langkah-Langkah Pelaksanaan:
@@ -279,6 +348,14 @@ export default function BantuanPage() {
             </Card>
           );
         })}
+      </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Rujukan aturan resmi</h2>
+        <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">Untuk keputusan kelembagaan dan ketentuan Koperasi Desa/Kelurahan Merah Putih, periksa dokumen asli dan versi terbarunya. Panduan di aplikasi ini adalah alur kerja, bukan nasihat hukum.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a href="https://jdih.kop.go.id/doc/peraturan_kdmp" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Aturan Kopdes Merah Putih <ExternalLink className="h-4 w-4" /></a>
+          <a href="https://www.jdih.kemenkeu.go.id/dok/uu-25-tahun-1992/view" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">UU Perkoperasian <ExternalLink className="h-4 w-4" /></a>
+        </div>
       </div>
     </div>
   );

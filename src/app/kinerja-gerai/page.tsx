@@ -17,12 +17,13 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
-  Calendar,
   AlertOctagon,
   Minus,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardMetric } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { MonthPicker } from "@/components/ui/MonthPicker";
+import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/layout";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -198,47 +199,21 @@ export default function KinerjaGeraiPage() {
         title="Kinerja & Capaian Gerai"
         description="Analisis komparatif target bulanan, kedisiplinan rekapitulasi harian, serta selisih operasional seluruh unit usaha koperasi."
         badgeText="Operational Analytics"
-        actions={
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Pemilih Bulan */}
-            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 shadow-sm">
-              <Calendar className="h-4 w-4 text-slate-500 shrink-0" />
-              <input
-                id="month-selector"
-                aria-label="Pilih Bulan Kinerja"
-                type="month"
-                min="2025-01"
-                max="2030-12"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-transparent text-xs md:text-sm font-semibold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer"
-              />
-            </div>
+      />
 
-            {/* Tombol Refresh */}
-            <Button
-              variant="outline"
-              onClick={() => loadPerformanceData(selectedMonth)}
-              disabled={isLoading}
-              className="min-h-11 px-3.5 gap-2 font-semibold shadow-sm"
-            >
-              <RotateCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">Perbarui</span>
+      <Card>
+        <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between md:p-5">
+          <MonthPicker label="Bulan kinerja" min="2025-01" max="2030-12" value={selectedMonth} onChange={setSelectedMonth} className="w-full sm:max-w-[250px]" />
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+            <Button variant="outline" onClick={() => loadPerformanceData(selectedMonth)} disabled={isLoading} className="min-h-12 gap-2 px-4 font-semibold">
+              <RotateCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} /> Perbarui
             </Button>
-
-            {/* Tombol Ekspor CSV */}
-            <Button
-              variant="outline"
-              onClick={handleExportCsv}
-              disabled={!data || filteredUnits.length === 0}
-              className="min-h-11 px-3.5 gap-2 font-semibold shadow-sm"
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Unduh CSV</span>
+            <Button variant="outline" onClick={handleExportCsv} disabled={!data || filteredUnits.length === 0} className="min-h-12 gap-2 px-4 font-semibold">
+              <Download className="h-4 w-4" /> Unduh CSV
             </Button>
           </div>
-        }
-      />
+        </CardContent>
+      </Card>
 
       {/* Partial Errors Banner */}
       {data?.partialErrors && data.partialErrors.length > 0 && (
@@ -296,36 +271,30 @@ export default function KinerjaGeraiPage() {
       {/* Bilah Filter & Pencarian */}
       <Card>
         <CardContent className="p-4 md:p-6 space-y-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Filter Status Gerai */}
-            <div className="space-y-1.5">
-              <label htmlFor="filter-status" className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Status Gerai
-              </label>
-              <select
+            <div className="min-w-0">
+              <Select
                 id="filter-status"
+                label="Status Gerai"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full h-11 px-3 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
                 <option value="semua">Semua Status</option>
                 <option value="aktif">Aktif Beroperasi</option>
                 <option value="persiapan">Tahap Persiapan</option>
                 <option value="rencana">Rencana</option>
                 <option value="nonaktif">Non-Aktif</option>
-              </select>
+              </Select>
             </div>
 
             {/* Filter Jenis Usaha */}
-            <div className="space-y-1.5">
-              <label htmlFor="filter-type" className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Jenis Usaha
-              </label>
-              <select
+            <div className="min-w-0">
+              <Select
                 id="filter-type"
+                label="Jenis Usaha"
                 value={unitTypeFilter}
                 onChange={(e) => setUnitTypeFilter(e.target.value)}
-                className="w-full h-11 px-3 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
               >
                 <option value="semua">Semua Jenis Usaha</option>
                 {unitTypes.map((type) => (
@@ -333,23 +302,23 @@ export default function KinerjaGeraiPage() {
                     {type}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             {/* Pencarian Teks */}
-            <div className="space-y-1.5">
-              <label htmlFor="filter-search" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
+              <label htmlFor="filter-search" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Cari Gerai / PIC / Lokasi
               </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3.5 top-4 h-4 w-4 text-slate-400" />
                 <input
                   id="filter-search"
                   type="text"
                   placeholder="Cari nama gerai, kode, atau PIC..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 text-xs md:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                  className="w-full h-12 pl-10 pr-4 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -536,11 +505,11 @@ export default function KinerjaGeraiPage() {
             {filteredUnits.map((u) => {
               const percent = u.targetAchievementPercent;
               return (
-                <Card key={u.id} className="p-5 space-y-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">{u.name}</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <Card key={u.id} className="space-y-5 p-5 sm:p-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
+                    <div className="min-w-0 space-y-1">
+                      <h3 className="text-lg font-bold leading-7 text-slate-900 dark:text-slate-100">{u.name}</h3>
+                      <p className="text-sm leading-5 text-slate-500 dark:text-slate-400">
                         {u.code} · PIC: <strong>{u.picName}</strong>
                       </p>
                     </div>
@@ -553,16 +522,16 @@ export default function KinerjaGeraiPage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100 dark:border-slate-800 text-xs">
-                    <div>
-                      <span className="text-slate-500 block">Target Bulanan</span>
-                      <strong className="text-sm font-semibold tabular-nums text-slate-800 dark:text-slate-200">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="min-w-0 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/60">
+                      <span className="block text-sm text-slate-600 dark:text-slate-400">Target Bulanan</span>
+                      <strong className="mt-1 block break-words text-base font-semibold tabular-nums text-slate-800 dark:text-slate-200">
                         {u.monthlyTarget > 0 ? formatRupiah(u.monthlyTarget) : "Belum ditentukan"}
                       </strong>
                     </div>
-                    <div>
-                      <span className="text-slate-500 block">Realisasi Omset</span>
-                      <strong className="text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100">
+                    <div className="min-w-0 rounded-xl bg-rose-50/60 p-4 dark:bg-rose-950/20">
+                      <span className="block text-sm text-slate-600 dark:text-slate-400">Realisasi Omset</span>
+                      <strong className="mt-1 block break-words text-base font-bold tabular-nums text-slate-900 dark:text-slate-100">
                         {formatRupiah(u.actualRevenue)}
                       </strong>
                     </div>
@@ -570,8 +539,8 @@ export default function KinerjaGeraiPage() {
 
                   {/* Progress Bar Target */}
                   {percent !== null && (
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
                         <span>Pencapaian Target</span>
                         <strong className={percent >= 100 ? "text-emerald-600 font-bold" : "text-slate-800 dark:text-slate-200"}>
                           {percent}%
@@ -592,20 +561,20 @@ export default function KinerjaGeraiPage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-                    <div>
-                      <span className="text-slate-500 block">Hari Rekap Masuk</span>
-                      <strong className="text-slate-800 dark:text-slate-200">
+                  <div className="grid grid-cols-1 gap-4 border-t border-slate-100 pt-4 dark:border-slate-800 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <span className="block text-sm text-slate-600 dark:text-slate-400">Hari Rekap Masuk</span>
+                      <strong className="block text-base text-slate-800 dark:text-slate-200">
                         {u.reportedDays} dari {u.calendarDaysElapsed} hari
                       </strong>
-                      <span className="text-[11px] text-slate-400 block mt-0.5">
+                      <span className="block text-sm text-slate-500 dark:text-slate-400">
                         {u.reportingRatePercent !== null ? `(${u.reportingRatePercent}% hari)` : "-"}
                       </span>
                     </div>
-                    <div>
-                      <span className="text-slate-500 block">Selisih Operasional</span>
+                    <div className="space-y-1">
+                      <span className="block text-sm text-slate-600 dark:text-slate-400">Selisih Operasional</span>
                       <strong
-                        className={`text-sm tabular-nums font-bold ${
+                        className={`block text-base tabular-nums font-bold ${
                           u.operationalMargin >= 0
                             ? "text-emerald-700 dark:text-emerald-300"
                             : "text-rose-700 dark:text-rose-300"
@@ -613,25 +582,25 @@ export default function KinerjaGeraiPage() {
                       >
                         {formatRupiah(u.operationalMargin)}
                       </strong>
-                      <span className="text-[11px] text-slate-400 block mt-0.5">
+                      <span className="block text-sm text-slate-500 dark:text-slate-400">
                         Keluar: {formatRupiah(u.totalExpenses)}
                       </span>
                     </div>
                   </div>
 
                   {/* Tren Perbandingan */}
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-                    <span className="text-slate-500 block text-[11px]">Tren vs Bulan Lalu:</span>
-                    <p className="mt-0.5 text-slate-700 dark:text-slate-300 font-medium">
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/40">
+                    <span className="block text-sm text-slate-600 dark:text-slate-400">Tren vs Bulan Lalu</span>
+                    <p className="mt-1 text-sm font-medium leading-6 text-slate-700 dark:text-slate-300">
                       {u.comparison.note}
                     </p>
                   </div>
 
                   {/* Tombol Aksi 1-Klik */}
-                  <div className="pt-2">
+                  <div>
                     <Link
                       href={`/monitoring?unitId=${u.id}`}
-                      className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-4 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                       <span>Lihat Riwayat Rekap Gerai</span>
                       <ArrowUpRight className="h-4 w-4" />

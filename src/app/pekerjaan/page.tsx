@@ -280,6 +280,7 @@ export default function PekerjaanPage() {
               <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
               <input
                 type="search"
+                aria-label="Cari tugas, penanggung jawab, atau instruksi"
                 placeholder="Cari tugas, PIC, atau instruksi..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -355,7 +356,7 @@ export default function PekerjaanPage() {
               size="sm"
               onClick={handleExportCsv}
               disabled={filteredTasks.length === 0}
-              className="min-h-11 sm:min-h-9 gap-1.5 font-bold text-xs"
+              className="min-h-11 gap-1.5 text-sm font-semibold"
             >
               <Download className="h-3.5 w-3.5 text-primary-container" />
               Ekspor CSV ({filteredTasks.length})
