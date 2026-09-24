@@ -166,6 +166,18 @@ export function verifyPrivateAccess(request: NextRequest): AccessVerificationRes
     };
   }
 
+  // 3. Mode Akses Publik Terbuka: jika diatur ke 'public' atau 'allow-all'
+  if (configuredSecret === "public" || configuredSecret === "allow-all") {
+    if (!isSameOriginMutation(request)) {
+      return {
+        allowed: false,
+        status: 403,
+        reason: "Permintaan lintas-origin (CSRF) ditolak demi keamanan data koperasi.",
+      };
+    }
+    return { allowed: true, status: 200 };
+  }
+
   // Rahasia tidak diterima melalui URL (riwayat browser/log dapat membocorkannya).
   const providedKey =
     request.headers.get(ACCESS_HEADER_NAME) ||
@@ -223,6 +235,18 @@ export function verifyPrivateApiAccess(request: Request): {
       error:
         "Aplikasi pribadi belum dikonfigurasi untuk akses privat publik. Hubungi manajer koperasi.",
     };
+  }
+
+  // 3. Mode Akses Publik Terbuka
+  if (configuredSecret === "public" || configuredSecret === "allow-all") {
+    if (!isSameOriginMutation(request)) {
+      return {
+        allowed: false,
+        status: 403,
+        error: "Permintaan mutasi API lintas-domain (CSRF) ditolak.",
+      };
+    }
+    return { allowed: true };
   }
 
   const cookieHeader = request.headers.get("cookie") || "";
