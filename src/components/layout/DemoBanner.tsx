@@ -20,7 +20,7 @@ export const DemoBanner: React.FC = () => (
       <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
       <span>
         {hasSupabase
-          ? "Aplikasi Pribadi Manajer · Supabase Terhubung"
+          ? "Aplikasi Pribadi Manajer · Supabase Dikonfigurasi"
           : "Aplikasi Pribadi Manajer · Akses Privat Lokal"}
       </span>
     </span>

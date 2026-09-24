@@ -37,70 +37,80 @@ interface GuideTopic {
 
 const GUIDE_TOPICS: GuideTopic[] = [
   {
-    id: "anggota-simpanan",
-    title: "Tata Kelola Calon Anggota & Pembukuan Simpanan",
-    category: "Kelembagaan",
-    summary: "Aturan pendaftaran anggota pendiri, penyamaran NIK, dan pengakuan simpanan pokok/wajib.",
+    id: "pekerjaan",
+    title: "Memulai hari dari Meja Kerja",
+    category: "Operasional",
+    summary: "Lihat pekerjaan mendesak, gerai yang belum melapor, dan stok yang perlu diperiksa.",
     steps: [
-      "Catat calon anggota di modul Anggota (NIK disamarkan otomatis menjadi **** demi kepatuhan privasi).",
-      "Pendaftaran calon anggota belum otomatis mencatat simpanan telah lunas.",
-      "Saat uang tunai simpanan disetor riil ke rekening/brankas, catat mutasi penerimaan di modul Keuangan > Simpanan Anggota.",
-      "Sistem akan menerbitkan bukti setoran dan membukukan Jurnal Umum otomatis (Debit: Kas/Bank, Kredit: Simpanan Pokok).",
+      "Buka Meja Kerja dan mulai dari kelompok Perlu Sekarang.",
+      "Gunakan filter gerai atau sumber data bila daftar panjang.",
+      "Buka item untuk menindaklanjuti pada modul asalnya; status baru berubah bila data sumber benar-benar diperbarui.",
     ],
-    tips: "Simpanan Pokok dan Wajib adalah Modal Sendiri (Ekuitas Koperasi), bukan omzet atau pendapatan kios.",
-    actionUrl: "/anggota",
-    actionLabel: "Buka Modul Anggota",
+    tips: "Daftar ini membantu memilih prioritas, bukan bukti bahwa seluruh kegiatan koperasi telah diperiksa.",
+    actionUrl: "/meja-kerja",
+    actionLabel: "Buka Meja Kerja",
   },
   {
-    id: "po-gudang",
-    title: "Siklus Pengadaan Barang (PO) & Penerimaan Gudang",
-    category: "Unit Usaha",
-    summary: "Memastikan stok fisik di gerai sembako tidak menyimpang dari dokumen pesanan.",
+    id: "anggota",
+    title: "Mencatat data anggota",
+    category: "Kelembagaan",
+    summary: "Kelola daftar anggota tanpa menganggapnya sebagai buku simpanan.",
     steps: [
-      "Buat Surat Pesanan (PO) di modul Pengadaan ke salah satu mitra grosir yang terdaftar.",
-      "PO yang disetujui (Approved) BELUM menambah kuantitas stok di sistem.",
-      "Ketika barang fisik tiba di kios sembako Ladang Laweh, klik 'Terima Barang' dan masukkan nomor Surat Jalan pemasok.",
-      "Periksa fisik barang: komoditas yang rusak/cacat dialihkan ke gudang Karantina, sedangkan yang utuh otomatis menambah saldo siap jual.",
+      "Buka Data Anggota untuk melihat daftar dan status yang sudah tersimpan.",
+      "Tambahkan atau impor anggota hanya setelah nomor dan data pribadinya diperiksa.",
+      "Perubahan status anggota tidak otomatis membukukan setoran simpanan.",
     ],
-    tips: "Pemisahan status pesanan (PO) dan penerimaan fisik (Goods Receipt) mencegah terjadinya selisih stok yang tidak sesuai.",
+    tips: "Saat ini skema Supabase anggota masih perlu penyelarasan; jika halaman gagal dimuat, jangan mengulangi impor atau mengira daftar kosong.",
+    actionUrl: "/anggota",
+    actionLabel: "Buka Data Anggota",
+  },
+  {
+    id: "rekap-gerai",
+    title: "Membaca rekap dan kinerja gerai",
+    category: "Unit Usaha",
+    summary: "Catat angka harian lalu bandingkan keterisian rekap dan capaian target.",
+    steps: [
+      "Isi Pemantauan Gerai dari catatan penutupan harian yang benar.",
+      "Periksa jumlah gerai aktif yang telah mengisi rekap pada dashboard.",
+      "Buka Kinerja Gerai untuk melihat omset tercatat, target bila ada, dan keterisian rekap per periode.",
+    ],
+    tips: "Hari tanpa rekap bukan bukti omset nol. Selisih omset dan pengeluaran bukan laba bersih resmi.",
+    actionUrl: "/kinerja-gerai",
+    actionLabel: "Buka Kinerja Gerai",
+  },
+  {
+    id: "stok",
+    title: "Memeriksa stok fisik",
+    category: "Unit Usaha",
+    summary: "Pantau barang yang habis atau mencapai batas minimum tanpa mencatat transaksi kasir.",
+    steps: [
+      "Buka Barang & Stok dan saring barang yang perlu perhatian.",
+      "Cocokkan angka yang terlihat dengan hitungan fisik di lokasi penyimpanan.",
+      "Sesuaikan angka hanya setelah satuan barang dan alasan selisih dipahami.",
+    ],
+    tips: "Saat ini sistem menyimpan angka stok terakhir, belum mempunyai kartu mutasi/opname yang dapat menjelaskan semua perubahan.",
     actionUrl: "/stok",
     actionLabel: "Buka Barang & Stok",
   },
   {
-    id: "kasir-shift",
-    title: "Disiplin Shift Kasir & Perhitungan Fisik Buta (Blind Count)",
-    category: "Operasional",
-    summary: "Prosedur operasional harian kasir sembako untuk mencegah kebocoran uang register kasir.",
+    id: "keuangan",
+    title: "Memahami angka keuangan",
+    category: "Keuangan",
+    summary: "Bedakan rekap operasional gerai dari buku kas dan laporan resmi.",
     steps: [
-      "Di awal jam buka gerai, kasir membuka shift baru dengan memasukkan modal awal kas register (kas kecil).",
-      "Lakukan transaksi penjualan eceran sembako, cetak struk untuk pembeli, dan terima pembayaran tunai atau QRIS.",
-      "Jika ada barang retur dari pembeli, gunakan menu Otorisasi Retur dengan memilih alasan cacat atau salah beli.",
-      "Saat toko tutup, kasir wajib melakukan 'Tutup Shift' dengan menghitung fisik uang tunai yang ada di laci kasir (Blind Count) tanpa diberitahu kalkulasi sistem.",
+      "Buka Kas & Buku Besar untuk membaca penerimaan yang benar-benar tercatat.",
+      "Bandingkan tanggal dan gerai sumber sebelum menarik kesimpulan.",
+      "Gunakan Neraca & SHU sebagai ringkasan kerja dengan catatan batas data, bukan pengesahan otomatis.",
     ],
-    tips: "Selisih lebih atau selisih kurang pada kas register kasir akan otomatis tercatat di berita acara tutup shift.",
-    actionUrl: "/monitoring",
-    actionLabel: "Buka Pemantauan Gerai",
-  },
-  {
-    id: "jurnal-pembukuan",
-    title: "Pembukuan Berpasangan (Double-Entry) & Jurnal Pembalikan",
-    category: "Akuntansi",
-    summary: "Aturan transaksi posted yang permanen dan tata cara perbaikan jurnal yang sah.",
-    steps: [
-      "Buka Buku Jurnal untuk memeriksa transaksi sesi yang sudah menghasilkan jurnal. Integrasi seluruh modul belum selesai.",
-      "Nilai Debit harus selalu sama persis dengan Kredit (keseimbangan mutlak).",
-      "Jurnal yang telah berstatus Sah (Posted) DILARANG keras dihapus atau diedit angkanya.",
-      "Jika terjadi kesalahan pencatatan nomor akun atau nominal, terbitkan Jurnal Pembalikan (Reversal Entry) dengan alasan tertulis.",
-    ],
-    tips: "Jurnal pembalikan membatalkan mutasi sebelumnya secara transparan dan menjaga audit trail tetap utuh.",
+    tips: "Jurnal Simulasi adalah sarana belajar; jangan menyamakannya dengan pembukuan resmi transaksi nyata.",
     actionUrl: "/keuangan",
-    actionLabel: "Buka Buku Jurnal",
+    actionLabel: "Buka Kas & Buku Besar",
   },
 ];
 
 export default function BantuanPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [activeAccordion, setActiveAccordion] = useState<string | null>("anggota-simpanan");
+  const [activeAccordion, setActiveAccordion] = useState<string | null>("pekerjaan");
 
   const filteredTopics = GUIDE_TOPICS.filter((t) => {
     if (selectedCategory === "all") return true;
@@ -118,13 +128,13 @@ export default function BantuanPage() {
         title="Panduan & bantuan"
         statusBadge="Mode Persiapan"
         badgeVariant="crimson"
-        description="Panduan teknis alur kerja sistem, tata kelola kepatuhan, dan prosedur harian Koperasi Desa Ladang Laweh untuk Bapak Abdul Halim."
+        description="Langkah sederhana memakai data gerai, tugas, stok, anggota, dan keuangan untuk keputusan manajer."
       />
 
       {/* 3 Kartu Metrik Ringkasan Atas (Gaya /persiapan) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <CardMetric
-          title="Fokus Operasional Utama"
+          title="Fokus Harian"
           value="Kesiapan Awal 2027"
           subtext="Penuntasan legalitas, gerai fisik, dan SOP"
           icon={<Clock className="h-4 w-4 text-rose-600 dark:text-rose-400" />}
@@ -132,17 +142,17 @@ export default function BantuanPage() {
           accentColor="crimson"
          action={{ label: "Buka checklist", href: "/persiapan" }}/>
         <CardMetric
-          title="Integritas Lingkungan Data"
-          value="Prototipe sesi"
-          subtext="Data contoh dapat berubah selama sesi."
+          title="Sumber Angka"
+          value="Data tercatat"
+          subtext="Angka diambil dari rekap dan tabel yang tersambung."
           icon={<ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-          trend={{ label: "Data contoh", positive: true }}
+          trend={{ label: "Cek sumber", positive: true }}
           accentColor="emerald"
          action={{ label: "Lihat pengaturan", href: "/pengaturan" }}/>
         <CardMetric
-          title="Peran Akun Pengguna"
-          value="Manajer Persiapan"
-          subtext="Login dan hak akses nyata belum dihubungkan."
+          title="Ruang Kerja"
+          value="Pribadi manajer"
+          subtext="Aplikasi tanpa layar login, untuk lingkungan privat."
           icon={<Users className="h-4 w-4 text-sky-600 dark:text-sky-400" />}
           trend={{ label: "Abdul Halim", positive: true }}
           accentColor="sky"
@@ -159,7 +169,7 @@ export default function BantuanPage() {
           <p className="text-sky-800 dark:text-sky-300/90">
             Aplikasi ini dirancang khusus untuk memudahkan pengelolaan koperasi oleh pengurus nagari.
             Pada operasional nyata, setiap angka, stok, dan kas perlu didukung <strong>dokumen fisik otentik</strong>.
-            Apabila Anda menemui keraguan alur kerja di lapangan, rujuklah <strong>4 pilar panduan operasional</strong> di
+            Apabila Anda menemui keraguan alur kerja di lapangan, rujuklah <strong>panduan operasional</strong> di
             bawah ini atau hubungi pembina koperasi nagari.
           </p>
         </div>
@@ -173,14 +183,14 @@ export default function BantuanPage() {
         {[
           { id: "all", label: "Semua Panduan" },
           { id: "Kelembagaan", label: "Kelembagaan & Anggota" },
-          { id: "Unit Usaha", label: "Pengadaan & Gudang" },
-          { id: "Operasional", label: "Kasir & Ritel" },
-          { id: "Akuntansi", label: "Jurnal & Keuangan" },
+          { id: "Unit Usaha", label: "Gerai & Stok" },
+          { id: "Operasional", label: "Prioritas Harian" },
+          { id: "Keuangan", label: "Catatan Keuangan" },
         ].map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`min-h-11 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
               selectedCategory === cat.id
                 ? "bg-slate-900 dark:bg-rose-700 text-white shadow-sm"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100"

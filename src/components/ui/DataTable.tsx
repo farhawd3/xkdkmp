@@ -31,12 +31,12 @@ export function DataTable<T>({
       aria-label="Tabel data, dapat digulir horizontal"
       tabIndex={0}
       className={cn(
-        "w-full overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm",
+        "w-full overflow-x-auto rounded-[20px] border border-slate-200/90 bg-white shadow-[var(--card-shadow)] dark:border-slate-700 dark:bg-[#252F40]",
         className
       )}
     >
       <table className="w-full text-left text-sm text-slate-700 dark:text-slate-200">
-        <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <thead className="border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/65 text-xs font-semibold tracking-wide text-slate-600 dark:text-slate-300">
           <tr>
             {columns.map((col) => (
               <th
@@ -71,12 +71,12 @@ export function DataTable<T>({
             data.map((row) => (
               <tr
                 key={keyExtractor(row)}
-                className="transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800/60"
+                className="transition-colors hover:bg-rose-50/40 dark:hover:bg-slate-800/60"
               >
                 {columns.map((col) => {
                   const alignClass =
                     col.align === "right" || col.isNumeric
-                      ? "text-right tabular-nums font-mono text-slate-900 dark:text-slate-100"
+                      ? "text-right tabular-nums font-semibold text-slate-900 dark:text-slate-100"
                       : col.align === "center"
                       ? "text-center"
                       : "text-left";

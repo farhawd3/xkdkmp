@@ -18,6 +18,8 @@
     --text-muted: #637189;
     --border-subtle: #F1F5F9;
     --border-muted: #E2E8F0;
+    --surface-soft: #F2F5FA;
+    --card-shadow: 0 1px 2px rgb(40 52 73 / 4%), 0 12px 32px rgb(40 52 73 / 4%);
   }
 
   .dark {
@@ -32,6 +34,8 @@
     --text-muted: #AAB7CB; /* Slate 400 */
     --border-subtle: #303C50; /* Slate 800 */
     --border-muted: #3B4960; /* Slate 700 */
+    --surface-soft: #222D3D;
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 10%), 0 16px 36px rgb(0 0 0 / 8%);
   }
 
   * {
@@ -59,6 +63,20 @@
     background-color: var(--background);
     color: var(--text-main);
     overflow-x: hidden;
+  }
+
+  .app-canvas {
+    background:
+      radial-gradient(ellipse 50% 28% at 90% 0%, rgb(247 215 227 / 34%), transparent),
+      radial-gradient(ellipse 35% 26% at 10% 55%, rgb(220 235 248 / 30%), transparent),
+      var(--background);
+  }
+
+  .dark .app-canvas {
+    background:
+      radial-gradient(ellipse 50% 28% at 90% 0%, rgb(166 71 104 / 9%), transparent),
+      radial-gradient(ellipse 35% 26% at 10% 55%, rgb(80 119 150 / 8%), transparent),
+      var(--background);
   }
 }
 

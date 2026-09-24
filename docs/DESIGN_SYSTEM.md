@@ -1,5 +1,15 @@
 # DESIGN SYSTEM — KOPDES MERAH PUTIH LADANG LAWEH
 
+## Revisi fondasi v2.9.4 — 24 September 2026
+
+- Latar memakai dua radial pastel yang sangat tipis di atas `--background`; mode gelap memakai aksen rose/biru beropasitas rendah. Informasi tetap dominan, bukan dekorasi.
+- Semua komponen `Card` memakai radius 20 px, border halus dan `--card-shadow` sesuai tema. Metrik memakai gradasi lembut per kategori dengan isi tetap netral; angka tabular 24 px.
+- `PageHeader` ringkas dalam satu panel, aksi sejajar pada desktop lebar. Tautan terkait ditampilkan sebagai chip sentuh 44 px agar tidak bersaing dengan judul.
+- Tombol utama memakai bayangan rose tipis dan fokus kontras pada mode gelap; tabel memakai permukaan kartu yang sama, judul kolom tanpa huruf kapital semua, angka sejajar kanan tanpa font teknis. Dialog memakai latar redup sesuai tema dan aksi tertata dengan jarak jelas.
+- Grafik pelaporan harian menampilkan pasangan `melapor/gerai aktif` per tanggal, selalu disertai penjelasan bahwa hari operasional belum tercatat. Nol dengan gerai aktif berbeda dari persentase tidak berlaku saat tak ada gerai aktif.
+- Panduan harus menggambarkan fungsi yang benar-benar ada. Dilarang menulis instruksi kasir/POS, bukti setoran otomatis, atau alur login yang tidak dijalankan.
+- Perubahan ini bersifat sistemik pada komponen bersama; audit visual per modul dan grafik dengan data nyata masih harus dilanjutkan.
+
 ## Acuan pekerjaan berikutnya — dashboard manajer
 
 Rancangan hierarki layar, keadaan data, matriks visual terang/gelap, dan kriteria fitur berikutnya tertulis di [ROADMAP_MANAJER_BERIKUTNYA.md](ROADMAP_MANAJER_BERIKUTNYA.md). Pada dashboard, jangan mengulang sapaan/tanggal dalam header, baris navigasi dan teks terpisah. Aksi data dikelompokkan di header; grafik kosong memakai pesan ringkas, bukan ruang gambar tanpa informasi. Ini acuan untuk fitur baru, bukan klaim seluruh layar sudah lolos audit visual.

@@ -57,6 +57,11 @@ export const NAVIGATION_GROUPS: { groupName: string; items: NavItem[] }[] = [
         iconName: "Activity",
       },
       {
+        title: "Kinerja Gerai",
+        href: "/kinerja-gerai",
+        iconName: "BarChart3",
+      },
+      {
         title: "Daftar & Edit Gerai",
         href: "/unit-usaha",
         iconName: "Store",

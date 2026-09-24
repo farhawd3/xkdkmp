@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyPrivateApiAccess } from "@/lib/security/private-access";
 import { createClient } from "@/lib/supabase/server";
 import { getTodayWIB, getCurrentYearMonthWIB, getDaysAgoWIB } from "@/lib/utils";
+import { buildReportingTrend } from "@/lib/reporting-trend";
 
 export async function GET(request: Request) {
   try {
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
       supabase.from("unit_daily_reports").select("gross_revenue, operational_expenses, net_profit").gte("report_date", `${currentYearMonth}-01`).lte("report_date", today),
       // Data tren 7 hari WIB: omset per hari
       supabase.from("unit_daily_reports")
-        .select("report_date, gross_revenue, operational_expenses, net_profit")
+        .select("report_date, unit_id, gross_revenue, operational_expenses, net_profit")
         .gte("report_date", sevenDaysAgoStr)
         .lte("report_date", today)
         .order("report_date", { ascending: true }),
@@ -131,6 +132,11 @@ export async function GET(request: Request) {
     );
     const allUnits = allUnitsRes.data || [];
     const activeUnits = allUnits.filter((u: { status?: string }) => u.status === "aktif");
+    const reportingTrend = buildReportingTrend(
+      dailyTrend.map((day) => day.date),
+      (weeklyReportsRes.data || []) as Array<{ report_date: string; unit_id: string }>,
+      activeUnits.map((unit: { id: string }) => unit.id),
+    );
 
     const unreportedUnits = activeUnits
       .filter((u: { id: string }) => !reportedUnitIds.has(u.id))
@@ -186,6 +192,7 @@ export async function GET(request: Request) {
       monthExpenses,
       monthProfit,
       dailyTrend,
+      reportingTrend,
       unreportedUnits,
       businessStatus: orgProfileRes.data?.business_status ?? "persiapan",
       // Fitur Fokus Hari Ini

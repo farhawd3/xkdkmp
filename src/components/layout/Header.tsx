@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   );
 
   return (
-    <header className="sticky top-0 z-30 h-16 sm:h-[70px] w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm transition-colors">
+    <header className="sticky top-0 z-30 h-16 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl transition-colors dark:border-slate-700/70 dark:bg-[#222C3C]/95 sm:h-[70px]">
       <div className="flex h-full w-full items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
         {/* Kiri: Toggle Menu (Mobile & Tablet) + Status Tanggal */}
         <div className="flex items-center gap-3">

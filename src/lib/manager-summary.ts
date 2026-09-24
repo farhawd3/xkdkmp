@@ -23,6 +23,7 @@ export interface DashboardSummary {
   monthExpenses: number;
   monthProfit: number;
   dailyTrend: { date: string; revenue: number; expenses: number; profit: number }[];
+  reportingTrend?: { date: string; reported: number; total: number; percent: number | null }[];
   unreportedUnits: { id: string; name: string }[];
   businessStatus: string;
   lowStockCount?: number;
@@ -95,6 +96,9 @@ export function managerSnapshotRows(data: DashboardSummary, organizationName: st
     ["Selisih operasional", data.monthProfit, "Bukan laba bersih atau SHU resmi; Rupiah"],
     ["Tugas aktif", data.activeTasks, "Semua tugas belum selesai"],
     ["Stok perlu perhatian", data.lowStockCount ?? 0, "Jumlah barang, bukan jumlah satuan"],
+    [], ["Keterisian rekap tujuh hari", "Gerai aktif saat ini dengan rekap per tanggal; bukan jadwal hari operasional"],
+    ["Tanggal", "Gerai melapor", "Gerai aktif", "Persentase"],
+    ...(data.reportingTrend ?? []).map((day) => [day.date, day.reported, day.total, day.percent ?? "Belum berlaku"]),
     [], ["Kategori", "Tindak lanjut", "Keterangan", "Status"],
     ...managerActions(data).map((item) => [item.category, item.title, item.detail, item.label]),
     ["Catatan", "Daftar tugas/stok merupakan cuplikan prioritas, bukan backup lengkap."],

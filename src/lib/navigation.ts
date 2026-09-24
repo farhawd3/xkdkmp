@@ -6,6 +6,7 @@ export const PRODUCTION_READY_ROUTES = new Set([
   "/meja-kerja",
   "/pekerjaan",
   "/monitoring",
+  "/kinerja-gerai",
   "/unit-usaha",
   "/stok",
   "/keuangan",

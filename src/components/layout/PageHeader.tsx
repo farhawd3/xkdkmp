@@ -29,19 +29,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   children,
   className,
 }) => {
-  const displayBadge = statusBadge ?? badgeText ?? "Mode Persiapan";
+  const displayBadge = statusBadge ?? badgeText;
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-3", className)}>
       {/* Remah Roti (Breadcrumb) Seragam */}
       {breadcrumbItems && breadcrumbItems.length > 0 && (
         <Breadcrumb items={breadcrumbItems} />
       )}
 
       {/* Baris Judul & Aksi Utama yang Terstandarisasi */}
-      <div className="relative flex flex-col gap-5 rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-sm dark:border-slate-700/70 dark:bg-[#252F40] md:p-6 2xl:flex-row 2xl:items-start 2xl:justify-between">
-        <div className="space-y-1.5 min-w-0">
+      <div className="flex flex-col gap-4 rounded-[22px] border border-slate-200/75 bg-white/90 px-5 py-5 shadow-[var(--card-shadow)] dark:border-slate-700/65 dark:bg-[#252F40] md:px-6 md:py-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="min-w-0 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
+            <h1 className="text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-[1.75rem]">
               {title}
             </h1>
             {displayBadge && (
@@ -51,14 +51,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             )}
           </div>
           {description && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
+            <p className="max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               {description}
             </p>
           )}
         </div>
 
         {actions && (
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 sm:pt-1">
+          <div className="flex flex-wrap items-center gap-2.5 xl:shrink-0">
             {actions}
           </div>
         )}

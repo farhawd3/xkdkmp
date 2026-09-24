@@ -71,7 +71,7 @@ export const Dialog: React.FC<DialogProps> = ({
   const dialogContent = (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex bg-slate-950/65 backdrop-blur-[3px] animate-in fade-in duration-200",
+        "fixed inset-0 z-50 flex bg-slate-950/45 dark:bg-slate-950/70 backdrop-blur-[3px] animate-in fade-in duration-200",
         overlayPositionClass
       )}
       onClick={closeOnBackdrop ? onClose : undefined}
@@ -84,7 +84,7 @@ export const Dialog: React.FC<DialogProps> = ({
         ref={panelRef}
         tabIndex={-1}
         className={cn(
-          "flex max-h-[92dvh] w-full flex-col overflow-hidden bg-white shadow-2xl dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)]",
+          "flex max-h-[92dvh] w-full flex-col overflow-hidden bg-white shadow-[0_24px_80px_rgba(30,41,59,0.22)] dark:bg-[#252F40] sm:max-h-[calc(100dvh-2.5rem)]",
           panelPositionClass,
           maxWidthClasses
         )}
@@ -123,7 +123,7 @@ export const Dialog: React.FC<DialogProps> = ({
 
         {/* Footer Modal (Opsional) */}
         {footer && (
-          <div className="shrink-0 border-t border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/80 md:px-6 md:py-4">
+          <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/80 sm:flex-row sm:justify-end md:px-6 md:py-4">
             {footer}
           </div>
         )}

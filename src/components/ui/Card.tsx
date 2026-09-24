@@ -10,7 +10,7 @@ export const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-2xl border border-slate-200/70 dark:border-slate-700/60 bg-white dark:bg-[#252F40] text-slate-900 dark:text-slate-100 shadow-sm transition-colors duration-200",
+      "rounded-[20px] border border-slate-200/75 bg-white text-slate-900 shadow-[var(--card-shadow)] transition-colors duration-200 dark:border-slate-700/65 dark:bg-[#252F40] dark:text-slate-100",
       className
     )}
     {...props}
@@ -24,7 +24,7 @@ export const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-5 md:p-6 pb-2 md:pb-3", className)}
+    className={cn("flex flex-col space-y-1 p-5 pb-2 md:p-6 md:pb-2", className)}
     {...props}
   />
 ));
@@ -120,27 +120,27 @@ export const CardMetric: React.FC<CardMetricProps> = ({
   
   const accentStyles = {
     crimson: {
-      border: "bg-gradient-to-br from-rose-50/70 to-white dark:from-slate-900 dark:to-slate-900",
+      border: "bg-gradient-to-br from-rose-50/60 via-white to-white dark:from-[#2B3043] dark:via-[#252F40] dark:to-[#252F40]",
       bar: "bg-primary-container",
       badgeVariant: "crimson" as const,
     },
     emerald: {
-      border: "bg-gradient-to-br from-emerald-50/70 to-white dark:from-slate-900 dark:to-slate-900",
+      border: "bg-gradient-to-br from-emerald-50/50 via-white to-white dark:from-[#263B40] dark:via-[#252F40] dark:to-[#252F40]",
       bar: "bg-emerald-600",
       badgeVariant: "success" as const,
     },
     sky: {
-      border: "bg-gradient-to-br from-sky-50/70 to-white dark:from-slate-900 dark:to-slate-900",
+      border: "bg-gradient-to-br from-sky-50/60 via-white to-white dark:from-[#293847] dark:via-[#252F40] dark:to-[#252F40]",
       bar: "bg-sky-600",
       badgeVariant: "info" as const,
     },
     amber: {
-      border: "bg-gradient-to-br from-amber-50/70 to-white dark:from-slate-900 dark:to-slate-900",
+      border: "bg-gradient-to-br from-amber-50/55 via-white to-white dark:from-[#363746] dark:via-[#252F40] dark:to-[#252F40]",
       bar: "bg-amber-500",
       badgeVariant: "warning" as const,
     },
     indigo: {
-      border: "bg-gradient-to-br from-indigo-50/70 to-white dark:from-slate-900 dark:to-slate-900",
+      border: "bg-gradient-to-br from-indigo-50/55 via-white to-white dark:from-[#30354B] dark:via-[#252F40] dark:to-[#252F40]",
       bar: "bg-indigo-600",
       badgeVariant: "neutral" as const,
     },
@@ -166,11 +166,11 @@ export const CardMetric: React.FC<CardMetricProps> = ({
       )}
       {...props}
     >
-      <CardContent className="flex-1 p-5 md:p-6 space-y-3">
+      <CardContent className="flex-1 space-y-3 p-5 md:p-5">
         {/* Baris 1: Header Atas (Kategori di Kiri, Badge / Status di Kanan) */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            {icon && <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/80 bg-white/70 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">{icon}</span>}
+            {icon && <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/80 bg-white/85 text-primary dark:border-slate-700 dark:bg-slate-800/70 dark:text-rose-200">{icon}</span>}
             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
               {title}
             </span>
@@ -203,7 +203,7 @@ export const CardMetric: React.FC<CardMetricProps> = ({
         </div>
 
         {/* Baris 2: Nilai Utama / Judul */}
-        <div className="break-words text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-snug tracking-tight tabular-nums">
+        <div className="break-words text-2xl font-bold text-slate-900 dark:text-slate-100 leading-snug tracking-tight tabular-nums">
           {value}
         </div>
 
@@ -222,7 +222,7 @@ export const CardMetric: React.FC<CardMetricProps> = ({
         )}
       </CardContent>
       {action && (
-        <div className="border-t border-slate-200/60 dark:border-slate-700/60 px-5 md:px-6">
+        <div className="border-t border-slate-200/60 px-5 dark:border-slate-700/60">
           {action.href ? (
             <Link href={action.href} className="flex min-h-11 items-center justify-between gap-2 text-sm font-semibold text-primary-container">
               {action.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4 shrink-0" />

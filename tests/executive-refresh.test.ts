@@ -29,6 +29,6 @@ describe("API dashboard — batas tanggal dan galat", () => {
     const response = await GET(new Request("http://localhost:3000/api/dashboard/executive"));
     expect(response.status).toBe(200);
     expect(bounds).toContainEqual(["unit_daily_reports", "gross_revenue, operational_expenses, net_profit", "report_date", getTodayWIB()]);
-    expect(await response.json()).toMatchObject({ businessDate: getTodayWIB(), activeReportedUnits: 0 });
+    expect(await response.json()).toMatchObject({ businessDate: getTodayWIB(), activeReportedUnits: 0, reportingTrend: expect.arrayContaining([expect.objectContaining({ total: 0, percent: null })]) });
   });
 });

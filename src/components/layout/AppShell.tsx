@@ -44,7 +44,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       >
         Lewati ke konten utama
       </a>
-      <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,228,230,0.55),_transparent_34%),#F7F8FC] font-sans text-on-surface antialiased dark:bg-[radial-gradient(circle_at_top_left,_rgba(166,71,104,0.12),_transparent_32%),#1D2533] dark:text-slate-100">
+      <div className="app-canvas flex h-dvh max-h-dvh flex-col overflow-hidden font-sans text-on-surface antialiased dark:text-slate-100">
         {/* Banner Mode Persiapan */}
         <div className="shrink-0 z-40">
           <DemoBanner />
@@ -82,7 +82,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-gutter-stable"
               style={{ scrollbarGutter: "stable" }}
             >
-              <main id="main-content" tabIndex={-1} className="pt-6 pb-12 px-4 md:px-6 lg:px-8 max-w-7xl w-full mx-auto">
+              <main id="main-content" tabIndex={-1} className="w-full max-w-7xl mx-auto px-4 pb-12 pt-5 md:px-6 md:pt-6 xl:px-8">
                 {children}
               </main>
             </div>

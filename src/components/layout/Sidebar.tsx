@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
   return (
     <div
       className={cn(
-        "flex h-full w-64 xl:w-72 flex-col border-r border-slate-200/80 dark:border-slate-700/70 bg-white/95 dark:bg-[#252F40] select-none shrink-0 transition-colors",
+        "flex h-full w-64 xl:w-72 flex-col border-r border-slate-200/80 bg-white/95 dark:border-slate-700/70 dark:bg-[#222C3C] select-none shrink-0 transition-colors",
         className
       )}
     >
@@ -178,8 +178,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, onClose, classNam
           </div>
         ))}
         {productionMode && (
-          <p className="mx-2 rounded-xl border border-rose-100 bg-rose-50/70 p-3 text-xs leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
-            Menu transaksi dan administrasi akan tampil setelah integrasi Supabase serta pemeriksaan izinnya selesai.
+          <p className="mx-2 px-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            Gunakan Meja Kerja untuk melihat hal yang perlu ditindaklanjuti hari ini.
           </p>
         )}
       </div>

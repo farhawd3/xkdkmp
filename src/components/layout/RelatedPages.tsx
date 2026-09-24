@@ -28,10 +28,10 @@ export function RelatedPages() {
   );
   if (routes.length === 0) return null;
   return (
-    <nav aria-label="Halaman terkait" className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-200/70 pt-2 dark:border-slate-700/70">
-      <span className="text-xs text-slate-500 dark:text-slate-400">Lanjutkan ke</span>
+    <nav aria-label="Halaman terkait" className="flex flex-wrap items-center gap-2">
+      <span className="mr-1 text-xs font-medium text-slate-500 dark:text-slate-400">Terkait</span>
       {routes.map((href) => (
-        <Link key={href} href={href} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-primary-container dark:text-slate-300">
+        <Link key={href} href={href} className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/80 px-3 text-xs font-semibold text-slate-600 transition-colors hover:border-rose-200 hover:text-primary dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-rose-400/40 dark:hover:text-rose-200">
           {SEARCH_MODULES.find((item) => item.href === href)?.title}
           <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
         </Link>

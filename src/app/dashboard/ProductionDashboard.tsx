@@ -55,6 +55,39 @@ function RevenueTrend({ data }: { data: DashboardSummary["dailyTrend"] }) {
   );
 }
 
+function ReportingTrend({ data }: { data: NonNullable<DashboardSummary["reportingTrend"]> }) {
+  const total = data[0]?.total ?? 0;
+  return (
+    <Card>
+      <CardHeader className="pb-0">
+        <CardTitle>Keterisian rekap tujuh hari</CardTitle>
+        <CardDescription>Jumlah gerai aktif saat ini yang memiliki rekap pada tiap tanggal. Bukan penilaian hari operasional.</CardDescription>
+      </CardHeader>
+      <CardContent className="pt-5">
+        {total === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-5 py-6 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-300">
+            Belum ada gerai aktif. Grafik keterisian akan tersedia setelah ada gerai berstatus aktif.
+          </div>
+        ) : (
+          <div className="flex h-40 items-end gap-2 sm:gap-4" aria-label="Grafik keterisian rekap tujuh hari">
+            {data.map((day) => (
+              <div key={day.date} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1.5" title={`${day.date}: ${day.reported} dari ${day.total} gerai aktif`}>
+                <span className="text-xs font-semibold tabular-nums text-slate-600 dark:text-slate-300">{day.reported}/{day.total}</span>
+                <div className="flex h-24 w-full max-w-12 items-end rounded-t-lg bg-sky-50 dark:bg-slate-800">
+                  <div className="w-full rounded-t-lg bg-sky-500/75 dark:bg-sky-400/70" style={{ height: `${day.percent ?? 0}%` }} />
+                </div>
+                <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">{day.date.slice(8)}/{day.date.slice(5, 7)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="mt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Hitungan per gerai unik; rekap ganda pada satu tanggal tidak menambah jumlah. Jadwal hari tutup belum tercatat.</p>
+        <Link href="/kinerja-gerai" className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary">Lihat kinerja gerai <ArrowUpRight className="h-4 w-4" /></Link>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function ProductionDashboard() {
   const { data, loading, error, reload } = useResource(loadSummary);
   const { profile, error: profileError } = useOrganizationProfile();
@@ -124,7 +157,10 @@ export function ProductionDashboard() {
           </CardContent></Card>
         </div>
       </div>
-      <RevenueTrend data={data.dailyTrend} />
+      <section aria-label="Tren tujuh hari" className="grid items-start gap-4 lg:grid-cols-2">
+        <RevenueTrend data={data.dailyTrend} />
+        {data.reportingTrend && <ReportingTrend data={data.reportingTrend} />}
+      </section>
     </div>
   );
 }

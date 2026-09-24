@@ -2,7 +2,7 @@ export const fieldLabelClass =
   "block text-sm font-semibold leading-5 text-slate-700 dark:text-slate-200";
 
 export const fieldControlClass = [
-  "w-full rounded-xl border border-slate-200/90 bg-white text-sm text-slate-900 shadow-sm",
+  "w-full rounded-xl border border-slate-200/90 bg-white text-sm text-slate-900 shadow-[0_1px_2px_rgb(40_52_73_/_4%)]",
   "transition-[border-color,box-shadow,background-color] duration-200",
   "placeholder:text-slate-400 dark:border-slate-700 dark:bg-[#202A39] dark:text-slate-100 dark:placeholder:text-slate-500",
   "hover:border-slate-300 dark:hover:border-slate-600",

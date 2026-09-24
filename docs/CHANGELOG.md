@@ -2,6 +2,47 @@
 
 Catatan perubahan kronologis proyek untuk pelacakan lintas agen AI dan pengembang.
 
+## [Pemeriksaan runtime — koneksi lokal] — 24 September 2026
+
+- Menelusuri kegagalan memuat massal: server lokal sebelumnya tidak mendapat izin jaringan ke Supabase. Setelah server dijalankan ulang dengan izin yang sesuai, 10 API inti kembali HTTP 200. Tidak ada perubahan kode atau database; status migrasi 00009 Cloud masih perlu verifikasi terpisah.
+
+## [v2.9.4 — fondasi tampilan dan tren pelaporan] — 24 September 2026
+
+- Menyegarkan permukaan dan komponen bersama (shell, kartu metrik, header halaman, sidebar/topbar, chip navigasi, tombol, tabel, dialog, dan field) agar aplikasi lebih bersih dan konsisten di dua tema; perubahan menurun ke seluruh modul yang memakai komponen tersebut.
+- Menambah grafik keterisian rekap 7 hari di dashboard/CSV dari gerai aktif unik, tanpa tabel baru; kondisi tanpa gerai aktif dan laporan ganda ditangani serta diuji.
+- Memperbaiki Panduan yang sebelumnya masih mengklaim fitur POS, PO, jurnal otomatis, data contoh dan login lama; label status Supabase kini tidak menyamakan konfigurasi dengan koneksi berhasil.
+- 184 tes lulus, typecheck bersih, build 37 rute. Spot-check visual tablet dilakukan pada Panduan; grafik dashboard belum dapat dilihat berisi data karena `fetch failed` saat mengambil data Supabase di lingkungan pengujian. Tidak ada perubahan cloud.
+
+## [v2.9.3 — Tahap P2: Kinerja Gerai (/kinerja-gerai)] — 24 September 2026
+
+- **Fitur Baru — Kinerja & Capaian Gerai (`/kinerja-gerai`)**:
+  - Halaman analitik komparatif performa unit usaha bagi Bapak Abdul Halim untuk memantau capaian target bulanan, kedisiplinan rekapitulasi harian, dan selisih operasional seluruh gerai secara adil dan jujur.
+  - Aturan bisnis kejujuran data:
+    - Target 0 / belum disepakati = "Target belum ditetapkan", bukan "0%".
+    - Keterisian laporan dihitung terhadap total hari kalender yang telah berjalan (`calendarDaysElapsed`), bukan sebulan penuh jika bulan masih aktif berjalan.
+    - Perbandingan periode adil (*fair comparison*): membandingkan hari ke-1 s.d. hari ke-N bulan ini dengan hari ke-1 s.d. hari ke-N bulan lalu, dan hanya menampilkan persentase kenaikan/penurunan jika data bulan lalu memadai (minimal 50% hari lapor).
+    - Selisih operasional = Omset - Pengeluaran (dengan catatan edukasi bahwa ini bukan laba bersih resmi / SHU).
+- **Backend Route Handler Baru (`GET /api/manager/unit-performance`)**:
+  - Mengambil data dari 2 tabel Supabase yang sudah ada (`business_units` dan `unit_daily_reports`) tanpa tabel baru.
+  - Menerima parameter `month` (`YYYY-MM`) dan `unitId` dengan validasi Zod.
+  - Dilindungi verifikasi akses privat (`verifyPrivateApiAccess`).
+- **Modul Perhitungan Kanonikal (`src/lib/unit-performance.ts`)**:
+  - Fungsi murni perhitungan target, hari kalender berjalan, evaluasi perbandingan adil, dan agregasi ringkasan koperasi.
+- **Antarmuka Pengguna & Navigasi**:
+  - Header dengan pemilih bulan interaktif (`input[type="month"]`), tombol Perbarui, dan tombol Unduh CSV.
+  - 4 kartu metrik KPI (Total Omset Terhimpun, Capaian Target Koperasi, Rata-rata Keterisian Rekap, Selisih Operasional).
+  - Bilah filter interaktif (Status Gerai, Jenis Usaha, Pencarian Teks Cepat).
+  - Tampilan Desktop: Tabel performa dengan visual progress bar target, badge status, hari rekap, selisih operasional, tren vs bulan lalu, kendala terakhir, dan tombol 1-klik menuju `/monitoring?unitId=...`.
+  - Tampilan Tablet & Mobile: Kartu responsif bertingkat dengan area sentuh lega 44–48 px.
+  - Menu baru ditambahkan di Sidebar pada kelompok **Operasional Gerai** dengan ikon `BarChart3`.
+- **Pengujian & Verifikasi**:
+  - 182/182 unit test Vitest lulus (20 berkas), termasuk 13 tes baru di `tests/unit-performance.test.ts`.
+  - 0 galat TypeScript (`tsc --noEmit`).
+  - Next.js production build sukses mengompilasi 37 rute.
+  - Evaluasi visual mandiri tuntas menggunakan *browser subagent*.
+
+---
+
 ## [v2.9.2 — Tahap P1: Meja Kerja Manajer (/meja-kerja)] — 23 September 2026
 
 - **Fitur Baru — Meja Kerja Manajer (`/meja-kerja`)**:

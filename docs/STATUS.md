@@ -1,6 +1,51 @@
 # Status Proyek — Kopdes Merah Putih Ladang Laweh
 
-Terakhir diperbarui: 23 September 2026 — Implementasi Tahap P1 Selesai (Meja Kerja Manajer /meja-kerja).
+## Pemeriksaan runtime 24 September 2026 — gagal memuat massal teratasi
+
+- Saat server produksi lokal dijalankan dalam sandbox tanpa izin jaringan keluar, 10 API inti mengembalikan HTTP 500 dengan `TypeError: fetch failed`. Host Supabase dapat diakses dari luar sandbox (uji HTTPS tanpa kredensial menghasilkan HTTP 401 yang wajar), sehingga kegagalan massal bukan bukti kerusakan tabel.
+- Server lokal dihentikan lalu dijalankan ulang dengan izin jaringan pada `http://127.0.0.1:3000`. Pemeriksaan ulang memberi HTTP **200 untuk 10/10 API**: dashboard eksekutif, Meja Kerja, Kinerja Gerai, anggota, stok, tugas, gerai, rekap monitoring, profil organisasi, dan ringkasan keuangan. Minta pengguna memuat ulang halaman browser jika masih menampilkan galat lama.
+- Tidak ada perubahan kode, SQL, atau data Supabase dalam pemeriksaan ini. Status penerapan migrasi 00009 di ledger Cloud belum diverifikasi; catatan P0 di bawah merupakan riwayat galat sebelumnya, bukan bukti API saat ini masih 500. Server aktif pada sesi lokal saat catatan ini ditulis.
+
+## Checkpoint 24 September 2026 — fondasi redesain dan grafik pelaporan
+
+- Direktori terbaru dibaca sebelum perubahan. Modul **Meja Kerja** dan **Kinerja Gerai** beserta perubahan Git yang belum di-commit dipertahankan; keduanya sudah ada sebelum checkpoint ini.
+- Fondasi visual lintas aplikasi diperbarui lewat `globals.css`, `AppShell`, `Card`/`CardMetric`, `PageHeader`, `RelatedPages`, `Header`, `Sidebar`, `Button`, `DataTable`, `Dialog`, dan gaya field. Permukaan lebih netral, gradasi pastel lebih tipis, kartu dan bayangan konsisten, judul lebih ringkas, navigasi terkait berbentuk chip, target sentuh tetap minimal 44 px. Ini penyegaran komponen bersama, **bukan klaim setiap halaman sudah direka ulang/diinspeksi satu per satu**.
+- Fitur baru setelah fondasi visual: grafik **Keterisian Rekap 7 Hari** di dashboard dan CSV. API eksekutif menghitung jumlah gerai aktif unik yang memiliki rekap per tanggal dari query mingguan yang sudah ada; laporan ganda tidak menaikkan angka. Jika tidak ada gerai aktif, persentase `null` dan muncul pesan “belum berlaku”. Grafik menjelaskan bahwa hari tutup belum dimodelkan, sehingga ini bukan nilai kepatuhan resmi. Perhitungan murni ada di `src/lib/reporting-trend.ts`.
+- Halaman Panduan diperbarui agar tidak lagi memandu kasir/PO/jurnal otomatis atau menyebut data sesi dan login yang sudah tidak sesuai produk. Isi kini berfokus pada Meja Kerja, rekap/kinerja, stok, anggota dan batas angka keuangan.
+- Verifikasi kode: **184/184 tes lulus (21 berkas)**, TypeScript tanpa galat, build Next.js sukses **37 rute**. Tes baru mencakup gerai aktif unik, laporan duplikat, gerai nonaktif dan keadaan tanpa gerai aktif.
+- Spot-check browser tablet mode terang dan gelap pada `/bantuan` menunjukkan header, chip, dan kartu terbaca serta tidak bertumpuk. Label status Supabase kini hanya menyatakan konfigurasi tersedia, bukan koneksi berhasil. Dashboard dan Kinerja Gerai membuka halaman, tetapi query nyata mengembalikan `TypeError: fetch failed` pada lingkungan pengujian ini; grafik berisi data **belum terverifikasi secara visual**. Uji ulang saat koneksi Supabase tersedia. Ini tidak membuktikan migrasi 00009 telah diterapkan; status cloud tetap perlu verifikasi tersendiri.
+- Tidak ada SQL, migrasi, data koperasi, atau konfigurasi Supabase yang diubah. Pekerjaan lanjutan: audit visual tiap modul terang/gelap, grafik berisi data, query pagination >1.000, backup/restore atomik setelah keputusan Bapak. Server lokal dijalankan pada `http://127.0.0.1:3000` untuk spot-check sesi ini.
+
+Terakhir diperbarui: 24 September 2026 — Fondasi visual v2.9.4 dan grafik keterisian rekap; audit semua halaman masih berlanjut.
+
+## Tahap P2: Kinerja Gerai (`/kinerja-gerai`) — SELESAI (v2.9.3)
+
+- **Tujuan**: Pemantauan komparatif capaian target bulanan, keterisian rekapitulasi harian terhadap hari kalender berjalan, dan selisih operasional seluruh unit usaha koperasi secara adil dan jujur tanpa tabel database baru.
+- **Modul Kalkulasi Kanonikal**: [`src/lib/unit-performance.ts`](../src/lib/unit-performance.ts)
+  - Aturan bisnis kejujuran data:
+    1. Target 0 / belum disepakati = "Target belum ditetapkan", bukan "0%".
+    2. Keterisian rekap dihitung terhadap hari kalender yang telah berjalan (`calendarDaysElapsed`), bukan total sebulan jika bulan masih aktif.
+    3. Perbandingan periode adil (*fair comparison*): tidak membuat klaim sepihak jika data pembanding bulan lalu belum lengkap (<50% hari lapor).
+    4. Selisih operasional = Omset - Pengeluaran (dengan catatan edukasi bahwa ini bukan laba bersih resmi / SHU).
+- **Backend & Route Handler**: [`src/app/api/manager/unit-performance/route.ts`](../src/app/api/manager/unit-performance/route.ts)
+  - Menerima parameter query `month` (`YYYY-MM`) dan `unitId` dengan validasi Zod.
+  - Mengambil data dari 2 tabel Supabase: `business_units` dan `unit_daily_reports` (bulan berjalan + periode setara bulan lalu).
+  - Dilindungi proteksi akses privat (`verifyPrivateApiAccess`).
+- **Halaman Antarmuka**: [`src/app/kinerja-gerai/page.tsx`](../src/app/kinerja-gerai/page.tsx)
+  - Header dengan pemilih bulan interaktif (`input[type="month"]`), tombol Perbarui, dan Unduh CSV.
+  - 4 Kartu Metrik Ringkas (Total Omset Terhimpun, Capaian Target Koperasi, Rata-rata Keterisian Rekap, Selisih Operasional).
+  - Bilah filter interaktif (Status Gerai, Jenis Usaha, Pencarian Teks Cepat).
+  - Tampilan Desktop: Tabel performa dengan visual progress bar target, badge status, hari rekap, selisih operasional, tren vs bulan lalu, kendala terakhir, dan tombol 1-klik menuju `/monitoring?unitId=...`.
+  - Tampilan Tablet & Mobile: Kartu responsif bertingkat dengan area sentuh nyaman 44–48 px.
+  - Kotak edukasi transparansi metodologi di bagian bawah.
+- **Integrasi Navigasi**: Menu Kinerja Gerai ditambahkan di Sidebar pada kelompok **Operasional Gerai** (ikon `BarChart3`).
+- **Verifikasi Kualitas**:
+  - Unit test otomatis: **182/182 lulus 100% (20 berkas uji)** termasuk 13 tes komprehensif baru di [`tests/unit-performance.test.ts`](../tests/unit-performance.test.ts).
+  - TypeScript strict: 0 galat (`tsc --noEmit` bersih).
+  - Next.js production build: **37 rute** sukses terkompilasi optimal (termasuk `/kinerja-gerai` dan `/api/manager/unit-performance`).
+  - Evaluasi nyata peramban: Diuji langsung dengan *browser subagent* pada desktop dan tablet, dark/light mode, dan touch target 44–48 px.
+
+---
 
 ## Tahap P1: Meja Kerja Manajer (`/meja-kerja`) — SELESAI (v2.9.2)
 
