@@ -3,6 +3,7 @@
 import { ButtonLink } from "@/components/ui/Button";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Menu,
   Bell,
@@ -20,6 +21,7 @@ import {
   Sun,
   Moon,
   Shield,
+  Lock,
 } from "lucide-react";
 import { PRODUCTION_READY_ROUTES, SEARCH_MODULES } from "@/lib/navigation";
 import { formatTanggal } from "@/lib/utils";
@@ -48,6 +50,7 @@ interface NotificationItem {
 const PREPARATION_NOTIFICATIONS: NotificationItem[] = [];
 
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
+  const router = useRouter();
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -57,6 +60,19 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const { profile } = useOrganizationProfile();
 
   const notifRef = useRef<HTMLDivElement>(null);
+
+  const handleLockApp = async () => {
+    try {
+      await fetch("/api/auth/pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "lock" }),
+      });
+      router.push("/pin");
+    } catch {
+      router.push("/pin");
+    }
+  };
 
   useEffect(() => {
     setCurrentDateStr(formatTanggal(new Date()));
@@ -153,6 +169,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
             ) : (
               <Moon className="h-5 w-5 text-slate-600 transition-transform hover:-rotate-12" />
             )}
+          </button>
+
+          <button
+            onClick={handleLockApp}
+            aria-label="Kunci Aplikasi"
+            title="Kunci Layar (Kembali ke Input PIN)"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 transition-colors shadow-sm"
+          >
+            <Lock className="h-5 w-5" />
           </button>
 
           <button

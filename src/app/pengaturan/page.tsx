@@ -48,6 +48,7 @@ import { useOrganizationProfile, OrganizationProfileData } from "@/lib/Organizat
 import { getTodayWIB, formatTanggal } from "@/lib/utils";
 import { OpenAiKeySettings } from "@/components/pengaturan/OpenAiKeySettings";
 import { UnitApiKeySettings } from "@/components/pengaturan/UnitApiKeySettings";
+import { ManagerPinSettings } from "@/components/pengaturan/ManagerPinSettings";
 import { businessStatusLabel } from "@/lib/organization-status";
 
 export default function PengaturanPage() {
@@ -436,6 +437,9 @@ export default function PengaturanPage() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Keamanan & PIN Akses Manajer */}
+      <ManagerPinSettings />
 
       <Card>
         <CardHeader>

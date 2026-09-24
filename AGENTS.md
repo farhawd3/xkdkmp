@@ -58,32 +58,23 @@ Aturan ini berlaku untuk seluruh agen dan percakapan dalam workspace ini.
   4. Hindari pengujian interaksi berbelit-belit atau navigasi keliling antarhalaman jika tidak diminta.
   5. Selesai dan kembali dalam beberapa detik.
 
-## 7. Aturan Wajib Unggah ke GitHub untuk Perubahan Mayor (Git Commit & Push Standard)
-- **Pemicu Unggah Otomatis**: Setiap kali agen menyelesaikan **perubahan mayor** (penambahan fitur baru, perbaikan arsitektur/keamanan, perubahan skema database/SQL, penambahan API endpoint, atau pembaruan konfigurasi penting), agen **wajib** melakukan commit dan push langsung ke GitHub (`origin/main`).
-- **Pencegahan Kebocoran**: Sebelum melakukan `git add`, pastikan file kunci rahasia (`.env.local`) dan cache kompilasi tidak ikut terunggah.
-- **Format Pesan Commit (Sistematis, Rapi, & Berjarak Enter)**:
-  Pesan commit wajib rapi, menggunakan tata bahasa Indonesia baku dan sistematis, serta memisahkan judul dengan isi penjelasan menggunakan baris baru (*enter*).
-  Format standar:
+## 7. Aturan Unggah ke GitHub & Efisiensi Token (Git Commit & Push Standard)
+- **Frekuensi Unggah (Jangan Sering Push)**: Dilarang sering melakukan push untuk perubahan kecil/sepele. Lakukan commit dan push **hanya saat ada akumulasi perubahan banyak / paket kerja besar yang tuntas**.
+- **Efisiensi Token (Komentar Singkat & Padat)**: Jangan membuat komentar atau pesan commit yang bertele-tele karena akan memakan banyak token. Gunakan kalimat ringkas, padat, dan langsung ke inti.
+- **Format Pesan Commit (Rapi & Berjarak Enter)**:
+  Pisahkan judul dan penjelasan singkat menggunakan baris baru (*enter*):
   ```text
-  <tipe>(<cakupan>): <ringkasan judul perubahan>
+  <tipe>(<cakupan>): <ringkasan judul perubahan singkat>
 
-  <komentar singkat latar belakang/tujuan perubahan>
+  <1 kalimat singkat tujuan perubahan>
 
-  - <rincian poin perubahan konkret 1>
-  - <rincian poin perubahan konkret 2>
-  - <status pengujian/verifikasi: lulus test dan build sukses>
+  - <poin perubahan penting 1>
+  - <poin perubahan penting 2 (opsional)>
   ```
-  Daftar tipe baku:
-  - `feat`: Penambahan fitur, komponen, atau halaman baru.
-  - `fix`: Perbaikan kendala atau galat logika.
-  - `sec`: Peningkatan keamanan, middleware, atau pembatasan akses privat.
-  - `schema`: Penambahan atau penyesuaian skema database Supabase.
-  - `refactor`: Perapian struktur kode tanpa mengubah fungsi.
-  - `chore`: Pengaturan lingkungan, konfigurasi git, atau pembaruan berkas pendukung.
 - **Standar Perintah Eksekusi**:
-  Gunakan flag `-m` ganda agar menghasilkan pemisahan paragraf ber-enter yang rapi pada riwayat commit Git:
   ```powershell
-  git add <file-yang-diubah>
-  git commit -m "<tipe>(<cakupan>): <judul>" -m "<komentar singkat paragraf 1>" -m "- <poin rincian 1>`n- <poin rincian 2>`n- <verifikasi test>"
+  git add <file-relevan>
+  git commit -m "<tipe>(<cakupan>): <judul ringkas>" -m "<1 kalimat komentar singkat>" -m "- <poin ringkas 1>`n- <poin ringkas 2>"
   git push origin main
   ```
+

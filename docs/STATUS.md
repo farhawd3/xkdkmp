@@ -1,6 +1,14 @@
 # Status Proyek — Kopdes Merah Putih Ladang Laweh
 
-## Checkpoint 24 September 2026 — audit detail desain meja kerja
+## Checkpoint 24 September 2026 — gerbang PIN manajer dan pemulihan WhatsApp
+
+- **Layar PIN Manajer (`/pin`)**: Akses awal kini dilindungi gerbang PIN 4 digit yang ramah tablet/desktop. Tombol numerik virtual (0-9) dengan tinggi 56 px, 4 indikator titik interaktif, dukungan ketikan keyboard fisik, dan auto-submit saat 4 digit terisi. Default PIN awal: `1234`.
+- **Pengaturan PIN & Kontak Pemulihan (`/pengaturan`)**: Kartu pengaturan keamanan baru untuk mengganti PIN (PIN saat ini, PIN baru, konfirmasi PIN baru) dan mengatur nomor WhatsApp pemulihan resmi. Dilengkapi tombol uji tautan WhatsApp langsung.
+- **Pemulihan via WhatsApp**: Jika manajer lupa PIN, tombol "Lupa PIN?" di `/pin` langsung membuka pesan konfirmasi resmi WhatsApp ke nomor pemulihan yang tersimpan.
+- **Pembersihan Rute & Middleware**: Rute middleware kini mengalihkan sesi belum terautentikasi langsung ke `/pin` (bukan halaman galat 403 buntu). Rute sementara `/api/unlock` dihapus demi efisiensi dan keamanan. Tombol kunci cepat ditambahkan di Header.
+- **Basis Data**: Skrip migrasi `20260924000013_add_manager_pin.sql` dan `MASTER_RESET_DAN_SETUP_DATABASE.sql` diperbarui dengan kolom `manager_pin` dan `recovery_phone`. Sistem memiliki fallback otomatis ke PIN default `1234` jika kolom Supabase belum dieksekusi.
+- **Verifikasi**: **208/208 tes Vitest lulus 100%**, TypeScript strict 0 galat, Next.js build sukses 43 rute.
+
 
 - Browser terintegrasi dipakai untuk spot-check tablet 884 px pada Meja Kerja, Pemantauan Gerai, Tugas & Agenda, Pemantauan Keuangan, Neraca & SHU, dan Pengaturan. Tidak terlihat halaman melebar atau kartu bertumpuk pada layar yang diperiksa; ini bukan klaim seluruh kondisi data dan dialog telah diuji.
 - Temuan Meja Kerja: filter sumber terlalu sempit sehingga pilihan terpotong. Tata letak kini dua kolom pada tablet, dengan pencarian di baris penuh; ukuran teks pencarian 14 px dan tinggi input 48 px. Keadaan kosong tidak lagi menyimpulkan “semua aman” dari daftar tanpa item, melainkan menjelaskan batas data serta memberi pintasan memeriksa rekap gerai.

@@ -146,6 +146,8 @@ CREATE TABLE public.organization_profile (
   bank_account_number VARCHAR(100),
   bank_account_holder VARCHAR(150),
   notes TEXT,
+  manager_pin VARCHAR(20) NOT NULL DEFAULT '1234',
+  recovery_phone VARCHAR(50) DEFAULT '081267890123',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -218,7 +220,9 @@ INSERT INTO public.organization_profile (
   manager_title,
   region,
   full_address,
-  fiscal_year
+  fiscal_year,
+  manager_pin,
+  recovery_phone
 )
 VALUES (
   'Kopdes Merah Putih — Ladang Laweh',
@@ -228,7 +232,9 @@ VALUES (
   'Manajer Koperasi',
   'Nagari Ladang Laweh, Kec. Banuhampu, Agam',
   'Simpang Tiga Ladang Laweh, Kec. Banuhampu, Kab. Agam, Sumatera Barat',
-  '2026/2027'
+  '2026/2027',
+  '1234',
+  '081267890123'
 );
 
 -- ------------------------------------------------------------------------------
