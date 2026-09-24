@@ -46,4 +46,38 @@ describe("Keamanan PIN Manajer & Integrasi WhatsApp", () => {
     expect(decodedUrl).toContain("Abdul Halim");
     expect(decodedUrl).toContain("reset PIN akses aplikasi Kopdes");
   });
+
+  it("mengizinkan akses API jika cookie sesi PIN disertakan tanpa KOPDES_PRIVATE_ACCESS_KEY", async () => {
+    const { verifyPrivateApiAccess } = await import("@/lib/security/private-access");
+    const originalEnv = process.env.KOPDES_PRIVATE_ACCESS_KEY;
+    const originalVercel = process.env.VERCEL;
+
+    try {
+      delete process.env.KOPDES_PRIVATE_ACCESS_KEY;
+      process.env.VERCEL = "1"; // Simulasikan environment Vercel cloud
+
+      // 1. Request tanpa cookie PIN -> ditolak
+      const reqNoPin = new Request("https://kopdes.vercel.app/api/dashboard/executive", {
+        headers: { host: "kopdes.vercel.app" },
+      });
+      const resNoPin = verifyPrivateApiAccess(reqNoPin);
+      expect(resNoPin.allowed).toBe(false);
+
+      // 2. Request DENGAN cookie PIN -> diizinkan langsung!
+      const reqWithPin = new Request("https://kopdes.vercel.app/api/dashboard/executive", {
+        headers: {
+          host: "kopdes.vercel.app",
+          cookie: `${PIN_COOKIE_NAME}=kpd_valid123; other=abc`,
+        },
+      });
+      const resWithPin = verifyPrivateApiAccess(reqWithPin);
+      expect(resWithPin.allowed).toBe(true);
+    } finally {
+      if (originalEnv) process.env.KOPDES_PRIVATE_ACCESS_KEY = originalEnv;
+      else delete process.env.KOPDES_PRIVATE_ACCESS_KEY;
+
+      if (originalVercel) process.env.VERCEL = originalVercel;
+      else delete process.env.VERCEL;
+    }
+  });
 });

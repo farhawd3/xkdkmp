@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { PIN_COOKIE_NAME } from "@/lib/security/pin-service";
 
 /**
  * Modul Perlindungan Akses Privat — Kopdes Merah Putih Ladang Laweh.
@@ -154,7 +155,19 @@ export function verifyPrivateAccess(request: NextRequest): AccessVerificationRes
     return { allowed: true, status: 200 };
   }
 
-  // 2. Akses publik / remote: periksa kunci akses privat
+  // 2. Sesi PIN Manajer yang Sah
+  if (request.cookies.has(PIN_COOKIE_NAME)) {
+    if (!isSameOriginMutation(request)) {
+      return {
+        allowed: false,
+        status: 403,
+        reason: "Permintaan lintas-origin (CSRF) ditolak demi keamanan data koperasi.",
+      };
+    }
+    return { allowed: true, status: 200 };
+  }
+
+  // 3. Akses publik / remote: periksa kunci akses privat
   const configuredSecret = process.env[PRIVATE_KEY_ENV];
   if (!configuredSecret) {
     return {
@@ -166,7 +179,7 @@ export function verifyPrivateAccess(request: NextRequest): AccessVerificationRes
     };
   }
 
-  // 3. Mode Akses Publik Terbuka: jika diatur ke 'public' atau 'allow-all'
+  // 4. Mode Akses Publik Terbuka: jika diatur ke 'public' atau 'allow-all'
   if (configuredSecret === "public" || configuredSecret === "allow-all") {
     if (!isSameOriginMutation(request)) {
       return {
@@ -226,18 +239,35 @@ export function verifyPrivateApiAccess(request: Request): {
     return { allowed: true };
   }
 
-  // 2. Akses Publik
+  // 2. Sesi PIN Manajer yang Sah (melalui Cookie header)
+  const cookieHeader = request.headers.get("cookie") || "";
+  const hasPinSession = Boolean(
+    cookieHeader.match(new RegExp(`(?:^|;\\s*)${PIN_COOKIE_NAME}=([^;]*)`))
+  );
+
+  if (hasPinSession) {
+    if (!isSameOriginMutation(request)) {
+      return {
+        allowed: false,
+        status: 403,
+        error: "Permintaan mutasi API lintas-domain (CSRF) ditolak.",
+      };
+    }
+    return { allowed: true };
+  }
+
+  // 3. Akses Publik
   const configuredSecret = process.env[PRIVATE_KEY_ENV];
   if (!configuredSecret) {
     return {
       allowed: false,
       status: 403,
       error:
-        "Aplikasi pribadi belum dikonfigurasi untuk akses privat publik. Hubungi manajer koperasi.",
+        "Sesi PIN manajer diperlukan. Silakan masukkan PIN di layar awal.",
     };
   }
 
-  // 3. Mode Akses Publik Terbuka
+  // 4. Mode Akses Publik Terbuka
   if (configuredSecret === "public" || configuredSecret === "allow-all") {
     if (!isSameOriginMutation(request)) {
       return {
@@ -249,7 +279,6 @@ export function verifyPrivateApiAccess(request: Request): {
     return { allowed: true };
   }
 
-  const cookieHeader = request.headers.get("cookie") || "";
   const cookieMatch = cookieHeader.match(
     new RegExp(`(?:^|;\\s*)${ACCESS_COOKIE_NAME}=([^;]*)`)
   );
