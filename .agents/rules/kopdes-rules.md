@@ -49,3 +49,34 @@ Aturan ini berlaku untuk seluruh agen dan percakapan dalam workspace ini.
   3. Periksa poin penting: tata letak tidak rusak, teks terbaca jelas, dan area sentuh tombol proporsional (44–48 px).
   4. Hindari pengujian interaksi berbelit-belit atau navigasi keliling antarhalaman jika tidak diminta.
   5. Selesai dan kembali dalam beberapa detik.
+
+## 7. Aturan Wajib Unggah ke GitHub untuk Perubahan Mayor (Git Commit & Push Standard)
+- **Pemicu Unggah Otomatis**: Setiap kali agen menyelesaikan **perubahan mayor** (penambahan fitur baru, perbaikan arsitektur/keamanan, perubahan skema database/SQL, penambahan API endpoint, atau pembaruan konfigurasi penting), agen **wajib** melakukan commit dan push langsung ke GitHub (`origin/main`).
+- **Pencegahan Kebocoran**: Sebelum melakukan `git add`, pastikan file kunci rahasia (`.env.local`) dan cache kompilasi tidak ikut terunggah.
+- **Format Pesan Commit (Sistematis, Rapi, & Berjarak Enter)**:
+  Pesan commit wajib rapi, menggunakan tata bahasa Indonesia baku dan sistematis, serta memisahkan judul dengan isi penjelasan menggunakan baris baru (*enter*).
+  Format standar:
+  ```text
+  <tipe>(<cakupan>): <ringkasan judul perubahan>
+
+  <komentar singkat latar belakang/tujuan perubahan>
+
+  - <rincian poin perubahan konkret 1>
+  - <rincian poin perubahan konkret 2>
+  - <status pengujian/verifikasi: lulus test dan build sukses>
+  ```
+  Daftar tipe baku:
+  - `feat`: Penambahan fitur, komponen, atau halaman baru.
+  - `fix`: Perbaikan kendala atau galat logika.
+  - `sec`: Peningkatan keamanan, middleware, atau pembatasan akses privat.
+  - `schema`: Penambahan atau penyesuaian skema database Supabase.
+  - `refactor`: Perapian struktur kode tanpa mengubah fungsi.
+  - `chore`: Pengaturan lingkungan, konfigurasi git, atau pembaruan berkas pendukung.
+- **Standar Perintah Eksekusi**:
+  Gunakan flag `-m` ganda agar menghasilkan pemisahan paragraf ber-enter yang rapi pada riwayat commit Git:
+  ```powershell
+  git add <file-yang-diubah>
+  git commit -m "<tipe>(<cakupan>): <judul>" -m "<komentar singkat paragraf 1>" -m "- <poin rincian 1>`n- <poin rincian 2>`n- <verifikasi test>"
+  git push origin main
+  ```
+
