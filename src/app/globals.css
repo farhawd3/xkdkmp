@@ -224,7 +224,16 @@ select:not([multiple]) optgroup { background-color: var(--surface-card); color: 
   }
   .dark select:not([multiple]) option:checked { background: #3c2b3c; color: #f0bed0; }
   select:not([multiple]) option:disabled { opacity: 0.5; }
-  select:not([multiple]):open { border-color: var(--primary); }
   .kopdes-select:not([multiple]) option { text-align: left; }
   .kopdes-select:not([multiple]) option::checkmark { margin-right: 8px; }
 }
+
+@keyframes kopdes-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.animate-shake {
+  animation: kopdes-shake 0.4s ease-in-out;
+}
+
