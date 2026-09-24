@@ -14,9 +14,12 @@ ALTER TABLE public.organization_profile
   ADD COLUMN IF NOT EXISTS recovery_phone VARCHAR(50) DEFAULT '081267890123';
 
 UPDATE public.organization_profile 
-SET manager_pin = '1234' 
-WHERE manager_pin IS NULL;
+SET 
+  manager_pin = '1234',
+  recovery_phone = COALESCE(recovery_phone, '081267890123')
+WHERE manager_pin IS NULL OR recovery_phone IS NULL;
 
 NOTIFY pgrst, 'reload schema';
 
 COMMIT;
+

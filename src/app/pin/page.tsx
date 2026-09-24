@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Delete, MessageSquare, AlertCircle, CheckCircle2, Lock } from "lucide-react";
+import { Delete, MessageSquare, AlertCircle, Lock } from "lucide-react";
 
 export default function PinPage() {
   const router = useRouter();
